@@ -1,8 +1,519 @@
 {
   "schema": 1,
-  "version": 1,
+  "version": 2,
   "updated": "2026-09-20",
-  "articles": [],
+  "articles": [
+    {
+      "id": "art_plangpart1",
+      "title": "What is the Planning Scheme?",
+      "summary": "",
+      "body": "<br/>📌 <a href='https://www.sdrc.qld.gov.au/doing-business/planning---development/strategic-planning' target='_blank'>Southern Downs Planning Scheme</a><br/><br/>A legally binding document governing land use and development in the local government area over the long term (typically 20 years). Defines zoning, building heights, and development rules to balance community needs, economic growth, and environmental protection.<br/><br/>Each Queensland council prepares its own scheme in consultation with the State Government and community.<br/><br/>Aims to: ensure land is available for housing, services, and business; maximise liveability; plan infrastructure efficiently; protect natural areas and heritage; build resilience to floods and bushfires; and reflect the community's vision for the region.",
+      "audience": "internal",
+      "ownerId": "tax_customer_service_customer_service",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [],
+      "internal": true
+    },
+    {
+      "id": "art_plancani",
+      "title": "Background & Context Can I build here?",
+      "summary": "",
+      "body": "<br/>There are two types of approvals for construction: <b>building approval</b> and <b>planning approval</b>. Most new structures require building approval. A shed under 10m2 does not require building approval, but must still comply with siting and boundary clearance rules.<br/><br/>Whether planning approval is required depends on many factors — the most common reason is that the construction cannot meet the required setbacks of the Southern Downs Planning Scheme.<br/><br/><u>Common site constraints:</u><br/>- Underground infrastructure (e.g. sewer line)<br/>- Lack of constructed road access to the property<br/>- Bushfire Zone | Flood Zone<br/><br/><u>Setbacks - Dwellings (Class 1a):</u><br/>Residential/township: 6m front, 1.5m side &amp; rear (QDC MP 1.2)<br/>Rural: 6m front from sealed road; 60m from all boundaries if road is gravel/unmade<br/>Rural residential: Refer to Southern Downs Planning Scheme<br/><br/><u>Setbacks - Sheds &amp; outbuildings (Class 10a):</u><br/>Residential/township: 6m front, 1.5m side &amp; rear<br/>Rural: 6m front, 1.5m side &amp; rear regardless of road surface<br/><br/><i>Class 1a = habitable dwelling. Class 10a = non-habitable structure (sheds, carports, garages). Different setback rules — worth knowing the terms because applicants and the Building team use them.</i>",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_planexist",
+      "title": "Why we always transfer Existing Applications",
+      "summary": "",
+      "body": "<br/>Planning applications are complex and highly case-specific. Only the planner managing a file has the full context needed to answer accurately — application history, conditions, referral agency responses, and any outstanding issues.<br/><br/>Attempting to answer without that context risks giving incorrect advice that could have serious consequences for the applicant.",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_planprelodge",
+      "title": "General Enquiries vs Pre-Lodgement Meetings",
+      "summary": "",
+      "body": "<br/><b>General Enquiries (no fee):</b><br/>For information of a general nature - opportunities and constraints of a site; clarifying the location of a building; potential use of a specific parcel of land. Transfer to the planning team.<br/><br/><b>Pre-Lodgement Meeting ($300 - 60 min, RC192):</b><br/>A paid service for applicants who already have a clear development goal. Provides tailored advice on a specific proposal before a formal Development Application is lodged. Helps applicants understand key areas of assessment and required supporting documents in advance.<br/><br/>This service is for people who know what and where they want to develop - not for general site enquiries.",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_planobjection",
+      "title": "Why this matters Appeal rights",
+      "summary": "",
+      "body": "<br/>Submissions that do not meet all of the checklist criteria are <b>not considered properly made</b> and submitters will not have third-party appeal rights.<br/><br/>If a submission is properly made and Council approves the application, the submitter has the right to appeal Council's decision in the Planning and Environment Court.<br/><br/>If Council refuses the application, all submitters (properly made or not) are notified after the decision is made and receive a copy of the Decision Notice.",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_animalattack",
+      "title": "After a Dog Attack Possible outcomes",
+      "summary": "",
+      "body": "<br/>Following a reported attack, Local Laws officers will investigate. Possible outcomes:<br/><br/><b>Dangerous Dog Declaration:</b><br/>May be issued where a dog has attacked, bitten, or rushed at a person or animal. Requirements imposed on the owner include: microchipping, desexing, approved enclosure, muzzle in public, and a warning sign on the premises. The owner may appeal within 28 days to the Magistrates Court.<br/><br/><b>Destruction Order:</b><br/>May be issued in severe or repeat cases, or where the owner fails to comply with a Dangerous Dog Declaration.<br/><br/><b>Advising the victim:</b><br/>- Seek medical attention if injured<br/>- A police report may be appropriate for serious incidents<br/>- Retain evidence: photos, witness details, and vet reports if a pet was also injured",
+      "audience": "internal",
+      "ownerId": "tax_local_laws_animal_control",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "animals"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_barknew",
+      "title": "Why we require a diary Plain-English script",
+      "summary": "",
+      "body": "<br/>Customers often push back on having to keep a diary. A clean way to explain it:<br/><br/><i>&quot;A noise diary creates an objective record showing a pattern — which Local Laws Officers need to demonstrate a genuine nuisance under the legislation. It also protects you by documenting the problem factually.&quot;</i><br/><br/><u>Legal framework:</u><br/>Council needs documented evidence before taking enforcement action. A single complaint without a diary cannot result in formal action. The diary establishes a pattern of nuisance over time, which is required to demonstrate an ongoing problem.<br/><br/><u>Escalation path:</u><br/>1. Customer encouraged to contact the dog owner directly first<br/>2. Customer completes diary over 10 days and emails to Local Laws<br/>3. Local Laws contacts dog owner and issues written warning<br/>4. If behaviour continues: infringement notice may be issued<br/>5. Non-compliance: infringement notice which if unpaid can lead to court action<br/><br/>Set realistic expectations with the customer — the process takes time and council's primary goal is behavioural correction, not punishment.",
+      "audience": "internal",
+      "ownerId": "tax_local_laws_animal_control",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "animals"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_ratessale",
+      "title": "Property Valuations & Supplementary Notices Background",
+      "summary": "",
+      "body": "<br/>Properties are valued by the State Government (Department of Resources), not council. Valuations are updated annually and form the basis of the General Rate calculation.<br/><br/>Owners who believe their valuation is incorrect have 60 days from the date of their valuation notice to lodge a formal objection with the Department of Resources. Council cannot intervene in this process.<br/><br/><u>Why rates increase after subdivision or sale of bulk-assessed land:</u><br/>When bulk-assessed lots are sold or subdivided individually, each receives its own Property ID and is independently valued by the State. The per-lot valuation is typically higher than a proportional share of the bulk-assessed value, resulting in a higher rates charge.<br/><br/>This is a State Government valuation outcome — council has no discretion to reduce it. Customers who dispute their new valuation should contact the Department of Resources within the 60-day window.<br/><br/><u>Supplementary notices — what triggers them:</u><br/>- A property sale (most common)<br/>- A subdivision that creates new PIDs<br/>- A revaluation of an existing PID by the Department of Resources<br/>- A change in rates category (e.g. residential dwelling reclassified for short-term accommodation — see Planning STA workflow)<br/><br/>Because a supplementary notice can cover a period longer than the standard six months, the total amount may look higher than expected at first glance. Always direct the customer to check the dates the notice covers.",
+      "audience": "internal",
+      "ownerId": "tax_revenue_rates",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "rates"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_ratespayagree",
+      "title": "Payment Agreements Policy context",
+      "summary": "",
+      "body": "<br/><b>If a customer defaults:</b><br/>If the customer fails to maintain agreed payments, the payment agreement is void and all outstanding rates become immediately payable. Council may proceed to debt recovery, including referral to an external collector and ultimately a caveat on the property.<br/><br/><b>Customers in genuine hardship:</b><br/>Customers experiencing ongoing financial difficulty beyond a standard payment agreement should be encouraged to contact the revenue team directly. Customer service should not make commitments beyond the standard process.<br/><br/><b>Rate recovery codes — what they mean:</b><br/>- General: standard account in good standing<br/>- FirstREM / FinalREM: reminder notice issued, account overdue<br/>- ARR: referred to external debt recovery (Recoveries &amp; Reconstructions) — do not negotiate, transfer to R&amp;R: 1300 556 863",
+      "audience": "internal",
+      "ownerId": "tax_revenue_rates",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "rates"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingnew",
+      "title": "What building work requires approval?",
+      "summary": "",
+      "body": "<br/><u>Generally requires building approval:</u><br/>New dwellings, extensions, garages, carports, sheds over 10m2, swimming pools, retaining walls over 1m, patios/decks attached to the dwelling, and most commercial construction.<br/><br/><u>Generally does not require building approval:</u><br/>Garden sheds under 10m2, some fencing, some landscaping. However, even exempt structures must still comply with siting and boundary setback requirements under the Queensland Development Code.<br/><br/><u>Private Certifier vs Council:</u><br/>Customers may engage a private building certifier who manages the application, arranges inspections, and liaises with council on their behalf. Most customers undertaking larger projects choose this route. Council fees are the same either way — the certifier charges their own fee on top.",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingvsplanning",
+      "title": "Building vs Planning Approval Staff script",
+      "summary": "",
+      "body": "<br/>These two sound similar but answer two different questions. A clean way to explain it to a customer:<br/><br/><i>&quot;Planning approval asks: can this use happen on this land? It's about where the building goes, how it's sited, and whether the use fits the Planning Scheme — setbacks, overlays, road access, bushfire and flood zones.<br/><br/>Building approval asks: is the structure itself safe and compliant? It's about how the building is constructed — footings, framing, bracing, tie-down, energy efficiency, smoke alarms, and all the engineering that makes the building safe.&quot;</i><br/><br/><u>The usual pathway on the Southern Downs:</u><br/>- If the site ticks every box on the Rural Zone Checklist → building approval only<br/>- If it doesn't tick every box (can't meet setbacks, in bushfire zone, no constructed road) → planning approval (MCU) first, THEN building approval<br/><br/>Many rural houses need only building approval. Use the checklist with the customer before referring them up.",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingtinycontainer",
+      "title": "Tiny Homes, Prefab & Shipping Containers",
+      "summary": "",
+      "body": "<br/>These come up constantly and the most common misconception is that &quot;tiny&quot; or &quot;prefab&quot; means the normal rules don't apply. They do.<br/><br/><u>Tiny homes fixed to the land:</u><br/>Treated like any other Class 1a dwelling — full building approval process, full document list, Form 21 at the end. Council removed the 60m2 minimum floor area in August 2024, so there's no &quot;too small&quot; threshold.<br/><br/><u>Tiny homes on wheels:</u><br/>Treated like caravans. Can be stored on the land without approval if genuinely just stored (not lived in, not connected to services). Living in one requires a Temporary Home permit or an approved caravan park.<br/><br/><u>Prefab / manufactured homes:</u><br/>Can be approved as Class 1a — but paperwork is often harder, not easier. Many are imported and may not meet Australian standards. Advise the customer to get written certification BEFORE purchase: RPEQ signoff, Form 15 for structural, Form 43 for waterproofing, QBCC insurance eligibility.<br/><br/><u>Shipping containers — depends on use:</u><br/>- Self-assessable: short-term storage (under 6 months) during renovations, not fixed to ground, not on a road reserve<br/>- Building approval required: any use as a building or structure, long-term storage, anchored with footings/slabs, altered with doors/windows<br/>- Amenity &amp; Aesthetics application: required BEFORE building approval in Urban/Rural Residential zones, or in Rural zone within 100m of a residential area, on lots 4,000m2 or less, or within 20m of a boundary<br/><br/>Always advise the customer to call BEFORE committing funds — a 10-minute conversation can save thousands.",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingforms",
+      "title": "Forms 15, 16 & 21 What they are",
+      "summary": "",
+      "body": "<br/>Customers and builders reference these constantly. The short version:<br/><br/><b>Form 15 — Compliance Certificate for Building Design or Specification</b><br/>Signed by an RPEQ (registered engineer) to confirm that part of the design meets code. Commonly provided for footings, slabs, and steel framing. Required BEFORE building approval can be issued.<br/><br/><b>Form 16 — Inspection Certificate / Aspect Certificate</b><br/>Signed by the building certifier (or another competent person) after each stage of construction to confirm that stage passes. Four are collected over the build — footing, slab, frame, final.<br/><br/><b>Form 21 — Final Inspection Certificate</b><br/>Issued by the certifier once the final inspection passes and all conditions of approval are met. It's the document that says the building is complete and lawful.<br/><br/><u>Key point for customers:</u><br/>For new dwellings, the customer CANNOT move in until Form 21 is issued. Occupying a new dwelling before Form 21 is an offence under the Building Act 1975 and can affect their insurance.<br/><br/>Cleanaway also requires Form 21 before starting a kerbside collection service on a new property.",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingtemphome",
+      "title": "Temporary Accommodation During Build Background",
+      "summary": "",
+      "body": "<br/>Allowed on rural land only, AFTER building approval for the permanent dwelling has been granted. Not automatic, and not allowed in urban residential areas.<br/><br/><u>Process:</u><br/>1. Building approval for the dwelling must be in place first<br/>2. Customer submits Application for Permission to Occupy Temporary Accommodation — minimum 30 days before intended start date<br/>3. Applicable fee is paid<br/>4. Supporting information required: drawings of proposed temporary home, wastewater disposal plan, drinking water supply (minimum 5,000L tank), landowner consent if not the owner, reason for needing temporary occupation<br/><br/><u>Term:</u><br/>Up to 18 months, extendable to match expected completion of the permanent dwelling. Lapses automatically when the dwelling is finished or the building approval lapses.<br/><br/><u>What counts as suitable:</u><br/>Caravan, mobile home, or a Class 10a shed with prior building approval. Tents and camper trailers are NOT considered suitable.<br/><br/>Set the expectation clearly: starting occupation before approval voids the temporary approval and creates enforcement issues.",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingruralvsurban",
+      "title": "Rural vs Urban Zone-specific differences",
+      "summary": "",
+      "body": "<br/>Most of the process is the same regardless of zone (Form 15/16/21, four inspection stages, QBCC insurance, QLeave). Where the zone changes things:<br/><br/><u>RURAL ZONE — Common site constraints:</u><br/>- Setbacks: 60m from boundaries if dirt road frontage; 6m front + 60m side/rear if bitumen frontage<br/>- 50m from watercourse, 200m+ from various animal industries<br/>- 17m x 17m flood-free building pad on slope under 15%<br/>- BAL (Bushfire Attack Level) report often required<br/>- On-site water storage: 45,000L for 1-2 bedrooms, 67,500L for more<br/>- On-site sewerage (OSSF) — see Plumbing<br/>- Driveway with culvert if crossing a table drain<br/>- Longer rural lots may still be in Bushfire Hazard Overlay even if in township<br/><br/>Refer: Building a House in Rural Zone checklist.<br/><br/><u>URBAN ZONE (Residential / Rural Residential / Township):</u><br/>- Setbacks under 450m2 lots: QDC MP 1.1 (scaled smaller setbacks)<br/>- Setbacks 450m2 and over: QDC MP 1.2 — 6m front, 1.5m side &amp; rear (or siting concession)<br/>- Common overlays: Flood Hazard, Heritage/Character (some parts of Warwick and Stanthorpe), Airport Environs (near Warwick airport), easements (sewer/water/drainage commonly cross urban blocks)<br/>- Connected to town water and sewer in most cases — plumbing approval still required<br/>- Pool approval — see Building - Pool node<br/>- Secondary dwelling / granny flat — Planning Scheme currently under review, transfer to Duty Planner<br/><br/>Refer: Dual Occupancy (Duplex) Residential/Rural Residential checklist.<br/><br/><u>Common exemptions (QDC MP 1.2, lots 450m2+):</u><br/>- A1(c) Open carports within road setback if walls/screens/supports ≤15% of perimeter<br/>- A2(d) Class 10a buildings within side/rear clearances if height ≤4.5m, boundary length ≤9m, 1.5m from adjoining habitable windows",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingextensions",
+      "title": "Extensions, Decks, Sheds, Carports Rules of thumb",
+      "summary": "",
+      "body": "<br/>These are the most common small-project calls. Staff can use this as a quick-reference, but always confirm with the customer that a certifier or the building team will do the final check.<br/><br/><u>Extensions:</u><br/>Always need building approval. If the extension pushes into a setback, planning approval or a siting concession is also required.<br/><br/><u>Decks and patios attached to the dwelling:</u><br/>Need building approval. Decks higher than 1m above natural ground level need balustrades compliant with the Building Code.<br/><br/><u>Sheds over 10m2:</u><br/>Need building approval. Sheds under 10m2 are self-assessable but must still meet siting rules (boundary clearances, Queensland Development Code).<br/><br/><u>Carports:</u><br/>Need building approval. Open carports can sometimes sit within the front setback under QDC MP 1.2 A1(c) if supports/walls within the setback are under 15% of perimeter.<br/><br/><u>Retaining walls over 1m:</u><br/>Need building approval, with engineering design and Form 15.<br/><br/><u>Fences over 2m:</u><br/>Need building approval. Pool fencing has its own separate standard — see Building - Pool.<br/><br/>For anything close to a threshold, offer a callback from the building team rather than confirming over the phone.",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingpool",
+      "title": "Swimming Pools Safety Register & Certificate",
+      "summary": "",
+      "body": "<br/>Any pool capable of holding water deeper than 300mm needs BOTH building approval AND compliant pool fencing. This includes permanent pools, most portable/inflatable pools, spas, and portable wading pools at that depth.<br/><br/><u>Governing legislation:</u><br/>Building Act 1975 + Queensland Pool Safety Standard. Strictly enforced — no discretion on the fencing standard.<br/><br/><u>Three things every pool owner must know:</u><br/>1. <b>Queensland Pool Safety Register</b> — the pool must be registered<br/>2. <b>Pool Safety Certificate</b> — required before selling or leasing a property with a pool, and whenever the fence is replaced or modified<br/>3. Pool fence inspections are performed by a <b>licensed Pool Safety Inspector</b>, NOT Council. Council investigates unfenced or non-compliant pools as a safety matter.<br/><br/><u>Customer script — why the rules are strict:</u><br/><i>&quot;Child drownings remain the leading cause of accidental death for Queensland children under 5. Pool fencing is strictly enforced and there's no discretion on the standard — that's to keep kids alive.&quot;</i>",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_drivewayapproval",
+      "title": "Driveway / Works Within Road Reserve (WWRR)",
+      "summary": "",
+      "body": "<br/>Almost every new driveway — and any upgrade to an existing one — needs Works Within Road Reserve (WWRR) approval from Council Engineering. This is a high-frequency call and customers often don't know it's required.<br/><br/><u>Why it's required:</u><br/>Section 75(2) of the Local Government Act prohibits carrying out works on a road without Council's permission. The &quot;road reserve&quot; includes the sealed surface, kerb and channel, footpath, and verge — all Council-managed land even where the verge looks like part of the customer's front garden.<br/><br/><u>When WWRR is required:</u><br/>- New driveway access (part of virtually every new build)<br/>- Widening or relocating an existing driveway<br/>- Changing the surface type (e.g. gravel to concrete)<br/>- Adding a second access point, culvert, or kerb crossing<br/><br/>Simple resealing/maintenance of an existing surface does NOT normally trigger approval.<br/><br/><u>Gravel driveways need approval too</u> — the rule is about works on the road reserve, not the finish.<br/><br/><u>What's involved:</u><br/>1. Complete the Application for Minor Works — Works Within a Road Reserve form (Council Engineering)<br/>2. Attach a sketch plan showing proposed location, dimensions, and any culverts or drainage<br/>3. Pay the application fee (Fees &amp; Charges)<br/>4. Allow 20 working days for assessment<br/>5. On approval, Council issues an Approval Letter with conditions<br/><br/><u>TMR-controlled roads:</u><br/>If the property accesses the New England Highway, Cunningham Highway, or any other state-controlled road, driveway access is assessed by TMR, NOT Council. Refer customer to TMR on 13 20 80 BEFORE applying to Council.<br/><br/><u>Water or sewer infrastructure nearby:</u><br/>If the driveway will pass over, or within 2m of, any Council water main, sewer main, or manhole, a separate Works Near Water Supply or Sewerage Infrastructure approval is required under Section 192(2) of the Water Supply (Safety and Reliability) Act 2008 — second form, second assessment, second fee.<br/><br/>Telltale signs of underground infrastructure: meter boxes, sewer manholes, valve/hydrant surface boxes on or near the verge.<br/><br/>Engineering Department will identify applicable approvals during initial enquiry.<br/><br/><u>Script:</u><br/><i>&quot;Most licensed driveway contractors handle the WWRR as part of their quote — but ask them before signing rather than assuming. And call Council's Engineering Department for pre-application advice before any concrete is poured.&quot;</i>",
+      "audience": "internal",
+      "ownerId": "tax_works_engineering",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "works"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_plumbossf",
+      "title": "On-Site Sewerage Facilities (OSSF) Rural context",
+      "summary": "",
+      "body": "<br/>Most rural properties are not connected to Council's sewerage network, so they need an On-Site Sewerage Facility (OSSF) to treat wastewater on their own land. Two main options:<br/><br/><u>Septic tank with absorption trench:</u><br/>Traditional approach. Wastewater flows into the tank, solids settle, liquid effluent disperses through trenches into the soil. Works well on well-draining land with adequate room for trenches.<br/><br/><u>Aerated Wastewater Treatment System (AWTS):</u><br/>Higher-standard treatment using aeration. Treated water disperses over a smaller area, often via surface irrigation. More expensive to install, requires ongoing servicing, but often the only option on smaller or difficult sites.<br/><br/><u>Which is right depends on:</u><br/>Soil type, lot size, slope, separation from watercourses, bores and neighbours, and number of bedrooms. A soil test + consultation with a licensed plumber give a clear answer.<br/><br/><u>Customer-facing script:</u><br/><i>&quot;Don't commit to a house design before sorting the sewerage solution — it can influence your building footprint and siting, especially on smaller or sloped rural blocks.&quot;</i><br/><br/><u>Approvals &amp; inspections:</u><br/>OSSF installations require Council plumbing approval BEFORE work begins, and inspections during construction.",
+      "audience": "internal",
+      "ownerId": "tax_building_plumbing",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "plumbing"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingcosts",
+      "title": "Costs & Fees Beyond Construction Detail",
+      "summary": "",
+      "body": "<br/>Customers planning a build often underestimate the non-construction costs. Use this list to set realistic expectations.<br/><br/><u>Council fees:</u><br/>- <b>Building application fee</b> — see current Fees &amp; Charges<br/>- <b>Plumbing application fee</b> (separate from building)<br/>- <b>Planning application fee</b> — only if site needs MCU<br/>- <b>Pre-lodgement meeting</b> — $300 for 60 minutes (CREDITED back to application fee if lodged within 12 months — see Pre-Lodgement Meeting context panel)<br/>- <b>Driveway/WWRR application fee</b> — separate from building<br/><br/><u>Mandatory third-party costs:</u><br/>- <b>Private certifier fee</b> if using one (most builds do)<br/>- <b>RPEQ engineer</b> — for footing/slab design and Form 15, plus soil test<br/>- <b>Energy efficiency assessment</b> — required for ALL new dwellings<br/>- <b>BAL assessment</b> — only if in Bushfire Hazard Overlay (check Online Mapping)<br/>- <b>QBCC Home Warranty Insurance</b> — required for residential work over $3,300. Paid by builder, added to contract price<br/><br/><u>QLeave levy — important:</u><br/>Required for work over $150,000 (excl. GST). <b>MUST be paid before building approval is issued.</b> Customers often miss this and it delays approval.<br/><br/><u>Rural-specific infrastructure:</u><br/>- <b>Driveway construction</b> (often with culvert at table-drain crossing)<br/>- <b>Stormwater management</b><br/>- <b>On-site water storage</b> — minimum 45,000L for 1-2 bedrooms, 67,500L for more<br/>- <b>On-site sewerage</b> (septic or AWTS) — see Plumbing OSSF<br/>- <b>Power connection</b> — Ergon contracted, can be substantial cost on rural blocks<br/><br/><u>Ongoing post-build:</u><br/>- Rates (general + waste + water access charges)<br/>- Insurance (home + contents + landlord if applicable)<br/>- Pool maintenance + Pool Safety Certificate renewals if applicable",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingoverwhelmed",
+      "title": "First-time builder script \"I'm overwhelmed\"",
+      "summary": "",
+      "body": "<br/>This call comes through a lot, especially for rural builds. The customer often hasn't bought the land yet, or has just bought and doesn't know where to start. Most don't know terminology and feel they should before ringing — they shouldn't, and saying so is genuinely reassuring.<br/><br/><u>Customer-facing script:</u><br/><i>&quot;Totally normal feeling. The shortest sensible first week looks like this. First, check the property on our Online Mapping tool to confirm the zone — that tells you what rules apply. Then work through the checklist that matches your situation — Rural Zone Checklist if rural, the urban building info sheets otherwise. Mark each item as ticked, crossed, or not applicable. If anything is crossed, give us a ring and ask to speak to the duty planner — general enquiries are free, that's literally what they're there for. From there you'll know whether you need planning approval first, or whether you can go straight to building approval. Don't worry about knowing the right words before you ring. We're happy to walk you through it.&quot;</i><br/><br/><u>What to direct the customer to:</u><br/>1. SDRC Online Mapping (zone + overlays) — sdrc.spatial.t1cloud.com<br/>2. Building a House in the Rural Zone Checklist (if rural)<br/>3. Building Info Sheets (if urban)<br/>4. Phone the duty planner on 1300 697 372 — general enquiries free<br/><br/><u>Then:</u><br/>5. Get 2-3 quotes from licensed builders<br/>6. Engage a private certifier (if going that route)<br/>7. Consider booking a Pre-Lodgement Meeting ($300) for tailored advice<br/><br/><u>Reassurance points worth saying:</u><br/>- The duty planner doesn't bill for general enquiries<br/>- Pre-lodgement fees are credited back if you lodge within 12 months<br/>- Council staff are happy to walk through the process — it's not a test<br/>- Most rural builds only need building approval (no planning approval)",
+      "audience": "internal",
+      "ownerId": "tax_building_building",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "building"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_planprocess",
+      "title": "Planning Application Process 5 parts",
+      "summary": "",
+      "body": "<br/>The Queensland planning application process has five main parts. Not every application goes through every part — referral, information request, and public notification are conditional.<br/><br/><u>To be &quot;properly made&quot;, an application requires:</u><br/>[ ] Cover Letter<br/>[ ] DA Form 1 (standard Qld Government form)<br/>[ ] Plans — site plan, floor plans, elevations <i>(applicant typically engages an architect, surveyor, or similar professional)</i><br/>[ ] Owner's Consent (signed)<br/>[ ] Application Fee<br/><br/>For supporting documents specific to the application type, refer to the Planning Scheme Codes page on the SDRC website.<br/><br/><u>The five parts:</u><br/><br/><b>Part 1 — Application (10 business days)</b><br/>Council confirms the application is properly made. If yes: Action Notice + Confirmation Notice issued. If no (missing docs/consent/fee): clock doesn't start until issues resolved.<br/><br/><b>Part 2 — Referral (10 business days, IF APPLICABLE)</b><br/>Triggered by state-interest matters. Applicant submits directly to Referral Agency, not Council. Main agency: <b>State Assessment and Referral Agency (SARA)</b>. Common triggers:<br/>[ ] Land within 25m of a state-controlled road (New England Hwy, Cunningham Hwy)<br/>[ ] Clearing or proximity to regulated/protected vegetation<br/>[ ] Concurrence Environmentally Relevant Activity (ERA)<br/>[ ] Land on the Queensland Heritage Register<br/>Additional fees apply.<br/><br/><b>Part 3 — Information Request (10 business days)</b><br/>Council has 10 days from end of referral to issue any info request. <b>Applicant then has up to 3 months to respond.</b> This is often where applications stall — clock pauses while waiting on applicant.<br/><br/><b>Part 4 — Public Notification (15 business days, IMPACT ASSESSMENT ONLY)</b><br/>Applicant runs notification — Council provides signs, but sign placement on every frontage, newspaper notice, and written notice to adjoining owners are all the applicant's responsibility. If submissions are received: Council 10 days to consider, applicant 10 days to respond.<br/><br/><b>Part 5 — Decision (35 business days, less time elapsed)</b><br/>Most decided by Planning Department under delegated authority. Impact-assessable applications that received objecting submissions go to a full Council meeting. Applicant can request a deputation at a Committee Information Session before the meeting.<br/><br/><u>After the Decision Notice — 20 business days appeal period:</u><br/>- <b>Negotiated Decision</b> — applicant can request review/amendment of specific conditions<br/>- <b>Planning &amp; Environment Court appeal</b> — against conditions or refusal<br/>For impact applications, properly-made submitters get a further 20-day appeal window after the applicant's.<br/><br/><u>Approval currency periods (use must commence within):</u><br/>- <b>MCU</b> — 6 years<br/>- <b>RC (Reconfiguration of a Lot)</b> — 4 years<br/>- <b>BA + OPW</b> — 2 years<br/><br/><u>Critical script point — &quot;the clock pauses&quot;:</u><br/><i>&quot;If a decision feels slow, it's usually because the application is sitting with someone other than Council — a referral agency, an engineer, a town planner, or the applicant themselves waiting to respond to an information request. Statutory timeframes pause whenever we're waiting on someone else. The Application Tracking Tool shows where it is.&quot;</i>",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_plancodeimpact",
+      "title": "Code Assessment vs Impact Assessment",
+      "summary": "",
+      "body": "<br/>Once a proposal is assessable, the Planning Scheme determines one of two pathways. The applicant doesn't choose.<br/><br/><u>Code Assessment — the more straightforward pathway:</u><br/>- Assessed against specific codes in the Planning Scheme<br/>- <b>NO public notification required</b><br/>- Most decided by a Council planning officer under delegated authority<br/>- Faster, cheaper for the applicant<br/><br/><u>Impact Assessment — wider scrutiny:</u><br/>- For proposals that may have wider impacts on adjoining land uses or surrounding area<br/>- <b>Public notification required</b> — applicant erects signs on every frontage, advertises in newspaper, notifies adjoining owners<br/>- Members of the public can lodge submissions for or against<br/>- If objecting submissions received → application goes to a full Council meeting (not delegated)<br/>- Adds minimum 15 business days for public notification, plus signage and advertising costs<br/><br/><u>How to explain it to the customer:</u><br/><i>&quot;The Planning Scheme decides the pathway based on what you're proposing — neither you nor Council picks. Generally, uses that fit within the zone's intent get Code Assessment. Uses that sit at the edge of, or outside, the zone's intent get Impact Assessment. The duty planner can confirm which pathway your idea falls into before you spend money on an application.&quot;</i>",
+      "audience": "internal",
+      "ownerId": "tax_customer_service_customer_service",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [],
+      "internal": true
+    },
+    {
+      "id": "art_planprelodgefee",
+      "title": "Pre-Lodgement Meeting Fee & Credit Detail",
+      "summary": "",
+      "body": "<br/><u>Cost: $300 for 60 minutes</u><br/>Capped at 1 hour, typically 30 minutes.<br/><br/><u>Booking process:</u><br/>1. Customer completes Pre-lodgement Request Form<br/>2. Email to mail@sdrc.qld.gov.au<br/>3. Council officer contacts customer with payment details<br/>4. Meeting scheduled once payment received<br/>5. <b>Allow up to 4 weeks</b> for the meeting to be scheduled — planning staff need time to review concept plans and prepare tailored advice<br/><br/><u>Format options:</u><br/>- Online via Microsoft Teams<br/>- In person at Warwick (standard slots: Wednesday 2pm or 3pm)<br/>- In person at Stanthorpe on request<br/>- Maximum 5 people in person; unlimited via Teams<br/><br/><u>What customer should bring:</u><br/>- Completed request form with specific questions listed<br/>- Property details (address, lot &amp; plan, current use, lot size)<br/>- Proposal description<br/>- Site plan (hand-drawn fine — boundaries, existing structures, distances clear)<br/><br/><u>After the meeting:</u><br/>Council emails meeting record within one week.<br/><br/><u>The $300 fee credit — important:</u><br/>If the customer lodges an application within <b>12 months</b> of the pre-lodgement meeting, under the same Planning Scheme, for the same parcel of land, and for the same type of development, the $300 fee is <b>CREDITED against the application fee</b>. Customer must include a copy of the pre-lodgement receipt with the application to claim the credit.<br/><br/>The credit applies once per site/proposal — subsequent pre-lodgement meetings on the same matter don't accumulate.<br/><br/><u>SARA runs its own parallel track:</u><br/>If the proposal has state-interest triggers (state-controlled road, vegetation, ERA, Heritage Register), SARA offers its own pre-lodgement meetings. Book directly with SARA — Toowoomba office on 07 4616 7307 or ToowoombaSARA@dsdilgp.qld.gov.au. For complex rural proposals, running BOTH a Council pre-lodgement AND a SARA pre-lodgement is often worthwhile.<br/><br/><u>Important caveat for the customer:</u><br/><i>&quot;Pre-lodgement advice is not a commitment to approve. The advice can't override Council's legislative responsibilities during formal assessment — including considering submissions from the public, referral agency responses, or matters that come to light during detailed assessment. A pre-lodgement meeting reduces surprises; it doesn't guarantee an outcome.&quot;</i>",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_plansubdivide",
+      "title": "Rural Subdivision Minimum Lot Sizes & the \"No Family Exemption\" Rule",
+      "summary": "",
+      "body": "<br/>Almost every call about subdividing rural land hits the same answer: in line with State Government Planning Policy, subdivision in the Rural Zone is GENERALLY NOT SUPPORTED. Minimum lot sizes are set high to preserve productive agricultural units and discourage rural-residential fragmentation.<br/><br/><u>Minimum lot sizes by rural precinct:</u><br/>(Each NEW lot created must meet the minimum for that precinct)<br/><br/>- Alluvial Plains — 200 hectares (~494 acres)<br/>- Basalt Quality Grazing — 200 hectares (~494 acres)<br/>- Basalt Uplands — 200 hectares (~494 acres)<br/>- <b>Granite Belt — 100 hectares (~247 acres)</b> — smallest, most common SDRC<br/>- Granite Hills — 500 hectares (~1,235 acres)<br/>- Granite Plains — 500 hectares (~1,235 acres)<br/>- Sandstone Rises Traprock Hills — 700 hectares (~1,730 acres)<br/>- Walloon Arable — 200 hectares (~494 acres)<br/><br/>To identify which precinct a property falls into: consult the Rural Zone Precincts Map (link below).<br/><br/><u>⚠️ &quot;Can I subdivide off a block for my kids/parents?&quot; — the most common call</u><br/><br/><b>There is NO family exemption.</b> Council does not grant exceptions for subdivisions intended for a family member — child building a house, parent downsizing, succession planning. All subdivision applications are assessed against the same minimum lot-size requirements regardless of who the new lot is intended for. The answer is consistent and the customer needs to hear it clearly.<br/><br/><u>Customer-facing script:</u><br/><i>&quot;I understand this is frustrating, but Council can't grant an exemption based on who's intending to live on the new block. The minimum lot sizes are set by State Government Planning Policy to protect rural productive land — and they apply equally to every applicant, including families wanting to subdivide for adult kids or succession. The good news is, if more housing on the existing land is the goal rather than separate titles, there might be options — second dwellings, dual occupancy, or multiple dwellings, depending on the zone. The duty planner can talk you through what's actually possible on your specific block.&quot;</i><br/><br/><u>If the lot DOES meet the precinct minimum:</u><br/>Typically assessed as Reconfiguration of a Lot (RC) against standard codes. Engage a town planner or surveyor for anything beyond straightforward.<br/><br/><u>If the lot does NOT meet the precinct minimum:</u><br/>Application is technically possible but Impact Assessable. Goes to a full Council meeting. Applicant bears cost of public notification. Onus on applicant to demonstrate why proposal warrants departure from scheme. <b>Rare — and rarely approved.</b> Pre-lodgement meeting essential before going down this path.<br/><br/><u>Related options worth mentioning:</u><br/>If the goal is more housing rather than separate titles, see PlanSecondDwelling node — different rules, different pathway.<br/><br/>📌 Rural Zone Precincts Map: sdrc.qld.gov.au/ArticleDocuments/804",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_planseconddwelling",
+      "title": "Second Dwelling / Granny Flat Zone-by-Zone Rules",
+      "summary": "",
+      "body": "<br/>A &quot;second dwelling&quot; is two dwellings on one property — attached or detached. In planning terms it's a <b>Dual Occupancy</b>. Whether planning approval is required depends almost entirely on zone, lot size, and road frontage. Always check zone on Online Mapping FIRST.<br/><br/>⚠️ <b>Important — the Planning Scheme rules for secondary dwellings are currently being reviewed and may change.</b> Always recommend the customer call the duty planner on 1300 697 372 before committing to a design or contract.<br/><br/><u>RURAL ZONE — most flexibility</u><br/>Can often proceed WITHOUT planning approval IF all three of these are true:<br/>[ ] Lot is at least 10 hectares in area<br/>[ ] Lot has frontage to a constructed road (or constructed road via registered easement)<br/>[ ] Proposal meets all acceptable outcomes (watercourse setbacks, flood-free pad, separation from animal/extractive industries, on-site water storage)<br/><br/>If all three apply: building + plumbing approvals only.<br/>If 10ha+ &amp; constructed frontage but can't meet every AO: <b>code-assessable MCU</b><br/>If smaller than 10ha: <b>impact-assessable MCU</b> — pre-lodgement meeting recommended<br/><br/><u>LOW DENSITY RESIDENTIAL ZONE</u><br/>Planning approval ALWAYS required.<br/>- Lot 800m² or more → <b>code assessable</b><br/>- Lot smaller than 800m² → <b>impact assessable</b><br/><br/><u>MEDIUM DENSITY RESIDENTIAL ZONE</u><br/>Planning approval ALWAYS required.<br/><b>Code assessable regardless of lot size.</b><br/><br/><u>RURAL RESIDENTIAL ZONE</u><br/>- Lot 8,000m² or more AND constructed road frontage → <b>code assessable</b><br/>- Lot smaller than 8,000m² OR no constructed road frontage → <b>impact assessable</b><br/><br/><u>THREE OR MORE DWELLINGS — different category</u><br/>Three or more dwellings = Multiple Dwellings (flats, units, townhouses, triplexes). Different rules:<br/>- Only permitted in Low and Medium Density Residential zones<br/>- Density caps: ~1 dwelling per 500m² (Low Density), ~1 per 250m² (Medium Density), more generous for small one-bedroom units<br/>- Low Density: always impact-assessable<br/>- Medium Density: code-assessable<br/>Rare question — refer to duty planner.<br/><br/><u>Customer reminders regardless of zone:</u><br/>- Overlays can change the picture — Flood, Bushfire, Biodiversity, Heritage, Morgan Park / Airport environs<br/>- Building, plumbing, drainage approvals always required separately<br/>- Common conditions: road works, off-street parking, stormwater, landscaping, buffering, infrastructure charges<br/>- Secondary dwellings usually CANNOT be sold separately — remain on same title<br/><br/>📌 Dual Occupancy checklist: sdrc.qld.gov.au/ArticleDocuments/527",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_planhomebiz",
+      "title": "Home-Based Business Full Framework",
+      "summary": "",
+      "body": "<br/>Plenty of small businesses operate legitimately from home in the Southern Downs without ANY planning approval — online retailers, consultants, tutors, bookkeepers, tradespeople whose work happens at other sites, family day care, B&amp;Bs. The Planning Scheme has a dedicated <b>Home Based Business</b> framework (section 9.3.4) that defines what fits within self-assessable limits and what tips into needing an MCU.<br/><br/><u>NO planning approval required IF ALL of these apply:</u><br/><br/><b>Size of operation:</b><br/>- Up to 40m² in Residential zones<br/>- Up to 100m² in Rural zone<br/><br/><b>Staff:</b><br/>- Residential zones: only residents of the dwelling<br/>- Rural zone: residents PLUS one off-site employee<br/><br/><b>Clients on site:</b><br/>- Maximum 6 at any one time<br/>- Between 8am and 7pm Monday-Saturday (excl. public holidays)<br/>- Family day care has its own rule — see below<br/><br/><b>Signage:</b><br/>- One sign maximum<br/>- 0.3m² maximum size<br/>- Showing only name, occupation, contact details of the occupier<br/><br/><b>No retail sales from premises:</b><br/>- Mail order and online sales OK<br/>- No walk-in retail, goods on display, or outside storage<br/><br/><b>Vehicles:</b><br/>- One commercial vehicle (two in Rural zone)<br/>- No vehicle over 4.5 tonnes in residential zones<br/>- No fuelling, repairing, or maintenance (beyond cleaning) of vehicles on site<br/><br/><b>Excluded outright (regardless of scale):</b><br/>- Motor vehicle workshops<br/>- Medium-impact industries<br/>- High-impact industries<br/><br/><u>Family Day Care — specific rule:</u><br/>- Capped at 6 children under school age at any one time. Other limits above still apply.<br/><br/>⚠️ <b>B&amp;B / Airbnb / short-term accommodation — different pathway:</b><br/>Even small B&amp;B or Airbnb-style operations are NOT covered by the Home Based Business framework. They sit under <b>Short-Term Accommodation</b> instead, which has its own approval stack:<br/>- Planning approval (sometimes)<br/>- <b>Building approval for Class 1a → Class 1b reclassification</b> (always — even with no building work)<br/>- <b>Local Law permit to Operate Rental Accommodation</b> (always)<br/>- Plumbing &amp; drainage approval (if applicable)<br/>Plus the rates category changes once reclassified. Route the customer to the Short-Term Accommodation workflow.<br/><br/><u>If the business steps outside ANY of those limits — MCU required:</u><br/><br/>This is more common than people assume. An MCU doesn't mean refusal — it's the pathway that lets Council assess against Performance Outcomes rather than strict Acceptable Outcomes. Plenty of home-based operations that don't fit the default ratios get approved with conditions on hours, parking, signage, neighbour notification, etc.<br/><br/><u>Customer-facing script:</u><br/><i>&quot;If you think your plan might need an MCU, give the duty planner a call before you commit to anything. General enquiries are free, and a 10-minute conversation can shape your proposal in a way that makes approval much more straightforward.&quot;</i><br/><br/><u>OTHER permits that may be required (separate from planning):</u><br/>- <b>Food businesses</b> (baked goods, meals, catering, market stalls, mobile coffee, home kitchens) — separate Food Business Licence under Food Act 2006<br/>- <b>Personal Appearance Services</b> (body piercing, tattooing, beauty therapy, skin penetration) — licence required under Public Health Act 2003, regardless of setting<br/><br/><u>Outside Council's remit but worth mentioning:</u><br/>ABN (Australian Business Register), ATO tax implications, Working with Children check (Blue Card), liquor licence (OLGR), WorkCover if employing staff. Business Queensland (business.qld.gov.au) has good checklists.",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_plansta",
+      "title": "Short-Term Accommodation Full Background",
+      "summary": "",
+      "body": "<br/>Short-term accommodation covers two distinct planning uses, plus a third (caravan parks) that's related but separately defined:<br/>- <b>Short-term accommodation</b> (paid guest accommodation in a building) — Airbnb-style lets, cabins, motels, farm-stays, larger B&amp;Bs<br/>- <b>Tourist parks</b> (caravan parks &amp; camping grounds) — different defined use<br/><br/><u>The big surprise for owners — the approval stack:</u><br/>Most owners think &quot;I already own the house, why would I need approval?&quot; The answer: the <em>use</em> of the building changes, and Queensland's building classification system reflects that. A Class 1a (dwelling) and a Class 1b (small boarding-style building) have different safety standards because the second is intended for paying guests who don't know the building.<br/><br/>The reclassification is mandatory regardless of whether any physical work is being done. Often the building needs upgrades (smoke alarms, evacuation lighting) to meet Class 1b standards, but the classification change is the planning event — not the work.<br/><br/><u>IN-TOWN Airbnb-style — full detail:</u><br/>The Low Density Residential and Medium Density Residential zones treat short-term letting of an existing dwelling as accepted development if all acceptable outcomes are met. This is the most common &quot;I want to do Airbnb&quot; scenario and the answer is genuinely permissive from the planning side. But the building reclassification (Class 1a → 1b) and the Local Law permit still apply on top — those don't disappear just because no planning approval is required.<br/><br/>Acceptable outcomes that need to be met for the no-planning path:<br/>- Existing dwelling (not a new build, not a converted shed)<br/>- ≤ 6 guests at any one time<br/>- Parking, amenity, signage, operating hours all within scheme limits<br/><br/>If any AO can't be met, or scale exceeds 6 guests, planning approval becomes required — code-assessable for &quot;exceeds AO but ≤ 6 guests in existing dwelling&quot;, impact-assessable for &quot;&gt; 6 guests OR new building OR non-dwelling building&quot;.<br/><br/><u>RURAL — full detail:</u><br/>The Rural zone treats accommodation more cautiously because of the impact on surrounding agricultural use, bushfire risk, water supply, and traffic on rural roads. Planning approval is always required.<br/><br/>Two code-assessable brackets reflect the scale-vs-impact tradeoff:<br/>- <b>5ha + ≤ 2 buildings + ≤ 12 guests:</b> small farm-stay / glamping operation. Code path.<br/>- <b>10ha + ≤ 4 buildings + ≤ 24 guests:</b> larger lodge-style or distributed cabins. Code path.<br/><br/>Anything outside those brackets is impact-assessable: public notification, decision at a Council meeting.<br/><br/><u>CARAVAN PARKS / CAMPING GROUNDS — full detail:</u><br/>Tourist Park is a different defined use. Only contemplated in the Rural zone (you won't see one approved in a residential area). Planning approval always required.<br/><br/>- 10ha + ≤ 20 sites: code-assessable<br/>- Anything larger: impact-assessable<br/><br/>Tourist parks have a separate ongoing layer beyond the planning approval: Council's <b>Caravan Parks Local Law</b> governs operation once approved, including amenities ratios (toilets, showers, laundry per site), dump point requirements, and waste management. The Local Laws team can walk a prospective operator through those requirements early — often during pre-lodgement.<br/><br/><u>Building reclassification — why every item matters:</u><br/>The Class 1b building requirements are designed for people who don't live in the building. A long-term resident knows where the exits are, knows the layout, and isn't asleep on the first night in a strange building. A paying guest does none of those things. Hence: interconnected smoke alarms in every bedroom (so an alarm anywhere wakes everyone), evacuation lighting that comes on with the alarm (so the path to the exit is visible at 2am), balustrades to current BCA standards (so guests unfamiliar with the deck don't fall off), and disabled access if 4+ bedrooms (so the operation is accessible to a reasonable cross-section of guests).<br/><br/>These aren't punitive requirements — they're the difference between &quot;Mum's house&quot; and &quot;a business serving the public&quot;. Helps to explain to owners who push back.<br/><br/><u>Form 11 vs Form 21 — the most common confusion:</u><br/>- <b>Form 21</b> = Certificate of Occupancy for a new Class 1a dwelling at the end of a build (Building Rural / Building Urban workflow)<br/>- <b>Form 11</b> = Certificate of Occupancy for a building reclassification (this workflow — STA)<br/><br/>If a customer says &quot;I'm waiting for my Form 21 to do Airbnb,&quot; they may be confused. They actually need a Form 11 for the reclassification. Worth clarifying.<br/><br/><u>Rates change — what's actually happening:</u><br/>Once a property is reclassified as Class 1b, it shifts rates category. The specifics depend on the rating policy in place at the time, but in general the property is no longer rated as a private residence. The rates increase isn't a penalty — it reflects the property's use as a commercial accommodation business. Direct rates enquiries to Revenue Department.<br/><br/><u>Pre-Lodgement strongly recommended for ALL rural STA:</u><br/>Rural accommodation almost always involves overlays (bushfire, watercourse, biodiversity), on-site sewerage considerations, and infrastructure charges that aren't obvious from the form. A $300 pre-lodgement meeting routinely saves applicants $5k+ in avoided redesign or refusal. Worth pushing.<br/><br/>📌 Planning Information Sheets page (SDRC website) — full acceptable-outcomes checklists for each pathway",
+      "audience": "internal",
+      "ownerId": "tax_planning_planning",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "planning"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_animalkeeping",
+      "title": "Keeping of Animals Permits & Limits",
+      "summary": "",
+      "body": "<br/>The number and type of animals you can keep depends on the zone, lot size, and animal type. The <b>Keeping of Animals Fact Sheet</b> is the definitive source — covers dogs, cats, horses, cattle, poultry, bees, pigs, exotic animals, with maximum permitted numbers without a permit for each.<br/><br/><u>General principle:</u><br/>Rural-zoned land allows a broader range and higher numbers (horses, cattle, sheep, goats, alpacas, poultry typical). Residential land is much more restricted — a few hens, limited dogs/cats, no large livestock.<br/><br/><u>If the customer wants more than the standard number:</u><br/>A <b>Keeping of Animals permit</b> is required. Process:<br/>1. Advise customer to call Local Laws BEFORE applying — discuss whether a permit is likely to be approved for their block (saves wasted application fee)<br/>2. If feasible: customer submits application + fee<br/>3. Local Laws assesses against zone, lot size, animal welfare, neighbour amenity, waste management<br/><br/><u>Restricted or prohibited regardless of lot size:</u><br/>[ ] Restricted breed dogs (American Pit Bull Terrier, Dogo Argentino, Fila Brasileiro, Japanese Tosa, Perro de Presa Canario)<br/>[ ] Some reptiles<br/>[ ] All feral animals (rabbits — see Pest Animals - Rabbits, foxes, etc.)<br/><br/>⚠️ Customer should check the fact sheet BEFORE buying, breeding, or relocating animals to a new property — buying first and asking later often ends with the customer being required to rehome animals they're already attached to.<br/><br/>📌 <a href='https://www.sdrc.qld.gov.au/ArticleDocuments/702/Keeping_Animals_Fact_Sheet.pdf.aspx' target='_blank'>Keeping of Animals Fact Sheet</a>",
+      "audience": "internal",
+      "ownerId": "tax_customer_service_customer_service",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [],
+      "internal": true
+    },
+    {
+      "id": "art_animalbreeding",
+      "title": "Breeding Full Background",
+      "summary": "",
+      "body": "<br/>Why does this exist as a regulated activity? Until 2017, Queensland had no central register of dog breeders. Welfare concerns about backyard breeding (puppy farming, unhealthy genetics, on-selling without traceability) led the State to introduce the <i>Queensland Dog Breeder Register</i> as a single source of truth. Every puppy born on or after 26 May 2017 should be traceable back to its breeder through the microchip — that\\\\'s the function the supply number performs.<br/><br/><u>Why does Council care if it\\\\'s state law?</u><br/>Two reasons:<br/>1. Council\\\\'s pound IS a breeder for legal purposes when it rehomes unclaimed dogs that don\\\\'t already have a supply number. So Council has its own Breeder Identification Number that gets used for rehoming.<br/>2. Customers ringing Council about dog registration, microchipping, or rehoming will often ask about breeder rules because they\\\\'re intertwined in their head. We need to be able to explain the difference and route them correctly.<br/><br/><u>The 28-day rule — why it exists:</u><br/>A breeder has 28 days from the day a litter is born to register. The point is to ensure the supply number exists by the time the puppies are old enough to microchip and start being advertised (typically 8 weeks). Vets who microchip puppies are required by law to refuse the implant if no valid supply number is provided. So if a breeder delays registering past 28 days, they create a knock-on problem when it comes time to chip the puppies.<br/><br/><u>Working dog exemption — why it\\\\'s drawn narrowly:</u><br/>The Act recognises that working dogs on rural land aren\\\\'t \\&quot;pet trade\\&quot; — they\\\\'re livestock management tools bred for function, often shared between neighbouring properties. The exemption is narrow because the State doesn\\\\'t want it to become a loophole for non-working breeders to claim primary producer status. The three conditions (rural land + primary producer + droving/tending stock) all need to be met.<br/><br/><u>Pig-dogs — why they\\\\'re excluded:</u><br/>Pig-dogs hunt feral animals. The Act\\\\'s working dog definition is limited to dogs that work stock (cattle, sheep, etc.). Managing feral animals is not stock work. This is a regular point of customer confusion — primary producers who use pig-dogs often assume they\\\\'re covered. They\\\\'re not. If they breed pig-dogs and supply any puppies, they need to register.<br/><br/><u>Breeder Exemption Numbers — the find-a-stray scenario:</u><br/>You find a dog in your paddock. It\\\\'s not chipped. You can\\\\'t trace the owner. You decide to keep it / rehome it. Are you a \\&quot;breeder\\&quot;? Technically no — you didn\\\\'t breed the dog. But you ARE about to supply it, and Queensland law requires supply numbers for any dog transfer. The Breeder Exemption Number exists for exactly this case. Apply through the QDBR portal, get a one-off exemption number tied to that specific animal.<br/><br/>The same applies for:<br/>- Owners rehoming a single pet they own but didn\\\\'t breed<br/>- Primary producers selling a working dog to a non-primary-producer<br/>- People who acquired a dog without a supply number and want to rehome it<br/><br/>Each exemption is tied to ONE dog. Selling 3 dogs you didn\\\\'t breed = 3 separate exemption numbers.<br/><br/><u>Cat breeding — why Council handles it differently:</u><br/>Cat breeding in Queensland was never brought under the same statewide register that applies to dogs. The State requires microchipping for cats but leaves the keeping-of-multiple-cats question to local government. SDRC\\\\'s approach:<br/>- Up to 4 breeding cats with affiliation to a recognised association: handle through Local Law permit (Animal Breeder Permit)<br/>- More than 4: triggers Planning Scheme \\&quot;Animal keeping\\&quot; assessment because it\\\\'s now operating at a commercial scale<br/><br/>Recognised cat breeder associations include CCC of Q (Co-ordinating Cat Council of Queensland), QFA (Queensland Feline Association), and others — Local Laws keeps a current list.<br/><br/><u>Common customer scenarios — quick references:</u><br/>- \\&quot;I had an accidental litter and want to give the puppies away\\&quot; → register as a breeder (QDBR, free, 15 mins), get a supply number, microchip the puppies WITH the supply number<br/>- \\&quot;I breed working kelpies for other farmers\\&quot; → exempt IF all puppies go to primary producers as working dogs<br/>- \\&quot;I breed kelpies but sometimes sell one as a pet\\&quot; → register, use supply number for the pet ones<br/>- \\&quot;I found a stray and want to keep her then rehome her once she\\\\'s settled\\&quot; → apply for Breeder Exemption Number when ready to rehome<br/>- \\&quot;I want to breed Ragdolls and have 6 cats\\&quot; → Animal Breeder Permit (up to 4) or Planning approval (more than 4); also state microchipping rules<br/><br/>📌 <a href=\\\\'https://qdbr.daf.qld.gov.au\\\\' target=\\\\'_blank\\\\'>Queensland Dog Breeder Register</a><br/>📌 Biosecurity Queensland: 13 25 23",
+      "audience": "internal",
+      "ownerId": "tax_local_laws_animal_control",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "animals"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_buildingadmin",
+      "title": "Building plan copyright Background",
+      "summary": "",
+      "body": "<br/>Building plans are a creative work protected by copyright. The copyright belongs to whoever created the plans (architect, draftsperson, or design team) — not the property owner, even if the owner paid for construction.<br/><br/>Copyright lasts for the creator's lifetime plus 70 years. Council cannot release plans without written consent from the copyright owner, or until the copyright has expired.<br/><br/><u>Common scenarios:</u><br/>- Plans by a known draftsperson or firm: contact that person or their estate for consent<br/>- Plans drawn by Len Rigg: standing permission has been granted by his estate — council may release these<br/>- Plans with unknown or long-deceased creator: copyright may have expired — seek guidance from the building team before releasing<br/><br/>The property owner's right to maintain their property does not transfer copyright ownership.",
+      "audience": "internal",
+      "ownerId": "tax_customer_service_customer_service",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [],
+      "internal": true
+    },
+    {
+      "id": "art_wastebin",
+      "title": "Cleanaway contract Background",
+      "summary": "",
+      "body": "<br/>Cleanaway is contracted by SDRC to provide domestic waste and recycling collection. Council does not directly manage collection operations — Cleanaway is the point of contact for all standard service issues.<br/><br/>All bin service requests go through the Cleanaway portal. Do not lodge a {{var_sys_requests}} for standard bin issues (missed pickup, damaged bin, missing bin) — these must go through Cleanaway directly.<br/><br/><u>Complaints about recurring issues or driver conduct:</u><br/>Lodge a {{var_sys_requests}} (Keyword: Complaint) — these are actioned by the Council's Waste Team, not Cleanaway.<br/><br/><u>If a Cleanaway request goes unresolved:</u><br/>Lodge a {{var_sys_requests}} (Keyword: Complaint) so council can follow up with Cleanaway on the customer's behalf.",
+      "audience": "internal",
+      "ownerId": "tax_waste_waste_recycling",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "waste"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_wastefacilities",
+      "title": "Facility charges, materials & opening hours",
+      "summary": "",
+      "body": "<br/><u>Generally accepted at no charge:</u><br/>Green/garden waste (residents), clean recyclables (paper, cardboard, glass, plastics 1 and 2), and e-waste at designated sites.<br/><br/><u>Fees typically apply to:</u><br/>General household waste, mattresses, tyres, large whitegoods. Fees set annually in the Fees &amp; Charges schedule.<br/><br/><u>Asbestos — special requirements:</u><br/>Asbestos must be double-bagged in 200-micron plastic, clearly labelled, and the customer must pre-book with council before attending the facility. Facility staff cannot accept asbestos that has not been pre-booked. Direct customers to the Asbestos Disposal Guidelines for full requirements.<br/><br/><u>Landfill levy:</u><br/>A State Government charge included in the cost of general waste disposal. Council must pass this on and has no discretion to waive it.<br/><br/><b>━━━ OPENING HOURS ━━━</b><br/><br/><u>Weighbridge facilities — open 7 days, 8am–5pm</u> (closed Christmas Day and Good Friday):<br/>- <b>Warwick:</b> 190 Old Stanthorpe Rd, Warwick 4370 — Reuse Shop: Wed 12–4pm, Sat 8am–4pm<br/>- <b>Stanthorpe:</b> 94 Rifle Range Rd, Stanthorpe 4380 — Reuse Shop: Thu 12–4pm, Sat 8am–4pm<br/><br/><u>Transfer stations — 9am–4pm on days shown:</u><br/>- Allora, 14 Burges Road — Fri to Mon<br/>- Broadwater, 814 Texas Road — Fri to Sun<br/>- Killarney, 152 Killarney-Barlows Gate Road — Fri to Mon<br/>- Leyburn, 466 Donovan Road — Fri to Sun<br/>- Maryvale, 53 Whites Road — Sat to Mon<br/>- Northern Granite Belt, 76 Taggart Road, The Summit — Sat to Mon<br/>- Pratten, 12 Springate Lane — Sat to Mon<br/>- Wallangarra, 13 Hines Road — Fri to Sun<br/>- Yangan, 345 Strudwicks Road — Fri to Sun<br/><br/>Some transfer stations cannot accept large volumes, large items like furniture, or commercial waste — check the flyer for what each site takes.",
+      "audience": "internal",
+      "ownerId": "tax_waste_waste_recycling",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "waste"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_wasterecyclemate",
+      "title": "Recycle Mate & Batteries Staff script",
+      "summary": "",
+      "body": "<br/><u>Recycle Mate — the fastest answer to &quot;where does this go?&quot;</u><br/>Recycle Mate is a free app (and web tool) that tells customers exactly how and where to dispose of almost anything. They snap a photo or type the item name, and it returns locations specific to the Southern Downs — Council waste facilities, supermarkets running soft plastic or battery collection, pharmacies taking unused medication, and charity shops accepting reusable items.<br/><br/>Lead with Recycle Mate before going into facility details — it usually resolves the call in 30 seconds.<br/><br/><u>Batteries — never in a kerbside bin</u><br/>Batteries can short-circuit, catch fire, and damage trucks or facilities. This is one of the fastest-growing causes of waste fires in Australia.<br/><br/>Council has partnered with Ecobatt — dedicated battery collection containers are at ALL supervised Council waste facilities. Best practice: tape the terminals (especially lithium) and hand the battery to a facility attendant rather than dropping it in.<br/><br/>Accepted: household alkaline (AA, AAA, C, D, PP3, button cells), rechargeable, lithium, and power tool batteries under 5kg.<br/><br/><u>Bin colour guide for customers:</u><br/>- <b>Red or Green lid (general waste, weekly):</b> kitchen and food waste, general household rubbish, plastic bags and cling wrap, nappies, polystyrene foam<br/>- <b>Yellow lid (recycling, fortnightly):</b> paper and cardboard, steel and aluminium cans, rigid plastic bottles and containers (lids removed), glass bottles and jars (lids removed)",
+      "audience": "internal",
+      "ownerId": "tax_waste_waste_recycling",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "waste"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_wastedumping",
+      "title": "Illegal Dumping Threshold & process",
+      "summary": "",
+      "body": "<br/><u>This context node covers DOMESTIC illegal dumping.</u><br/>For trade waste / pollution incidents (chemicals, oil drums, contaminated runoff, business waste) see the separate Trade Waste &amp; Pollution branch — different process and different escalation path.<br/><br/><u>What counts as (domestic) illegal dumping:</u><br/>Any unlawful deposit of 200 litres or more of waste (roughly the volume of a wheelie bin) in bushland, roadsides, waterways, outside charity bins, on the kerbside outside of collection time, or at the wrong location within a waste facility.<br/><br/><u>Information to capture from the customer:</u><br/>[ ] Time, date, place, and description of the waste<br/>[ ] Vehicle registration, make, model, colour, or distinguishing features<br/>[ ] Description of the person (location in vehicle, clothing, gender)<br/>[ ] Photos if the customer has them — location pinned on map if reporting via online form<br/><br/><u>Safety script for the customer:</u><br/><i>&quot;Please don't approach the person depositing the waste. Take photos only if safe to do so.&quot;</i><br/><br/><u>Penalties:</u><br/>Fines are significant — individuals and corporations can face substantial on-the-spot penalties, with much higher amounts available if the matter goes to court. Refer customers to the Illegal Dumping fact sheet for current figures.<br/><br/><u>Useful context for customers who are dumping out of frustration:</u><br/>Almost all domestic waste can be disposed of at Council facilities for free. The cost of doing it properly is much less than the fine for dumping — worth mentioning if a caller expresses frustration with facility fees.",
+      "audience": "internal",
+      "ownerId": "tax_waste_waste_recycling",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "waste"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_wastetradepollution",
+      "title": "Trade Waste & Pollution Background",
+      "summary": "",
+      "body": "<br/><u>Why is this treated differently from ordinary illegal dumping?</u><br/>Domestic illegal dumping is a Council-led enforcement matter under local laws — the offender deposited household waste in the wrong place. Trade waste and environmental pollution can additionally trigger State environmental law (Environmental Protection Act 1994 and related instruments), have direct human-health and ecosystem impacts, and may require specialist response (HAZMAT, EPA officers, waterway monitoring). The escalation path is different because the response is different.<br/><br/><u>When does it become a State matter?</u><br/>Council's regulatory services handles most reports day-to-day. Cases get escalated to Queensland State Government authorities (most commonly the Department of Environment, Tourism, Science and Innovation, but also the EPA, Department of Resources, or Queensland Health depending on the substance) when:<br/>- The incident exceeds Council's investigative or regulatory capacity<br/>- The substance involved is on the State's notifiable list (some chemicals must be reported up the chain)<br/>- The dump site falls under State jurisdiction (state-controlled land, waterways, Crown land)<br/>- The volume or duration of the incident indicates organised illegal dumping<br/><br/>CS doesn't make the escalation decision — that's for Regulatory Services. Our job is to capture the report accurately and route it to them.<br/><br/><u>The 000-first rule — why it matters:</u><br/>If the customer is describing something happening RIGHT NOW that poses immediate risk (someone actively pumping waste into a creek, a tanker visibly leaking, an unidentified substance smoking or burning), we tell them to call 000 first. Reasoning:<br/>- 000 reaches police and fire emergency response — they can attend in minutes<br/>- Council's response time is hours-to-days even on priority calls<br/>- For acutely dangerous substances, fire response also handles initial containment<br/>The customer can — and should — call Council afterwards. We need the report in our system too, but not at the cost of delay during an active incident.<br/><br/><u>What about &quot;I think my neighbour is dumping oil from their workshop&quot;?</u><br/>This is the typical &quot;not in progress but ongoing concern&quot; scenario. Standard online form or 1300 697 372. Capture everything they have observed — frequency, time of day, what the substance looks like, where it ends up. Regulatory Services will assess whether to investigate.<br/><br/><u>What about the customer's safety?</u><br/>Make sure they know NOT to approach the source. Some dumped substances are genuinely hazardous:<br/>- Hydrocarbons (petrol, diesel, solvents) — flammable, can cause skin or respiratory damage<br/>- Asbestos-containing material — extremely dangerous to disturb<br/>- Battery acid, pool chemicals — caustic, can cause severe burns<br/>- Unknown drums or containers — could be anything<br/>The customer's priority is their safety and an accurate report. Confronting the dumper or trying to clean it up themselves is not their job and could put them at serious risk.<br/><br/><u>What we don't escalate to State:</u><br/>Routine domestic dumping — wheelie bin contents over a fence, household furniture on a roadside, even larger household-scale events like a single yard cleanout dumped in bushland — all stay with Council's domestic illegal dumping process. The trade waste / pollution process is for industrial-scale, chemical, or business-source incidents.<br/><br/>📌 SDRC Online Service Request Form: crm.sdrc.qld.gov.au<br/>📌 {{var_sys_intranet}}: Illegal Dumping",
+      "audience": "internal",
+      "ownerId": "tax_waste_waste_recycling",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "waste"
+      ],
+      "internal": true
+    },
+    {
+      "id": "art_watermetersides",
+      "title": "Which side of the meter? Plain-English script",
+      "summary": "",
+      "body": "<br/>This is one of the most common water calls and customers don't know the distinction. Clean script for phones:<br/><br/><i>&quot;Council's side is the meter itself and the pipe between the water main and the meter. If the leak is there, report it to us and we'll action it.<br/><br/>Your side is the pipe running from the meter into the property — that's the property owner's responsibility. If the leak is there, consider shutting off the water at the meter while you arrange a licensed plumber.<br/><br/>Not sure which side? Stay on the line and I'll help you work it out.&quot;</i><br/><br/><u>How to work it out on the call:</u><br/>1. Search Property ID in {{var_sys_water}} (customer-facing name: My SDRC Water portal — same system)<br/>2. Check if water usage shows periods of 0L/hour:<br/>[ ] Usage returns to 0L/hour AND visible leak present → Council side. Lodge {{var_sys_requests}} (keyword: leak), report to north/south maintenance supervisor<br/>[ ] Usage consistently above 0L/hour → customer side. Advise customer to shut off water at meter if practical and call a licensed plumber<br/>[ ] Both possible (non-zero usage AND visible council-side leak) → do both: lodge {{var_sys_requests}} for council side AND advise customer to shut off meter and call a plumber<br/><br/><u>Finding the inside leak — tips to share:</u><br/>- Running toilet is the most common cause. Add a few drops of food colouring to the cistern and wait 10 minutes without flushing; if colour appears in the bowl, the cistern is leaking<br/>- Check all taps, showerheads, and washing machine connections<br/>- Outside: look for unusually green or boggy ground (underground pipe failure)<br/>- Check garden timers and hose guns",
+      "audience": "internal",
+      "ownerId": "tax_water_water",
+      "status": "draft",
+      "lastReviewed": "",
+      "tags": [
+        "water"
+      ],
+      "internal": true
+    }
+  ],
   "faqs": [
     {
       "id": "faq_do_i_need_approval_to_build_on_my_rural_block",
@@ -13,7 +524,7 @@
         "order": 1,
         "groupTitle": "Before you start"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -27,7 +538,7 @@
         "order": 2,
         "groupTitle": "Before you start"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -41,7 +552,7 @@
         "order": 3,
         "groupTitle": "Before you start"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -55,7 +566,7 @@
         "order": 4,
         "groupTitle": "Before you start"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -69,7 +580,7 @@
         "order": 5,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -83,7 +594,7 @@
         "order": 6,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -97,7 +608,7 @@
         "order": 7,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -111,7 +622,7 @@
         "order": 8,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -125,7 +636,7 @@
         "order": 9,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -139,7 +650,7 @@
         "order": 10,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -153,7 +664,7 @@
         "order": 11,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -167,7 +678,7 @@
         "order": 12,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -181,7 +692,7 @@
         "order": 13,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -195,7 +706,7 @@
         "order": 14,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -209,7 +720,7 @@
         "order": 15,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -223,7 +734,7 @@
         "order": 16,
         "groupTitle": "During the build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -237,7 +748,7 @@
         "order": 17,
         "groupTitle": "During the build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -251,7 +762,7 @@
         "order": 18,
         "groupTitle": "During the build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -265,7 +776,7 @@
         "order": 19,
         "groupTitle": "During the build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -279,7 +790,7 @@
         "order": 20,
         "groupTitle": "After you move in"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -293,7 +804,7 @@
         "order": 21,
         "groupTitle": "After you move in"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -307,7 +818,7 @@
         "order": 22,
         "groupTitle": "Costs &amp; budgeting"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -321,7 +832,7 @@
         "order": 1,
         "groupTitle": "Before you start"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -335,7 +846,7 @@
         "order": 2,
         "groupTitle": "Before you start"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -349,7 +860,7 @@
         "order": 3,
         "groupTitle": "Before you start"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -363,7 +874,7 @@
         "order": 4,
         "groupTitle": "Before you start"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -377,7 +888,7 @@
         "order": 5,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -391,7 +902,7 @@
         "order": 6,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -405,7 +916,7 @@
         "order": 7,
         "groupTitle": "Designing your build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -419,7 +930,7 @@
         "order": 8,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -433,7 +944,7 @@
         "order": 9,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -447,7 +958,7 @@
         "order": 10,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -461,7 +972,7 @@
         "order": 11,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -475,7 +986,7 @@
         "order": 12,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -489,7 +1000,7 @@
         "order": 13,
         "groupTitle": "During the build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -503,7 +1014,7 @@
         "order": 14,
         "groupTitle": "During the build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -517,7 +1028,7 @@
         "order": 15,
         "groupTitle": "During the build"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -531,7 +1042,7 @@
         "order": 1,
         "groupTitle": "Before you commit"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -545,7 +1056,7 @@
         "order": 2,
         "groupTitle": "Before you commit"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -559,7 +1070,7 @@
         "order": 3,
         "groupTitle": "Applying"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -573,7 +1084,7 @@
         "order": 4,
         "groupTitle": "Applying"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -587,7 +1098,7 @@
         "order": 5,
         "groupTitle": "The security bond"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -601,7 +1112,7 @@
         "order": 6,
         "groupTitle": "The security bond"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -615,7 +1126,7 @@
         "order": 7,
         "groupTitle": "The security bond"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -629,7 +1140,7 @@
         "order": 8,
         "groupTitle": "The move and after"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -643,7 +1154,7 @@
         "order": 9,
         "groupTitle": "The move and after"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -657,7 +1168,7 @@
         "order": 10,
         "groupTitle": "The move and after"
       },
-      "ownerId": "",
+      "ownerId": "tax_building",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council info sheets and a January 2026 referral agency response",
       "internal": false
@@ -671,7 +1182,7 @@
         "order": 1,
         "groupTitle": "Understanding planning"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -685,7 +1196,7 @@
         "order": 2,
         "groupTitle": "Understanding planning"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -699,7 +1210,7 @@
         "order": 3,
         "groupTitle": "Understanding planning"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -713,7 +1224,7 @@
         "order": 4,
         "groupTitle": "Making an application"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -727,7 +1238,7 @@
         "order": 5,
         "groupTitle": "Making an application"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -741,7 +1252,7 @@
         "order": 6,
         "groupTitle": "Making an application"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -755,7 +1266,7 @@
         "order": 7,
         "groupTitle": "Making an application"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -769,7 +1280,7 @@
         "order": 8,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -783,7 +1294,7 @@
         "order": 9,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -797,7 +1308,7 @@
         "order": 10,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -811,7 +1322,7 @@
         "order": 11,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -825,7 +1336,7 @@
         "order": 12,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -839,7 +1350,7 @@
         "order": 13,
         "groupTitle": "Specific situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -853,7 +1364,7 @@
         "order": 14,
         "groupTitle": "Engaging with someone else's application"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -867,7 +1378,7 @@
         "order": 15,
         "groupTitle": "Engaging with someone else's application"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -881,7 +1392,7 @@
         "order": 16,
         "groupTitle": "Engaging with someone else's application"
       },
-      "ownerId": "",
+      "ownerId": "tax_planning",
       "status": "published",
       "lastReviewed": "August 2026 — draft, pending verification",
       "internal": false
@@ -895,7 +1406,7 @@
         "order": 1,
         "groupTitle": "Pets at home"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -909,7 +1420,7 @@
         "order": 2,
         "groupTitle": "Pets at home"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -923,7 +1434,7 @@
         "order": 3,
         "groupTitle": "Pets at home"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -937,7 +1448,7 @@
         "order": 4,
         "groupTitle": "Pets at home"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -951,7 +1462,7 @@
         "order": 5,
         "groupTitle": "Pets at home"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -965,7 +1476,7 @@
         "order": 6,
         "groupTitle": "Pets at home"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -979,7 +1490,7 @@
         "order": 7,
         "groupTitle": "Lost, found, and impounded animals"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -993,7 +1504,7 @@
         "order": 8,
         "groupTitle": "Lost, found, and impounded animals"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1007,7 +1518,7 @@
         "order": 9,
         "groupTitle": "Lost, found, and impounded animals"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1021,7 +1532,7 @@
         "order": 10,
         "groupTitle": "Lost, found, and impounded animals"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1035,7 +1546,7 @@
         "order": 11,
         "groupTitle": "Lost, found, and impounded animals"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1049,7 +1560,7 @@
         "order": 12,
         "groupTitle": "Animal nuisance and safety"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1063,7 +1574,7 @@
         "order": 13,
         "groupTitle": "Animal nuisance and safety"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1077,7 +1588,7 @@
         "order": 14,
         "groupTitle": "Animal nuisance and safety"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1091,7 +1602,7 @@
         "order": 15,
         "groupTitle": "Animal nuisance and safety"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1105,7 +1616,7 @@
         "order": 16,
         "groupTitle": "Breeding and supply"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1119,7 +1630,7 @@
         "order": 17,
         "groupTitle": "Breeding and supply"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1133,7 +1644,7 @@
         "order": 18,
         "groupTitle": "Breeding and supply"
       },
-      "ownerId": "",
+      "ownerId": "tax_local_laws",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1147,7 +1658,7 @@
         "order": 1,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1161,7 +1672,7 @@
         "order": 2,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1175,7 +1686,7 @@
         "order": 3,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1189,7 +1700,7 @@
         "order": 4,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1203,7 +1714,7 @@
         "order": 5,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1217,7 +1728,7 @@
         "order": 6,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1231,7 +1742,7 @@
         "order": 7,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1245,7 +1756,7 @@
         "order": 8,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1259,7 +1770,7 @@
         "order": 9,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1273,7 +1784,7 @@
         "order": 10,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1287,7 +1798,7 @@
         "order": 11,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1301,7 +1812,7 @@
         "order": 1,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1315,7 +1826,7 @@
         "order": 2,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1329,7 +1840,7 @@
         "order": 3,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1343,7 +1854,7 @@
         "order": 4,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1357,7 +1868,7 @@
         "order": 5,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1371,7 +1882,7 @@
         "order": 6,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1385,7 +1896,7 @@
         "order": 7,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_regulatory",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1399,7 +1910,7 @@
         "order": 1,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_water",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1413,7 +1924,7 @@
         "order": 2,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_water",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1427,7 +1938,7 @@
         "order": 3,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_water",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1441,7 +1952,7 @@
         "order": 4,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_water",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1455,7 +1966,7 @@
         "order": 5,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_water",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1469,7 +1980,7 @@
         "order": 1,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1483,7 +1994,7 @@
         "order": 2,
         "groupTitle": "Waste collection"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1497,7 +2008,7 @@
         "order": 3,
         "groupTitle": "Waste collection"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1511,7 +2022,7 @@
         "order": 4,
         "groupTitle": "Waste collection"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1525,7 +2036,7 @@
         "order": 5,
         "groupTitle": "Waste collection"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1539,7 +2050,7 @@
         "order": 6,
         "groupTitle": "Waste collection"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1553,7 +2064,7 @@
         "order": 7,
         "groupTitle": "Waste collection"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1567,7 +2078,7 @@
         "order": 8,
         "groupTitle": "Waste facilities"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1581,7 +2092,7 @@
         "order": 9,
         "groupTitle": "Waste facilities"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1595,7 +2106,7 @@
         "order": 10,
         "groupTitle": "Waste facilities"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1609,7 +2120,7 @@
         "order": 11,
         "groupTitle": "Waste facilities"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1623,7 +2134,7 @@
         "order": 12,
         "groupTitle": "Illegal dumping &amp; pollution"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1637,7 +2148,7 @@
         "order": 13,
         "groupTitle": "Illegal dumping &amp; pollution"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1651,7 +2162,7 @@
         "order": 14,
         "groupTitle": "Illegal dumping &amp; pollution"
       },
-      "ownerId": "",
+      "ownerId": "tax_waste",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1665,7 +2176,7 @@
         "order": 1,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_works",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1679,7 +2190,7 @@
         "order": 2,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_works",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1693,7 +2204,7 @@
         "order": 3,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_works",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1707,7 +2218,7 @@
         "order": 4,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_works",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1721,7 +2232,7 @@
         "order": 1,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_governance",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1735,7 +2246,7 @@
         "order": 2,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_governance",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1749,7 +2260,7 @@
         "order": 3,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_governance",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1763,7 +2274,7 @@
         "order": 4,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_governance",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1777,7 +2288,7 @@
         "order": 5,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_governance",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1791,7 +2302,7 @@
         "order": 6,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_governance",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1805,7 +2316,7 @@
         "order": 1,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1819,7 +2330,7 @@
         "order": 2,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1833,7 +2344,7 @@
         "order": 3,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1847,7 +2358,7 @@
         "order": 4,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1861,7 +2372,7 @@
         "order": 5,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1875,7 +2386,7 @@
         "order": 6,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1889,7 +2400,7 @@
         "order": 7,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1903,7 +2414,7 @@
         "order": 8,
         "groupTitle": null
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026",
       "internal": false
@@ -1917,7 +2428,7 @@
         "order": 1,
         "groupTitle": "Understanding the category"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -1931,7 +2442,7 @@
         "order": 2,
         "groupTitle": "Understanding the category"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -1945,7 +2456,7 @@
         "order": 3,
         "groupTitle": "Understanding the category"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -1959,7 +2470,7 @@
         "order": 4,
         "groupTitle": "Understanding the category"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -1973,7 +2484,7 @@
         "order": 5,
         "groupTitle": "Objecting to your categorisation"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -1987,7 +2498,7 @@
         "order": 6,
         "groupTitle": "Objecting to your categorisation"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -2001,7 +2512,7 @@
         "order": 7,
         "groupTitle": "Objecting to your categorisation"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -2015,7 +2526,7 @@
         "order": 8,
         "groupTitle": "Objecting to your categorisation"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -2029,7 +2540,7 @@
         "order": 9,
         "groupTitle": "Affordability and other situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -2043,7 +2554,7 @@
         "order": 10,
         "groupTitle": "Affordability and other situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -2057,7 +2568,7 @@
         "order": 11,
         "groupTitle": "Affordability and other situations"
       },
-      "ownerId": "",
+      "ownerId": "tax_revenue",
       "status": "published",
       "lastReviewed": "August 2026 — based on Council's NPPR information (updated August 2026), the 6 August 2026 media release, and the objection form (v5, 27 July 2026)",
       "internal": false
@@ -2071,7 +2582,7 @@
         "order": 1,
         "groupTitle": "Dams, fishing and boating"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2085,7 +2596,7 @@
         "order": 2,
         "groupTitle": "Dams, fishing and boating"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2099,7 +2610,7 @@
         "order": 3,
         "groupTitle": "Dams, fishing and boating"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2113,7 +2624,7 @@
         "order": 4,
         "groupTitle": "Dams, fishing and boating"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2127,7 +2638,7 @@
         "order": 5,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2141,7 +2652,7 @@
         "order": 6,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2155,7 +2666,7 @@
         "order": 7,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2169,7 +2680,7 @@
         "order": 8,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2183,7 +2694,7 @@
         "order": 9,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2197,7 +2708,7 @@
         "order": 10,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2211,7 +2722,7 @@
         "order": 11,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2225,7 +2736,7 @@
         "order": 12,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2239,7 +2750,7 @@
         "order": 13,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2253,7 +2764,7 @@
         "order": 14,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2267,7 +2778,7 @@
         "order": 15,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2281,7 +2792,7 @@
         "order": 16,
         "groupTitle": "Camping and caravans"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2295,7 +2806,7 @@
         "order": 17,
         "groupTitle": "Planning your visit"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2309,7 +2820,7 @@
         "order": 18,
         "groupTitle": "Planning your visit"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false
@@ -2323,7 +2834,7 @@
         "order": 19,
         "groupTitle": "Planning your visit"
       },
-      "ownerId": "",
+      "ownerId": "tax_parks_and_recreation",
       "status": "published",
       "lastReviewed": "September 2026 — draft, pending verification",
       "internal": false

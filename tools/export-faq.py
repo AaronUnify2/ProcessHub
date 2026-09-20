@@ -151,9 +151,19 @@ def main():
 def compare(a, b):
     """Report any difference between the original and the round-tripped result."""
     problems = []
+    notices = []
 
-    if a.get('departments') != b.get('departments'):
-        problems.append(f'departments differ:\n  was {a.get("departments")}\n  now {b.get("departments")}')
+    # A department added since the original is an intended change, not a loss.
+    # One that disappeared is a regression.
+    was, now = a.get('departments', []), b.get('departments', [])
+    dropped = [d for d in was if d not in now]
+    added = [d for d in now if d not in was]
+    if dropped:
+        problems.append(f'departments lost: {dropped}')
+    if [d for d in now if d in was] != [d for d in was if d in now]:
+        problems.append(f'department order changed:\n  was {was}\n  now {now}')
+    if added:
+        notices.append(f'departments added since the original: {added}')
 
     va = {v['id']: v for v in a.get('variables', [])}
     vb = {v['id']: v for v in b.get('variables', [])}
@@ -190,9 +200,11 @@ def compare(a, b):
             print(f'  … and {len(problems) - 40} more')
         return False
 
-    print('ROUND TRIP CLEAN — the export is identical to the original FAQ.json')
+    print('ROUND TRIP CLEAN — no published content was lost')
     print(f'  {len(b["variables"])} variables, {len(b["tabs"])} tabs, '
           f'{sum(len(t["items"]) for t in b["tabs"])} items')
+    for n in notices:
+        print(f'  note: {n}')
     return True
 
 
