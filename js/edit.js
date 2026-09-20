@@ -9,6 +9,7 @@
      process:<pid>:<key>
      step:<pid>:<sid>:<key>
      check:<pid>:<sid>:<cid>
+     connection:<pid>:<cid>:<key>
      article:<aid>:<key>
      faq:<fid>:<key>
      variable:<vid>:<key>
@@ -51,6 +52,12 @@
       if (!owner) return null;
       var check = (owner.checks || []).find(function (c) { return c.id === parts[3]; });
       return check ? { obj: check, key: 'text', process: proc } : null;
+    }
+    if (kind === 'connection') {
+      var owner = index.processes[parts[1]];
+      if (!owner) return null;
+      var conn = (owner.connections || []).find(function (c) { return c.id === parts[2]; });
+      return conn ? { obj: conn, key: parts[3], process: owner } : null;
     }
     if (kind === 'article') return { obj: index.articles[parts[1]], key: parts[2] };
     if (kind === 'faq') return { obj: index.faqs[parts[1]], key: parts[2] };
@@ -308,7 +315,8 @@
     };
     var at = afterStepId ? p.steps.findIndex(function (s) { return s.id === afterStepId; }) + 1 : p.steps.length;
     p.steps.splice(at, 0, step);
-    relayout(p);
+    relayout(p, true);
+    if (!step.x) { step.x = (previous ? previous.x + 320 : 80); step.y = previous ? previous.y : 80; }
     touch();
     return id;
   }
@@ -336,8 +344,10 @@
   }
 
   /** Reposition and rewire after any structural change, so the two agree. */
-  function relayout(p) {
-    p.steps.forEach(function (s, i) { s.x = 80 + i * 320; s.y = 80; });
+  function relayout(p, keepPositions) {
+    if (!keepPositions) {
+      p.steps.forEach(function (s, i) { s.x = 80 + i * 320; s.y = 80; });
+    }
     var kept = {};
     (p.connections || []).forEach(function (c) { kept[c.from + '>' + c.to] = c.condition || ''; });
     p.connections = [];
@@ -348,6 +358,18 @@
         condition: kept[s.id + '>' + next.id] || ''
       });
     });
+  }
+
+  /** Record a card's new position after a drag, as one change rather than many. */
+  function moveCard(processId, stepId, x, y) {
+    var p = Data.state.index.processes[processId];
+    if (!p) return;
+    var step = p.steps.find(function (s) { return s.id === stepId; });
+    if (!step) return;
+    if (step.x === x && step.y === y) return;
+    step.x = x;
+    step.y = y;
+    touch();
   }
 
   function addCheck(processId, stepId) {
@@ -391,6 +413,7 @@
     dirtyCount: function () { return dirty; },
     resetDirty: function () { dirty = 0; },
     addStep: addStep,
+    moveCard: moveCard,
     deleteStep: deleteStep,
     moveStep: moveStep,
     addCheck: addCheck,

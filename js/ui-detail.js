@@ -12,10 +12,14 @@
   var host = null;
   var onNavigate = function () {};
   var currentRoute = null;
+  var prefs = null;
+  var processView = 'steps';
 
   function init(options) {
     host = document.getElementById('detail');
     onNavigate = options.onNavigate || onNavigate;
+    prefs = options.prefs || {};
+    processView = prefs.processView || 'steps';
     host.addEventListener('click', handleAction);
   }
 
@@ -64,6 +68,13 @@
     var act = node.dataset.act;
     var d = node.dataset;
 
+    if (act === 'view') {
+      processView = d.view;
+      prefs.processView = processView;
+      Storage.savePrefs(prefs);
+      refresh();
+      return;
+    }
     if (act === 'add-step') { Edit.addStep(d.process, d.step); refresh(); }
     if (act === 'del-step' && confirm('Delete this step?')) { Edit.deleteStep(d.process, d.step); refresh(); }
     if (act === 'up') { Edit.moveStep(d.process, d.step, -1); refresh(); }
@@ -118,7 +129,8 @@
     if (!p) return paint(notFound('process', id));
     var pid = p.id;
 
-    var html = '<article class="pane">' +
+    // The map wants the whole window; the step list wants a reading width.
+    var html = '<article class="pane' + (processView === 'map' ? ' wide' : '') + '">' +
       '<header class="pane-head">' +
       '<div class="crumbs">' + e(Data.taxonomyPath(p.taxonomyId)) + '</div>' +
       '<h1 class="editable-h1">' + f('process:' + pid + ':name') + '</h1>' +
@@ -138,13 +150,23 @@
       btn('export-process-json', { process: pid }, '⤓ JSON') +
       '</div></header>';
 
+    html += '<div class="view-toggle">' +
+      '<button class="vt' + (processView === 'steps' ? ' on' : '') +
+      '" data-act="view" data-view="steps">Steps</button>' +
+      '<button class="vt' + (processView === 'map' ? ' on' : '') +
+      '" data-act="view" data-view="map">Map</button></div>';
+
     if (p.issues.length) html += renderIssues(p.issues, p);
 
-    html += '<section class="flow">' +
-      p.steps.map(function (step, i) { return renderStep(step, i, p); }).join('') +
-      '<div class="add-step-row">' +
-      btn('add-step', { process: pid }, '+ Add step at the end') +
-      '</div></section>';
+    if (processView === 'map') {
+      html += '<section class="canvas-host" id="canvasHost"></section>';
+    } else {
+      html += '<section class="flow">' +
+        p.steps.map(function (step, i) { return renderStep(step, i, p); }).join('') +
+        '<div class="add-step-row">' +
+        btn('add-step', { process: pid }, '+ Add step at the end') +
+        '</div></section>';
+    }
 
     var refs = p.custom && p.custom.references;
     if (refs && refs.length) {
@@ -169,6 +191,10 @@
       '</dl></section></article>';
 
     paint(html);
+
+    if (processView === 'map') {
+      Canvas.mount(pid, document.getElementById('canvasHost'), prefs);
+    }
   }
 
   function renderStep(step, i, p) {
@@ -180,7 +206,7 @@
         e(Data.taxonomyName(step.departmentId)) + '</div>';
     }
 
-    html += '<div class="step step-' + e(step.type) + '">' +
+    html += '<div class="step step-' + e(step.type) + '" id="step-' + e(step.id) + '">' +
       '<div class="step-head">' +
       '<span class="step-n">' + (i + 1) + '</span>' +
       '<span class="step-type">' + f(spec + 'type',

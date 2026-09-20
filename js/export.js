@@ -270,6 +270,166 @@
       steps + issues), 'text/html');
   }
 
+  // ---- the process map as SVG ----------------------------------------------
+  // Real vector output rather than a screenshot, so it scales and stays
+  // readable when someone drops it into a report. Geometry is shared with the
+  // canvas so the file matches what was on screen, and variables are frozen
+  // because an SVG cannot resolve anything at view time.
+
+  var HEADER_H = 86;
+
+  /** Break text into lines that fit a width, estimating from the glyph size. */
+  function wrapText(text, widthPx, fontPx) {
+    var perChar = fontPx * 0.54;
+    var max = Math.max(8, Math.floor(widthPx / perChar));
+    var lines = [];
+    String(text || '').split(/\n/).forEach(function (paragraph) {
+      var line = '';
+      paragraph.split(/\s+/).forEach(function (word) {
+        if (!line.length) { line = word; return; }
+        if ((line + ' ' + word).length <= max) { line += ' ' + word; return; }
+        lines.push(line);
+        line = word;
+      });
+      lines.push(line);
+    });
+    return lines.filter(function (l) { return l.length; });
+  }
+
+  var NODE_COLOUR = {
+    entry: '#2E7D53', action: '#0A66C2', decision: '#B45309', resolution: '#5B3FA8'
+  };
+
+  function processSvg(processId, detail) {
+    var p = Data.state.index.processes[processId];
+    if (!p) return;
+    detail = detail || 'default';
+
+    var W = Canvas.CARD_W;
+    var bounds = { width: 0, height: 0 };
+    p.steps.forEach(function (s) {
+      bounds.width = Math.max(bounds.width, (s.x || 0) + W);
+      bounds.height = Math.max(bounds.height, (s.y || 0) + Canvas.cardHeight(s));
+    });
+    bounds.width += 80;
+    bounds.height += 80;
+
+    var parts = [];
+
+    // wires first, so cards sit on top of them
+    var byId = {};
+    p.steps.forEach(function (s) { byId[s.id] = s; });
+    (p.connections || []).forEach(function (conn) {
+      var a = byId[conn.from], b = byId[conn.to];
+      if (!a || !b) return;
+      var wire = Canvas.wirePath(a, b);
+      var crosses = a.departmentId !== b.departmentId;
+      parts.push('<path d="' + wire.d + '" fill="none" stroke="' +
+        (crosses ? '#B45309' : '#8A93A0') + '" stroke-width="' + (crosses ? 2.2 : 1.6) + '"' +
+        (crosses ? ' stroke-dasharray="6 4"' : '') + ' marker-end="url(#arrow)"/>');
+      if (conn.condition) {
+        var label = Data.freeze(conn.condition);
+        var boxW = label.length * 6.2 + 14;
+        parts.push('<rect x="' + (wire.mid[0] - boxW / 2) + '" y="' + (wire.mid[1] - 20) +
+          '" width="' + boxW + '" height="17" rx="8" fill="#FFFFFF" stroke="#D8DEE6"/>' +
+          '<text x="' + wire.mid[0] + '" y="' + (wire.mid[1] - 8) +
+          '" text-anchor="middle" font-size="10" fill="#4A5260">' + e(label) + '</text>');
+      }
+    });
+
+    p.steps.forEach(function (step, i) {
+      var x = step.x || 0, y = step.y || 0;
+      var h = Canvas.cardHeight(step);
+      var colour = NODE_COLOUR[step.type] || '#8A93A0';
+
+      parts.push('<rect x="' + x + '" y="' + y + '" width="' + W + '" height="' + h +
+        '" rx="9" fill="#FFFFFF" stroke="#DDE2E9"/>');
+      parts.push('<path d="M ' + (x + 3) + ' ' + y + ' h -0 a 9 9 0 0 0 -3 9 v ' + (h - 18) +
+        ' a 9 9 0 0 0 3 9 z" fill="' + colour + '"/>');
+      parts.push('<rect x="' + x + '" y="' + y + '" width="3.5" height="' + h +
+        '" fill="' + colour + '"/>');
+
+      parts.push('<circle cx="' + (x + 24) + '" cy="' + (y + 20) + '" r="9" fill="#F0F3F7"/>' +
+        '<text x="' + (x + 24) + '" y="' + (y + 23.5) + '" text-anchor="middle" font-size="10" ' +
+        'font-weight="700" fill="#6E6E73">' + (i + 1) + '</text>');
+
+      var titleLines = wrapText(Data.freeze(step.title), W - 56, 12.5).slice(0, 2);
+      titleLines.forEach(function (line, n) {
+        parts.push('<text x="' + (x + 40) + '" y="' + (y + 18 + n * 15) +
+          '" font-size="12.5" font-weight="650" fill="#1D1D1F">' + e(line) + '</text>');
+      });
+
+      var cursor = y + 18 + titleLines.length * 15 + 6;
+
+      if (detail !== 'simple') {
+        var dept = Data.taxonomyName(step.departmentId);
+        var pillW = dept.length * 5.6 + 14;
+        parts.push('<rect x="' + (x + 14) + '" y="' + cursor + '" width="' + pillW +
+          '" height="15" rx="7.5" fill="#EAF2FB"/>' +
+          '<text x="' + (x + 21) + '" y="' + (cursor + 11) +
+          '" font-size="9.5" font-weight="600" fill="#0A66C2">' + e(dept) + '</text>');
+        if (step.responsibleRole) {
+          parts.push('<text x="' + (x + 20 + pillW) + '" y="' + (cursor + 11) +
+            '" font-size="9.5" fill="#6E6E73">' +
+            e(wrapText(step.responsibleRole, W - pillW - 40, 9.5)[0] || '') + '</text>');
+        }
+        cursor += 22;
+      }
+
+      if (detail === 'context') {
+        if (step.sop) {
+          wrapText(Data.freeze(step.sop), W - 28, 10).slice(0, 5).forEach(function (line) {
+            parts.push('<text x="' + (x + 14) + '" y="' + cursor +
+              '" font-size="10" fill="#4A5260">' + e(line) + '</text>');
+            cursor += 13;
+          });
+        }
+        if (step.completionTrigger) {
+          cursor += 4;
+          wrapText('→ ' + Data.freeze(step.completionTrigger), W - 28, 9.5)
+            .slice(0, 2).forEach(function (line) {
+              parts.push('<text x="' + (x + 14) + '" y="' + cursor +
+                '" font-size="9.5" fill="#6E6E73">' + e(line) + '</text>');
+              cursor += 12;
+            });
+        }
+      }
+    });
+
+    var departments = p.departments.map(Data.taxonomyName);
+    var header =
+      '<rect x="0" y="0" width="' + bounds.width + '" height="' + HEADER_H + '" fill="#FFFFFF"/>' +
+      '<text x="36" y="34" font-size="19" font-weight="700" fill="#1D1D1F">' +
+      e(p.name) + '</text>' +
+      '<text x="36" y="54" font-size="11" fill="#6E6E73">' +
+      e(Data.taxonomyPath(p.taxonomyId)) + '  ·  ' + p.steps.length + ' steps  ·  ' +
+      p.handoffs + ' handoff' + (p.handoffs === 1 ? '' : 's') + '  ·  ' + e(p.status) + '</text>' +
+      '<text x="36" y="71" font-size="10" fill="#8A93A0">' +
+      e(departments.join('  →  ')) + '</text>' +
+      '<text x="' + (bounds.width - 36) + '" y="34" text-anchor="end" font-size="10" ' +
+      'fill="#8A93A0">Exported ' + e(today()) + '</text>' +
+      (p.handoffs
+        ? '<line x1="' + (bounds.width - 128) + '" y1="52" x2="' + (bounds.width - 100) +
+          '" y2="52" stroke="#B45309" stroke-width="2.2" stroke-dasharray="6 4"/>' +
+          '<text x="' + (bounds.width - 94) + '" y="55" font-size="10" fill="#B45309">' +
+          'crosses departments</text>'
+        : '') +
+      '<line x1="0" y1="' + HEADER_H + '" x2="' + bounds.width + '" y2="' + HEADER_H +
+      '" stroke="#E4E8EE"/>';
+
+    var total = bounds.height + HEADER_H;
+    var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="' + bounds.width + '" height="' + total +
+      '" viewBox="0 0 ' + bounds.width + ' ' + total + '" ' +
+      'font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif">\n' +
+      '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" ' +
+      'markerHeight="7" orient="auto-start-reverse">' +
+      '<path d="M 0 0 L 10 5 L 0 10 z" fill="#8A93A0"/></marker></defs>\n' +
+      '<rect width="100%" height="100%" fill="#F5F7FA"/>\n' + header + '\n' +
+      '<g transform="translate(0,' + HEADER_H + ')">\n' + parts.join('\n') + '\n</g>\n</svg>\n';
+
+    download(safeName(p.name) + '-map.svg', svg, 'image/svg+xml');
+  }
   // ---- issues register -----------------------------------------------------
 
   function issuesHtml() {
@@ -381,6 +541,8 @@
     faqProjection: faqProjection,
     processJson: processJson,
     processHtml: processHtml,
+    processSvg: processSvg,
+    wrapText: wrapText,
     issuesHtml: issuesHtml,
     issuesCsv: issuesCsv,
     verificationText: verificationText,

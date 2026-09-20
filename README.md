@@ -18,7 +18,7 @@ processhub/
   index.html         the app
   css/app.css
   js/                storage.js · data.js · edit.js · export.js
-                     ui-sidebar.js · ui-detail.js · app.js
+                     canvas.js · ui-sidebar.js · ui-detail.js · app.js
   data/              source content, fetched by the app at load
     processes.json     taxonomy + process maps
     library.json       KB articles + FAQ questions + publish tabs
@@ -68,7 +68,20 @@ the clipboard, or downloaded as a printable sheet. Variables are frozen to
 their values in everything that leaves the app, and anything marked internal is
 withheld from a public export.
 
-**Still to come:** the draggable canvas and SVG export.
+**The map.** Every process has a Steps view and a Map view. On the map, cards
+drag on a 20px grid, the background pans, Ctrl and the wheel zooms, and
+**Tidy layout** arranges the process into columns by depth — wrapping every
+five columns and running alternate rows backwards, so a ten step process reads
+as two rows rather than one very long line. Arrows that cross a department
+boundary are drawn dashed and orange.
+
+Three card detail levels (Simple / Default / Context) control how much each
+card shows, and the same setting drives the SVG.
+
+**⤓ SVG** exports the map as real vector output — not a screenshot — with a
+header carrying the process name, department path, step and handoff counts,
+and a legend. Variables are frozen to their values, since an SVG cannot
+resolve anything when it is opened.
 
 ## Tools
 
@@ -144,6 +157,6 @@ All of this is why every imported process is `draft`.
 
 ## Next
 
-1. The draggable process canvas and SVG export.
-2. Work the issue register down, starting with the 32 Merit rewrites.
-3. Review the 13 variables that nothing references.
+1. Work the issue register down, starting with the 32 Merit rewrites.
+2. Review the 13 variables that nothing references.
+3. Proofread the imported content and move processes off `draft`.

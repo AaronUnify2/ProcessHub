@@ -70,7 +70,7 @@
     source = 'draft';
     setStatus('draft', 'Draft · ' + count + ' change' + (count === 1 ? '' : 's'));
     if (spec && STRUCTURAL.test(spec)) route();
-    else Sidebar.render(activeProcessId);
+    else if (spec) Sidebar.render(activeProcessId);
   }
 
   function showSaved(count, err) {
@@ -153,7 +153,7 @@
     source = from;
     Data.load(data);
     Sidebar.init({ prefs: prefs, onNavigate: navigate });
-    Detail.init({ onNavigate: navigate });
+    Detail.init({ onNavigate: navigate, prefs: prefs });
     Edit.init({ onChange: showDirty, onSaved: showSaved });
     wireExportMenu();
 
