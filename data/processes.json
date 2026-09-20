@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "version": 1,
+  "updated": "2026-09-20",
+  "taxonomy": [
+    {
+      "id": "tax_building",
+      "name": "Building",
+      "parentId": null,
+      "order": 1,
+      "collapsed": false
+    },
+    {
+      "id": "tax_planning",
+      "name": "Planning",
+      "parentId": null,
+      "order": 2,
+      "collapsed": false
+    },
+    {
+      "id": "tax_local_laws",
+      "name": "Local Laws",
+      "parentId": null,
+      "order": 3,
+      "collapsed": false
+    },
+    {
+      "id": "tax_water",
+      "name": "Water",
+      "parentId": null,
+      "order": 4,
+      "collapsed": false
+    },
+    {
+      "id": "tax_waste",
+      "name": "Waste",
+      "parentId": null,
+      "order": 5,
+      "collapsed": false
+    },
+    {
+      "id": "tax_governance",
+      "name": "Governance",
+      "parentId": null,
+      "order": 6,
+      "collapsed": false
+    },
+    {
+      "id": "tax_revenue",
+      "name": "Revenue",
+      "parentId": null,
+      "order": 7,
+      "collapsed": false
+    },
+    {
+      "id": "tax_regulatory",
+      "name": "Regulatory",
+      "parentId": null,
+      "order": 8,
+      "collapsed": false
+    },
+    {
+      "id": "tax_customer_service",
+      "name": "Customer Service",
+      "parentId": null,
+      "order": 9,
+      "collapsed": false
+    },
+    {
+      "id": "tax_parks_and_recreation",
+      "name": "Parks and Recreation",
+      "parentId": null,
+      "order": 10,
+      "collapsed": false
+    }
+  ],
+  "processes": []
+}
