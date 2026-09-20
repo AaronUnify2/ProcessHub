@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process Hub</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header class="app-header">
+  <button class="drawer-toggle" id="drawerToggle" aria-label="Show or hide the tree">☰</button>
+  <a class="app-brand" href="#/">Process&nbsp;Hub</a>
+  <span class="pill-status loading" id="statusPill">Loading…</span>
+</header>
+
+<div class="conflict-bar" id="conflictBar" hidden></div>
+
+<div class="app-body">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-search">
+      <input type="search" id="sidebarSearch" placeholder="Search everything…"
+             autocomplete="off" spellcheck="false" aria-label="Search">
+      <kbd class="search-hint">/</kbd>
+    </div>
+    <div class="sidebar-count" id="sidebarCount">—</div>
+    <nav class="sidebar-body">
+      <div id="tree"></div>
+      <div id="searchResults" hidden></div>
+    </nav>
+  </aside>
+
+  <main class="detail" id="detail"></main>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/data.js"></script>
+<script src="js/ui-sidebar.js"></script>
+<script src="js/ui-detail.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

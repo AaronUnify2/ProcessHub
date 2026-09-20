@@ -15,6 +15,9 @@ checklist.
 
 ```
 processhub/
+  index.html         the app
+  css/app.css
+  js/                storage.js · data.js · ui-sidebar.js · ui-detail.js · app.js
   data/              source content, fetched by the app at load
     processes.json     taxonomy + process maps
     library.json       KB articles + FAQ questions + publish tabs
@@ -27,9 +30,25 @@ processhub/
     export-faq.py
 ```
 
+## Running the app
+
+It reads its three JSON files over http, so it cannot be opened straight from
+disk — use the published address.
+
+Keyboard: <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd> jumps to search,
+<kbd>Esc</kbd> clears it. The tree is the default view; search filters across
+processes, articles, FAQ questions and variables at once.
+
+Every view has its own address — `#/process/<id>`, `#/article/<id>`,
+`#/faq/<id>`, `#/variable/<id>`, plus `#/articles`, `#/faqs`, `#/variables` and
+`#/issues` — so back, forward and copied links all work.
+
+**This pass is read-only.** It exists so the imported content can be read and
+judged. Editing, the draggable canvas and the export matrix come next.
+
 ## Tools
 
-Both scripts run from the repository root and need nothing installed.
+The scripts run from the repository root and need nothing installed.
 
 **Import the published FAQ content into the data model.** Overwrites everything
 in `data/`, so it is only for seeding.
@@ -101,6 +120,7 @@ All of this is why every imported process is `draft`.
 
 ## Next
 
-1. Build the editor shell: storage layer, sidebar, process canvas.
-2. Wire up the export matrix from the spec.
-3. Work the issue register down, starting with the 32 Merit rewrites.
+1. Editing: step fields, the variable manager, the rich text editor.
+2. The draggable process canvas and SVG export.
+3. The rest of the export matrix from the spec.
+4. Work the issue register down, starting with the 32 Merit rewrites.
