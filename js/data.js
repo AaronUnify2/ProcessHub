@@ -53,19 +53,59 @@
     });
   }
 
-  /** HTML in, HTML out. Used for article and FAQ bodies, which are authored HTML. */
+  /**
+   * HTML in, HTML out, for article and FAQ bodies.
+   *
+   * Two reference styles have to be handled. Process text uses {{var_id}},
+   * while content imported from the published FAQ uses the span form the
+   * council site already renders. Both are refreshed from the variable table
+   * so what you see is the current value rather than whatever was stored.
+   */
   function resolveHtml(html) {
-    return String(html == null ? '' : html).replace(VAR_PATTERN, function (_, id) {
-      return variableChip(id);
+    var withChips = String(html == null ? '' : html)
+      .replace(VAR_PATTERN, function (_, id) { return variableChip(id); });
+    return refreshSpans(withChips, false);
+  }
+
+  /**
+   * Update <span data-var> text and <a data-var-href> addresses in place.
+   * `bake` strips the markup and leaves plain values behind, for exports.
+   */
+  function refreshSpans(html, bake) {
+    if (html.indexOf('data-var') === -1) return html;
+    var holder = document.createElement('div');
+    holder.innerHTML = html;
+
+    Array.prototype.forEach.call(holder.querySelectorAll('[data-var]'), function (node) {
+      var v = variable(node.getAttribute('data-var'));
+      if (!v) return;
+      if (bake) {
+        node.replaceWith(document.createTextNode(v.value));
+      } else {
+        node.textContent = v.value;
+        node.classList.add('var-chip');
+        if (v.internal) node.classList.add('internal');
+        if (v.status === 'pending') node.classList.add('pending');
+        node.title = v.question || v.id;
+      }
     });
+
+    Array.prototype.forEach.call(holder.querySelectorAll('[data-var-href]'), function (node) {
+      var v = variable(node.getAttribute('data-var-href'));
+      if (v) node.setAttribute('href', v.value);
+      if (bake) node.removeAttribute('data-var-href');
+    });
+
+    return holder.innerHTML;
   }
 
   /** Values baked in, for anything leaving the app (SVG, exports, email). */
   function freeze(text) {
-    return String(text == null ? '' : text).replace(VAR_PATTERN, function (whole, id) {
+    var plain = String(text == null ? '' : text).replace(VAR_PATTERN, function (whole, id) {
       var v = variable(id);
       return v ? v.value : whole;
     });
+    return refreshSpans(plain, true);
   }
 
   // ---- indexes -------------------------------------------------------------
@@ -148,15 +188,25 @@
     });
   }
 
+  var SPAN_PATTERN = /data-var(?:-href)?="(var_[a-z0-9_]+)"/gi;
+
+  /**
+   * Count both reference styles. Process text uses {{var_id}}; content from
+   * the published FAQ uses the span form. Missing the second would understate
+   * every FAQ variable as unused, which is exactly the figure the verification
+   * email leans on.
+   */
   function countVariables(index, text, owner, step) {
     if (!text) return;
-    var match;
-    VAR_PATTERN.lastIndex = 0;
-    while ((match = VAR_PATTERN.exec(text))) {
-      var entry = index.usage[match[1]] = index.usage[match[1]] || { processes: [], steps: 0 };
-      if (entry.processes.indexOf(owner.id) === -1) entry.processes.push(owner.id);
-      if (step) entry.steps++;
-    }
+    [VAR_PATTERN, SPAN_PATTERN].forEach(function (pattern) {
+      var match;
+      pattern.lastIndex = 0;
+      while ((match = pattern.exec(text))) {
+        var entry = index.usage[match[1]] = index.usage[match[1]] || { processes: [], steps: 0 };
+        if (entry.processes.indexOf(owner.id) === -1) entry.processes.push(owner.id);
+        if (step) entry.steps++;
+      }
+    });
   }
 
   // ---- search --------------------------------------------------------------
@@ -309,6 +359,7 @@
     escapeHtml: escapeHtml,
     resolveText: resolveText,
     resolveHtml: resolveHtml,
+    refreshSpans: refreshSpans,
     freeze: freeze,
     variable: variable,
     search: search,

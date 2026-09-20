@@ -17,7 +17,8 @@ checklist.
 processhub/
   index.html         the app
   css/app.css
-  js/                storage.js · data.js · ui-sidebar.js · ui-detail.js · app.js
+  js/                storage.js · data.js · edit.js · export.js
+                     ui-sidebar.js · ui-detail.js · app.js
   data/              source content, fetched by the app at load
     processes.json     taxonomy + process maps
     library.json       KB articles + FAQ questions + publish tabs
@@ -43,8 +44,31 @@ Every view has its own address — `#/process/<id>`, `#/article/<id>`,
 `#/faq/<id>`, `#/variable/<id>`, plus `#/articles`, `#/faqs`, `#/variables` and
 `#/issues` — so back, forward and copied links all work.
 
-**This pass is read-only.** It exists so the imported content can be read and
-judged. Editing, the draggable canvas and the export matrix come next.
+**Editing.** Click any field to change it. Enter saves a single-line field,
+Ctrl+Enter a multi-line one, Esc cancels. The `+ Variable` button on the edit
+toolbar inserts a reference that stays in step with the variable. Steps can be
+added, reordered and deleted; checks and issues likewise.
+
+Changes go to a draft in IndexedDB about half a second after you stop typing,
+survive a reload, and never touch the published files until you export.
+
+**Export** (the button in the header):
+
+| | |
+|---|---|
+| Export for GitHub | All four files, versions bumped, named as they sit in the repo |
+| FAQ.json only | The file the council website consumes |
+| Verification sheet | Every variable, grouped by owning department |
+| Issues report | The register as a readable page |
+| Discard local changes | Throw the draft away and reload the published content |
+
+A process page also exports itself as JSON or as a self-contained HTML page,
+and the variables list offers a verification email per department — copied to
+the clipboard, or downloaded as a printable sheet. Variables are frozen to
+their values in everything that leaves the app, and anything marked internal is
+withheld from a public export.
+
+**Still to come:** the draggable canvas and SVG export.
 
 ## Tools
 
@@ -120,7 +144,6 @@ All of this is why every imported process is `draft`.
 
 ## Next
 
-1. Editing: step fields, the variable manager, the rich text editor.
-2. The draggable process canvas and SVG export.
-3. The rest of the export matrix from the spec.
-4. Work the issue register down, starting with the 32 Merit rewrites.
+1. The draggable process canvas and SVG export.
+2. Work the issue register down, starting with the 32 Merit rewrites.
+3. Review the 13 variables that nothing references.

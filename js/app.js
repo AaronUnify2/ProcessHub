@@ -1,16 +1,17 @@
 /* ===========================================================================
-   app.js — bootstrap and routing.
+   app.js — bootstrap, routing and the header controls.
 
    Loads the three published files, reconciles them against any saved draft,
    then wires the sidebar to the detail pane through the URL hash so that back,
    forward and a copied link all work.
    =========================================================================== */
 
-(function () {
+(function (global) {
   'use strict';
 
   var prefs = Storage.loadPrefs();
   var activeProcessId = null;
+  var source = 'live';
 
   // ---- routing -------------------------------------------------------------
 
@@ -47,18 +48,34 @@
     location.hash = target;
   }
 
-  // ---- the narrow-screen drawer -------------------------------------------
-
   function closeDrawer() {
     document.body.classList.remove('drawer-open');
   }
 
-  // ---- status pill ---------------------------------------------------------
+  // ---- status --------------------------------------------------------------
 
   function setStatus(kind, text) {
     var pill = document.getElementById('statusPill');
     pill.className = 'pill-status ' + kind;
     pill.textContent = text;
+  }
+
+  // Fields whose value changes more than their own box: a department move
+  // redraws the handoff markers, a status change redraws the badge and the
+  // tree, a reparent moves the process.
+  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal)$/;
+
+  function showDirty(count, spec) {
+    if (!count) return;
+    source = 'draft';
+    setStatus('draft', 'Draft · ' + count + ' change' + (count === 1 ? '' : 's'));
+    if (spec && STRUCTURAL.test(spec)) route();
+    else Sidebar.render(activeProcessId);
+  }
+
+  function showSaved(count, err) {
+    if (err) { setStatus('error', 'Save failed'); return; }
+    setStatus('draft', 'Draft saved · ' + count + ' change' + (count === 1 ? '' : 's'));
   }
 
   // ---- the conflict bar ----------------------------------------------------
@@ -75,30 +92,85 @@
 
     document.getElementById('keepMine').addEventListener('click', function () {
       bar.hidden = true;
-      start(result.draft.data, 'draft');
+      Data.load(result.draft.data);
+      route();
+      setStatus('draft', 'Local draft');
     });
     document.getElementById('takePublished').addEventListener('click', function () {
       Storage.clearDraft().then(function () {
         bar.hidden = true;
-        start(result.live, 'live');
+        Data.load(result.live);
+        Edit.resetDirty();
+        route();
+        setStatus('live', 'Published · v' + (result.live.processes.version || 1));
       });
+    });
+  }
+
+  // ---- export menu ---------------------------------------------------------
+
+  function wireExportMenu() {
+    var menu = document.getElementById('exportMenu');
+    var button = document.getElementById('exportBtn');
+
+    button.addEventListener('click', function (event) {
+      event.stopPropagation();
+      menu.hidden = !menu.hidden;
+    });
+    document.addEventListener('click', function (event) {
+      if (!menu.hidden && !event.target.closest('#exportMenu')) menu.hidden = true;
+    });
+
+    menu.addEventListener('click', function (event) {
+      // The buttons wrap a <strong> and a <span>, so the click usually lands
+      // on a child rather than the button itself.
+      var chosen = event.target.closest('[data-export]');
+      if (!chosen) return;
+      var action = chosen.dataset.export;
+      menu.hidden = true;
+
+      if (action === 'github') {
+        Exporter.exportForGitHub().then(function () {
+          setStatus('live', 'Exported · v' + Data.state.processes.version);
+        });
+      }
+      if (action === 'faq') Exporter.exportFaqOnly();
+      if (action === 'issues') Exporter.issuesHtml();
+      if (action === 'verification') {
+        Exporter.download('verification-all.html',
+          Exporter.verificationHtml(''), 'text/html');
+      }
+      if (action === 'discard') {
+        if (!confirm('Discard every local change and reload the published content?')) return;
+        Storage.clearDraft().then(function () { location.reload(); });
+      }
     });
   }
 
   // ---- start ---------------------------------------------------------------
 
-  function start(data, source) {
+  function start(data, from) {
+    source = from;
     Data.load(data);
     Sidebar.init({ prefs: prefs, onNavigate: navigate });
     Detail.init({ onNavigate: navigate });
+    Edit.init({ onChange: showDirty, onSaved: showSaved });
+    wireExportMenu();
 
-    if (source === 'draft') {
+    if (from === 'draft') {
       setStatus('draft', 'Local draft');
     } else {
       setStatus('live', 'Published · v' + (data.processes.version || 1));
     }
 
     window.addEventListener('hashchange', route);
+    window.addEventListener('beforeunload', function (event) {
+      if (Edit.dirtyCount() > 0) {
+        Edit.save();
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    });
     route();
   }
 
@@ -117,6 +189,9 @@
   document.getElementById('drawerToggle').addEventListener('click', function () {
     document.body.classList.toggle('drawer-open');
   });
+  document.getElementById('varPickerClose').addEventListener('click', function () {
+    document.getElementById('varPicker').hidden = true;
+  });
 
   setStatus('loading', 'Loading…');
 
@@ -124,8 +199,8 @@
     .then(function (results) {
       var result = Storage.reconcile(results[0], results[1]);
       if (result.state === 'conflict') {
-        showConflict(result);
         start(result.live, 'live');
+        showConflict(result);
       } else if (result.state === 'draft') {
         start(result.draft.data, 'draft');
       } else {
@@ -133,4 +208,6 @@
       }
     })
     .catch(fail);
-}());
+
+  global.App = { route: route, navigate: navigate };
+}(window));

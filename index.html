@@ -12,6 +12,31 @@
   <button class="drawer-toggle" id="drawerToggle" aria-label="Show or hide the tree">☰</button>
   <a class="app-brand" href="#/">Process&nbsp;Hub</a>
   <span class="pill-status loading" id="statusPill">Loading…</span>
+  <div class="export-wrap">
+    <button class="btn primary" id="exportBtn">⤓ Export</button>
+    <div class="export-menu" id="exportMenu" hidden>
+      <button data-export="github">
+        <strong>Export for GitHub</strong>
+        <span>All four files, named as they sit in the repo</span>
+      </button>
+      <button data-export="faq">
+        <strong>FAQ.json only</strong>
+        <span>The file the council website consumes</span>
+      </button>
+      <button data-export="verification">
+        <strong>Verification sheet</strong>
+        <span>Every variable, grouped by owning department</span>
+      </button>
+      <button data-export="issues">
+        <strong>Issues report</strong>
+        <span>The register as a readable page</span>
+      </button>
+      <button data-export="discard" class="danger">
+        <strong>Discard local changes</strong>
+        <span>Reload the published content</span>
+      </button>
+    </div>
+  </div>
 </header>
 
 <div class="conflict-bar" id="conflictBar" hidden></div>
@@ -33,8 +58,24 @@
   <main class="detail" id="detail"></main>
 </div>
 
+<!-- Variable picker, opened from the toolbar of any field being edited -->
+<div class="modal" id="varPicker" hidden>
+  <div class="modal-box">
+    <h3>Insert a variable</h3>
+    <p class="modal-sub">Pick a value to reference. It stays in step with the variable.</p>
+    <input type="search" id="varPickerSearch" placeholder="Search by value or question…"
+           autocomplete="off">
+    <div class="pick-list" id="varPickerList"></div>
+    <div class="modal-actions">
+      <button class="btn" id="varPickerClose">Close</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/storage.js"></script>
 <script src="js/data.js"></script>
+<script src="js/edit.js"></script>
+<script src="js/export.js"></script>
 <script src="js/ui-sidebar.js"></script>
 <script src="js/ui-detail.js"></script>
 <script src="js/app.js"></script>
