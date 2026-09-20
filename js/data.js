@@ -376,6 +376,8 @@
 
   function load(data) {
     state.processes = data.processes;
+    // Older files predate rules, so normalise rather than assume.
+    if (!Array.isArray(state.processes.rules)) state.processes.rules = [];
     state.library = data.library;
     state.variables = data.variables;
     buildIndexes();

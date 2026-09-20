@@ -1137,3 +1137,74 @@ select.edit-input { padding: 0.3rem 0.4rem; }
   .rt-toolbar button { font-size: 0.72rem; padding: 0.1rem 0.4rem; }
   .rt-area { min-height: 150px; }
 }
+
+/* ===========================================================================
+   Content rules
+   =========================================================================== */
+
+.rule-block {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface);
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.6rem;
+}
+.rule-block.sev-high { border-left-color: var(--danger); }
+.rule-block.sev-medium { border-left-color: var(--warn); }
+.rule-block.sev-low { border-left-color: var(--border-strong); }
+
+.rule-head { display: flex; align-items: center; gap: 0.5rem; }
+.rule-name { flex: 1; font-size: 0.92rem; font-weight: 650; min-width: 0; }
+.rule-count {
+  font-size: 0.7rem; font-weight: 700; padding: 1px 8px; border-radius: 999px;
+  background: #FBEAE8; color: var(--danger); white-space: nowrap;
+}
+.rule-count.clear { background: #EAF6EE; color: var(--good); }
+.rule-message { font-size: 0.82rem; color: var(--text-soft); margin: 0.4rem 0 0.5rem; }
+.rule-error { font-size: 0.82rem; color: var(--danger); margin-top: 0.4rem; }
+
+.list-row.finding { padding: 0.4rem 0.65rem; }
+.list-row.finding .list-title { font-size: 0.85rem; font-weight: 600; }
+
+.rule-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.7rem;
+  box-shadow: var(--shadow);
+}
+.rule-card.off { opacity: 0.55; }
+.rule-card-head { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; }
+
+.rule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.5rem 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.rule-field label {
+  display: block;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-soft);
+  margin-bottom: 0.1rem;
+}
+
+.scope-row { display: flex; flex-wrap: wrap; gap: 0.2rem; }
+.scope-chip {
+  font: inherit;
+  font-size: 0.7rem;
+  padding: 1px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: none;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.scope-chip.on { background: var(--accent-soft); border-color: #C6D9F0; color: var(--accent); font-weight: 600; }
+
+.row-actions .spacer { flex: 1; }

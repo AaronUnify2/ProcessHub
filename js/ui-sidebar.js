@@ -172,6 +172,7 @@
       '<button class="tree-link" data-route="#/faqs">FAQ questions</button>' +
       '<button class="tree-link" data-route="#/variables">Variables</button>' +
       '<button class="tree-link" data-route="#/issues">Issues register</button>' +
+      '<button class="tree-link" data-route="#/rules">Content rules</button>' +
       '</div>';
   }
 

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": 2,
+  "version": 3,
   "updated": "2026-09-20",
   "taxonomy": [
     {
@@ -17293,6 +17293,80 @@
           "{{var_sys_intranet}}: Pest Animals on Council Land"
         ]
       }
+    }
+  ],
+  "rules": [
+    {
+      "id": "rule_retired_merit",
+      "name": "Merit has been replaced by the CRM",
+      "kind": "text",
+      "match": {
+        "mode": "phrase",
+        "value": "Merit"
+      },
+      "scope": [
+        "process",
+        "step",
+        "article",
+        "faq"
+      ],
+      "severity": "high",
+      "message": "Still refers to Merit. The CRM replaced it — the request ID now goes to the customer by SMS, so the wording needs rewriting, not just renaming.",
+      "enabled": true,
+      "created": "2026-09-20"
+    },
+    {
+      "id": "rule_no_owner",
+      "name": "Process has no owner",
+      "kind": "empty",
+      "field": "owner",
+      "scope": [
+        "process"
+      ],
+      "severity": "low",
+      "message": "No manager is recorded as accountable for this process.",
+      "enabled": true,
+      "created": "2026-09-20"
+    },
+    {
+      "id": "rule_unreviewed",
+      "name": "Process not reviewed in 12 months",
+      "kind": "stale",
+      "field": "lastReviewed",
+      "months": 12,
+      "scope": [
+        "process"
+      ],
+      "severity": "medium",
+      "message": "This process has not been reviewed within the last 12 months.",
+      "enabled": true,
+      "created": "2026-09-20"
+    },
+    {
+      "id": "rule_unverified_variable",
+      "name": "Variable not verified in 12 months",
+      "kind": "stale",
+      "field": "lastVerified",
+      "months": 12,
+      "scope": [
+        "variable"
+      ],
+      "severity": "medium",
+      "message": "This value has not been confirmed by its owning department within the last 12 months.",
+      "enabled": true,
+      "created": "2026-09-20"
+    },
+    {
+      "id": "rule_unused_article",
+      "name": "Article nothing references",
+      "kind": "unused",
+      "scope": [
+        "article"
+      ],
+      "severity": "low",
+      "message": "No process or step links to this article, so nobody will find it.",
+      "enabled": true,
+      "created": "2026-09-20"
     }
   ]
 }

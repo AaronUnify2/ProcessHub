@@ -10,6 +10,7 @@
      step:<pid>:<sid>:<key>
      check:<pid>:<sid>:<cid>
      connection:<pid>:<cid>:<key>
+     rule:<rid>:<key>  ·  rule:<rid>:match:<key>
      article:<aid>:<key>
      faq:<fid>:<key>
      variable:<vid>:<key>
@@ -58,6 +59,16 @@
       if (!owner) return null;
       var conn = (owner.connections || []).find(function (c) { return c.id === parts[2]; });
       return conn ? { obj: conn, key: parts[3], process: owner } : null;
+    }
+    if (kind === 'rule') {
+      var rule = (Data.state.processes.rules || []).find(function (r) { return r.id === parts[1]; });
+      if (!rule) return null;
+      // rule:<id>:match:<key> reaches into the match object.
+      if (parts[2] === 'match') {
+        rule.match = rule.match || {};
+        return { obj: rule.match, key: parts[3] };
+      }
+      return { obj: rule, key: parts[2] };
     }
     if (kind === 'article') return { obj: index.articles[parts[1]], key: parts[2] };
     if (kind === 'faq') return { obj: index.faqs[parts[1]], key: parts[2] };

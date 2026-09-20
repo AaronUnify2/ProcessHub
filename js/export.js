@@ -434,6 +434,23 @@
 
   function issuesHtml() {
     var all = Data.allIssues();
+
+    // Rule findings first: they are computed now, so they are true now.
+    var ruleBlocks = Rules.run().filter(function (r) {
+      return !r.skipped && r.findings.length;
+    }).map(function (result) {
+      return '<h2>' + e(result.rule.name) + ' <span class="count">' +
+        result.findings.length + '</span></h2>' +
+        (result.rule.message ? '<p class="lede">' + e(result.rule.message) + '</p>' : '') +
+        '<table><thead><tr><th>Severity</th><th>Where</th><th>Detail</th></tr></thead><tbody>' +
+        result.findings.map(function (f) {
+          return '<tr class="' + e(f.severity) + '"><td><span class="sev">' +
+            e(f.severity) + '</span></td><td>' + e(f.label) +
+            '<div class="note">' + e(f.where) + '</div></td>' +
+            '<td>' + e(f.detail || '') + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    }).join('');
+
     var rows = all.map(function (entry) {
       return '<tr class="' + e(entry.issue.severity) + '">' +
         '<td><span class="sev">' + e(entry.issue.severity) + '</span></td>' +
@@ -446,19 +463,33 @@
     var counts = { high: 0, medium: 0, low: 0 };
     all.forEach(function (x) { counts[x.issue.severity]++; });
 
+    var ruleTotals = Rules.totals();
     download('process-issues.html', page('Process issues register',
       '<h1>Process issues register</h1>' +
-      '<p class="lede">' + all.length + ' open · ' + counts.high + ' high, ' +
-      counts.medium + ' medium, ' + counts.low + ' low. Generated ' +
+      '<p class="lede">' + ruleTotals.findings + ' flagged by ' + ruleTotals.rules +
+      ' content rules · ' + all.length + ' recorded by hand (' + counts.high +
+      ' high, ' + counts.medium + ' medium, ' + counts.low + ' low). Generated ' +
       e(new Date().toLocaleDateString('en-AU')) + '.</p>' +
+      ruleBlocks +
+      '<h2>Recorded issues <span class="count">' + all.length + '</span></h2>' +
       '<table><thead><tr><th>Severity</th><th>Process</th><th>Issue</th>' +
       '<th>Raised</th></tr></thead><tbody>' + rows + '</tbody></table>'), 'text/html');
   }
 
   function issuesCsv() {
-    var rows = [['severity', 'process', 'department', 'issue', 'raised', 'raised_by']];
+    var rows = [['source', 'severity', 'subject', 'where', 'issue', 'raised', 'raised_by']];
+
+    Rules.run().forEach(function (result) {
+      if (result.skipped) return;
+      result.findings.forEach(function (f) {
+        rows.push(['rule: ' + result.rule.name, f.severity, f.label, f.where,
+          f.message + (f.detail ? ' (' + f.detail + ')' : ''), '', 'Content rule']);
+      });
+    });
+
     Data.allIssues().forEach(function (entry) {
       rows.push([
+        'recorded',
         entry.issue.severity,
         entry.process.name,
         Data.taxonomyPath(entry.process.taxonomyId),
@@ -528,6 +559,7 @@
     'th,td{border:1px solid rgba(0,0,0,.14);padding:8px 10px;text-align:left;vertical-align:top}',
     'th{background:#EAF2FB;color:#0A66C2;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}',
     'td.n{width:32px;color:#6E6E73}td.val{font-weight:600;white-space:nowrap}',
+    'h2 .count{color:#8A93A0;font-weight:400}',
     'td.fill{width:30%;background:#FCFCFD}',
     '.q{font-weight:600}.note,.uses{font-size:.76rem;color:#6E6E73}',
     '.sev{font-size:.65rem;font-weight:700;text-transform:uppercase}',

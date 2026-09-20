@@ -23,7 +23,8 @@
     [/^#\/articles$/, function () { Detail.articleList(); }],
     [/^#\/faqs$/, function () { Detail.faqList(); }],
     [/^#\/variables$/, function () { Detail.variableList(); }],
-    [/^#\/issues$/, function () { Detail.issues(); }]
+    [/^#\/issues$/, function () { Detail.issues(); }],
+    [/^#\/rules$/, function () { Detail.rules(); }]
   ];
 
   function route() {
@@ -69,7 +70,8 @@
     if (!count) return;
     source = 'draft';
     setStatus('draft', 'Draft · ' + count + ' change' + (count === 1 ? '' : 's'));
-    if (spec && STRUCTURAL.test(spec)) route();
+    // Every part of a rule changes what it finds, so any rule edit redraws.
+    if (spec && (STRUCTURAL.test(spec) || spec.indexOf('rule:') === 0)) route();
     else if (spec) Sidebar.render(activeProcessId);
   }
 

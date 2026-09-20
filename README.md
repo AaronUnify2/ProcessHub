@@ -17,7 +17,7 @@ checklist.
 processhub/
   index.html         the app
   css/app.css
-  js/                storage.js · data.js · edit.js · export.js
+  js/                storage.js · data.js · edit.js · rules.js · export.js
                      richtext.js · canvas.js · ui-sidebar.js · ui-detail.js · app.js
   data/              source content, fetched by the app at load
     processes.json     taxonomy + process maps
@@ -81,6 +81,22 @@ the preview, which is what a member of the public sees.
 A chip is `contenteditable="false"`, so a reference can be deleted whole but
 never half-edited into nonsense. The link builder can point at a URL variable
 instead of a typed address, so a changed web address is still one edit.
+
+**Content rules.** A rule is a standing check across every process, article
+and FAQ. When something in the organisation changes — a system renamed, a form
+retired, a team restructured — add a rule rather than hunt through 112
+processes, and everything now wrong appears in the issues register.
+
+Four kinds: text that should no longer appear, a field that ought to be filled
+in, a date untouched for N months, and library content nothing references.
+Each rule carries a severity, the scopes it applies to, and a message
+explaining what to do.
+
+Findings are computed on every load and never stored, so fixing the content
+makes the finding disappear by itself. A recorded issue has to be ticked off by
+hand; a rule finding cannot lie about being fixed.
+
+Manage them at `#/rules`. They export with the issues report and CSV.
 
 **The map.** Every process has a Steps view and a Map view. On the map, cards
 drag on a 20px grid, the background pans, Ctrl and the wheel zooms, and
@@ -171,6 +187,6 @@ All of this is why every imported process is `draft`.
 
 ## Next
 
-1. Work the issue register down, starting with the 32 Merit rewrites.
+1. Work the issue register down, starting with the 21 remaining Merit mentions.
 2. Review the 13 variables that nothing references.
 3. Proofread the imported content and move processes off `draft`.

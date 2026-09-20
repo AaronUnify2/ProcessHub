@@ -374,16 +374,27 @@ def build_process(node, section, tax_ids, seen_proc, seen_step):
             retired_hits.update(hits)
             title = re.sub(r'\s*(?::| [-–] ).*$', '', text).strip()
             target = detect_handoff(sop)
-            add_step(type='action', title=(title or text)[:60], sop=sop,
+            # Titles and checks carry retired terms too; substituting only the
+            # sop leaves "Lodge Merit" sitting in the step name.
+            title_text, title_hits = apply_retired_terms(title or text)
+            retired_hits.update(title_hits)
+            checks = []
+            for i, c in enumerate(item['checks']):
+                check_text, check_hits = apply_retired_terms(c)
+                retired_hits.update(check_hits)
+                checks.append({'id': f'chk_{i + 1}', 'text': check_text})
+            add_step(type='action', title=title_text[:60], sop=sop,
                      departmentId=tax_ids[target] if target else cs_tax,
                      responsibleRole=f'{target[1]} officer' if target else 'Customer service officer',
                      escalationPoint=target[0] if target else '',
-                     checks=[{'id': f'chk_{i + 1}', 'text': c} for i, c in enumerate(item['checks'])])
+                     checks=checks)
     else:
         sop, hits = apply_retired_terms('\n'.join(parsed['preamble']) or name)
         retired_hits.update(hits)
         target = detect_handoff(sop)
-        add_step(type='action', title=name[:60], sop=sop,
+        name_text, name_hits = apply_retired_terms(name)
+        retired_hits.update(name_hits)
+        add_step(type='action', title=name_text[:60], sop=sop,
                  departmentId=tax_ids[target] if target else cs_tax,
                  responsibleRole=f'{target[1]} officer' if target else 'Customer service officer')
 

@@ -95,6 +95,46 @@
       Exporter.verificationHtml(d.owner || ''), 'text/html');
     if (act === 'export-process-json') Exporter.processJson(d.process);
     if (act === 'export-process-html') Exporter.processHtml(d.process);
+    if (act === 'add-rule') {
+      var id = Rules.add({
+        name: 'New rule', kind: 'text', match: { mode: 'phrase', value: '' },
+        scope: ['process', 'step', 'article', 'faq'], severity: 'medium', message: ''
+      });
+      refresh();
+      setTimeout(function () {
+        var row = document.getElementById('rule-' + id);
+        if (row) row.scrollIntoView({ block: 'center' });
+      }, 30);
+      return;
+    }
+    if (act === 'seed-rules') {
+      Rules.defaults().forEach(function (r) { if (!Rules.get(r.id)) Rules.add(r); });
+      refresh();
+      return;
+    }
+    if (act === 'toggle-rule') { Rules.toggle(d.rule); refresh(); return; }
+    if (act === 'scope') {
+      var rule = Rules.get(d.rule);
+      if (rule) {
+        rule.scope = rule.scope || [];
+        var at = rule.scope.indexOf(d.scope);
+        if (at === -1) rule.scope.push(d.scope); else rule.scope.splice(at, 1);
+        Edit.touch();
+        refresh();
+      }
+      return;
+    }
+    if (act === 'del-rule') {
+      if (confirm('Delete this rule? Its findings disappear with it.')) {
+        Rules.remove(d.rule); refresh();
+      }
+      return;
+    }
+    if (act === 'show-all') {
+      expanded[d.rule] = !expanded[d.rule];
+      refresh();
+      return;
+    }
     if (act === 'export-issues-html') Exporter.issuesHtml();
     if (act === 'export-issues-csv') Exporter.issuesCsv();
   }
@@ -472,27 +512,179 @@
       '</section></article>');
   }
 
+  var expanded = {};
+  var SHOW_FIRST = 8;
+
   function renderIssueRegister() {
-    var all = Data.allIssues();
+    var recorded = Data.allIssues();
     var counts = { high: 0, medium: 0, low: 0 };
-    all.forEach(function (x) { counts[x.issue.severity]++; });
+    recorded.forEach(function (x) { counts[x.issue.severity]++; });
+    var ruleTotals = Rules.totals();
 
     var html = '<div class="row-actions">' +
       btn('export-issues-html', {}, '⤓ Report (HTML)') +
       btn('export-issues-csv', {}, '⤓ CSV') +
-      '</div>' +
-      all.map(function (entry) {
-        return '<button class="list-row issue-list sev-' + e(entry.issue.severity) + '"' +
-          ' data-route="#/process/' + e(entry.process.id) + '">' +
-          '<span class="sev">' + e(entry.issue.severity) + '</span>' +
-          '<span class="list-title">' + e(entry.process.name) + '</span>' +
-          '<span class="list-sub">' + e(entry.issue.note) + '</span>' +
-          '</button>';
-      }).join('');
+      '<span class="spacer"></span>' +
+      '<button class="btn small" data-route="#/rules">⚙ Content rules</button>' +
+      '</div>';
+
+    // --- flagged by rules
+    html += '<h2 class="group">Flagged by rules <span>' +
+      ruleTotals.findings + ' from ' + ruleTotals.rules + ' rules</span></h2>';
+
+    var results = Rules.run().filter(function (r) { return !r.skipped; });
+    if (!results.length) {
+      html += '<p class="empty">No rules yet. ' +
+        '<button class="btn tiny" data-act="seed-rules">Add a starting set</button></p>';
+    } else {
+      html += results.map(renderRuleFindings).join('');
+    }
+
+    // --- recorded by hand, or by the import
+    html += '<h2 class="group">Recorded issues <span>' + recorded.length + ' open · ' +
+      counts.high + ' high, ' + counts.medium + ' medium, ' + counts.low + ' low</span></h2>' +
+      (recorded.length
+        ? recorded.map(function (entry) {
+            return '<button class="list-row issue-list sev-' + e(entry.issue.severity) + '"' +
+              ' data-route="#/process/' + e(entry.process.id) + '">' +
+              '<span class="sev">' + e(entry.issue.severity) + '</span>' +
+              '<span class="list-title">' + e(entry.process.name) + '</span>' +
+              '<span class="list-sub">' + e(entry.issue.note) + '</span>' +
+              '</button>';
+          }).join('')
+        : '<p class="empty">Nothing recorded by hand.</p>');
 
     paint(listPane('Issues register',
-      all.length + ' open · ' + counts.high + ' high, ' + counts.medium +
-      ' medium, ' + counts.low + ' low', html));
+      ruleTotals.findings + ' flagged by rules · ' + recorded.length + ' recorded', html));
+  }
+
+  function renderRuleFindings(result) {
+    var rule = result.rule;
+    var findings = result.findings;
+    var open = expanded[rule.id];
+    var shown = open ? findings : findings.slice(0, SHOW_FIRST);
+
+    var head = '<div class="rule-block sev-' + e(rule.severity || 'medium') + '">' +
+      '<div class="rule-head">' +
+      '<span class="sev">' + e(rule.severity || 'medium') + '</span>' +
+      '<span class="rule-name">' + e(rule.name) + '</span>' +
+      '<span class="rule-count' + (findings.length ? '' : ' clear') + '">' +
+      (findings.length ? findings.length + ' found' : 'nothing found') + '</span>' +
+      '</div>';
+
+    if (result.error) {
+      return head + '<p class="rule-error">' + e(result.error) + '</p></div>';
+    }
+    if (!findings.length) return head + '</div>';
+
+    var body = rule.message
+      ? '<p class="rule-message">' + e(rule.message) + '</p>' : '';
+
+    body += shown.map(function (f) {
+      return '<button class="list-row finding" data-route="' + e(f.route) + '">' +
+        '<span class="list-title">' + e(f.label) + '</span>' +
+        '<span class="list-sub">' + e(f.where) +
+        (f.detail ? ' — ' + e(f.detail) : '') + '</span></button>';
+    }).join('');
+
+    if (findings.length > SHOW_FIRST) {
+      body += '<button class="btn tiny" data-act="show-all" data-rule="' + e(rule.id) + '">' +
+        (open ? 'Show fewer' : 'Show all ' + findings.length) + '</button>';
+    }
+
+    return head + body + '</div>';
+  }
+
+  // ---- rules manager -------------------------------------------------------
+
+  var RULE_KINDS = [
+    { value: 'text', label: 'Text that should no longer appear' },
+    { value: 'empty', label: 'A field that should be filled in' },
+    { value: 'stale', label: 'A date not touched for a while' },
+    { value: 'unused', label: 'Content nothing references' }
+  ];
+
+  var FIELD_HINTS = {
+    empty: 'owner · responsibleRole · escalationPoint · timeframe · sop · ownerId',
+    stale: 'lastReviewed · lastVerified'
+  };
+
+  function renderRules() {
+    var all = Rules.list();
+    var results = {};
+    Rules.run().forEach(function (r) { results[r.rule.id] = r; });
+
+    var html = '<div class="row-actions">' +
+      btn('add-rule', {}, '+ New rule') +
+      (all.length ? '' : btn('seed-rules', {}, 'Add a starting set')) +
+      '<span class="spacer"></span>' +
+      '<button class="btn small" data-route="#/issues">← Issues register</button>' +
+      '</div>';
+
+    if (!all.length) {
+      html += '<p class="empty">No rules yet. A rule is a standing check across ' +
+        'every process, article and FAQ — add one whenever something in the ' +
+        'organisation changes.</p>';
+    }
+
+    html += all.map(function (rule) {
+      var spec = 'rule:' + rule.id + ':';
+      var found = (results[rule.id] && results[rule.id].findings.length) || 0;
+      var off = rule.enabled === false;
+
+      var body = '';
+      if (rule.kind === 'text') {
+        body += field('Look for', f(spec + 'match:value',
+          { placeholder: 'e.g. Merit' })) +
+          field('Matching', f(spec + 'match:mode', { type: 'select', options: [
+            { value: 'phrase', label: 'This exact wording' },
+            { value: 'regex', label: 'A pattern (regular expression)' }] }));
+      }
+      if (rule.kind === 'empty' || rule.kind === 'stale') {
+        body += field('Field', f(spec + 'field',
+          { placeholder: FIELD_HINTS[rule.kind] }));
+      }
+      if (rule.kind === 'stale') {
+        body += field('Older than (months)', f(spec + 'months', { placeholder: '12' }));
+      }
+
+      return '<div class="rule-card' + (off ? ' off' : '') + '" id="rule-' + e(rule.id) + '">' +
+        '<div class="rule-card-head">' +
+        '<span class="rule-name">' + f(spec + 'name') + '</span>' +
+        '<span class="rule-count' + (found ? '' : ' clear') + '">' +
+        (off ? 'disabled' : found + ' found') + '</span>' +
+        btn('toggle-rule', { rule: rule.id }, off ? 'Enable' : 'Disable', 'tiny') +
+        btn('del-rule', { rule: rule.id }, '×', 'tiny danger') +
+        '</div>' +
+        '<div class="rule-grid">' +
+        field('Check', f(spec + 'kind', { type: 'select', options: RULE_KINDS })) +
+        field('Severity', f(spec + 'severity', { type: 'select',
+          options: options(['high', 'medium', 'low']) })) +
+        body +
+        field('Applies to', scopeEditor(rule)) +
+        '</div>' +
+        field('What to tell the reader', f(spec + 'message',
+          { type: 'multiline', placeholder: 'Why this matters and what to do about it' })) +
+        '</div>';
+    }).join('');
+
+    paint(listPane('Content rules',
+      all.length + ' rules · ' + Rules.totals().findings + ' findings across the corpus',
+      html));
+  }
+
+  function field(label, control) {
+    return '<div class="rule-field"><label>' + e(label) + '</label>' + control + '</div>';
+  }
+
+  function scopeEditor(rule) {
+    var chosen = rule.scope || [];
+    return '<div class="scope-row">' + Rules.SCOPES.map(function (scope) {
+      var on = chosen.indexOf(scope) !== -1;
+      return '<button class="scope-chip' + (on ? ' on' : '') +
+        '" data-act="scope" data-rule="' + e(rule.id) + '" data-scope="' + e(scope) +
+        '">' + e(scope) + '</button>';
+    }).join('') + '</div>';
   }
 
   function renderHome() {
@@ -568,6 +760,7 @@
     variableList: renderVariableList,
     variable: renderVariable,
     issues: renderIssueRegister,
+    rules: renderRules,
     home: renderHome
   };
 }(window));
