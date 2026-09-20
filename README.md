@@ -18,7 +18,7 @@ processhub/
   index.html         the app
   css/app.css
   js/                storage.js · data.js · edit.js · export.js
-                     canvas.js · ui-sidebar.js · ui-detail.js · app.js
+                     richtext.js · canvas.js · ui-sidebar.js · ui-detail.js · app.js
   data/              source content, fetched by the app at load
     processes.json     taxonomy + process maps
     library.json       KB articles + FAQ questions + publish tabs
@@ -67,6 +67,20 @@ and the variables list offers a verification email per department — copied to
 the clipboard, or downloaded as a printable sheet. Variables are frozen to
 their values in everything that leaves the app, and anything marked internal is
 withheld from a public export.
+
+**Prose editing.** Knowledge base articles and FAQ answers use the rich text
+editor carried over from the FAQ Editor: bold, italic, paragraph, lists, links,
+the Note / Warn / Term boxes, a starter table, and a `</> HTML` toggle for when
+the markup needs a hand.
+
+Underneath sits a **live preview styled like the published page**, so a public
+answer is judged as it will appear rather than as markup. Variables show as
+chips in the editor — dotted while they are unverified — and as plain text in
+the preview, which is what a member of the public sees.
+
+A chip is `contenteditable="false"`, so a reference can be deleted whole but
+never half-edited into nonsense. The link builder can point at a URL variable
+instead of a typed address, so a changed web address is still one edit.
 
 **The map.** Every process has a Steps view and a Map view. On the map, cards
 drag on a 20px grid, the background pans, Ctrl and the wheel zooms, and

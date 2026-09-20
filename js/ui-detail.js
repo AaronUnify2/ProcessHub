@@ -27,6 +27,7 @@
   function f(spec, opts) { return Edit.field(spec, opts); }
 
   function paint(html) {
+    if (global.RichText) RichText.flush();
     var top = host.scrollTop;
     host.innerHTML = html;
     host.scrollTop = currentRoute === location.hash ? top : 0;
@@ -301,9 +302,13 @@
         { type: 'select', options: departmentOptions() }) + '</span>' +
       (a.internal ? '<span class="badge lock">🔒 internal</span>' : '') +
       '</div>' + renderUsage(usage) + '</header>' +
-      '<section class="block"><h2>Body</h2>' +
-      f('article:' + id + ':body', { type: 'html', placeholder: 'Write the article' }) +
-      '</section></article>');
+      '<section class="block"><h2>Body</h2><div id="richHost"></div></section></article>');
+
+    RichText.mount(document.getElementById('richHost'), {
+      html: a.body,
+      headerHtml: '',
+      onChange: function (html) { Edit.set('article:' + id + ':body', html); }
+    });
   }
 
   function renderFaq(id) {
@@ -326,9 +331,14 @@
         { type: 'select', options: departmentOptions() }) + '</span>' +
       (q.lastReviewed ? '<span class="badge quiet">' + e(q.lastReviewed) + '</span>' : '') +
       '</div></header>' +
-      '<section class="block"><h2>Answer — public wording</h2>' +
-      f('faq:' + id + ':a', { type: 'html', placeholder: 'Write the answer' }) +
-      '</section></article>');
+      '<section class="block"><h2>Answer — public wording</h2><div id="richHost"></div></section>' +
+      '</article>');
+
+    RichText.mount(document.getElementById('richHost'), {
+      html: q.a,
+      headerHtml: Data.escapeHtml(q.q),
+      onChange: function (html) { Edit.set('faq:' + id + ':a', html); }
+    });
   }
 
   function renderUsage(usage) {

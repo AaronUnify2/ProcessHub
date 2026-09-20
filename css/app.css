@@ -952,3 +952,188 @@ select.edit-input { padding: 0.3rem 0.4rem; }
 
 .pane.wide { max-width: none; }
 .pane.wide .pane-head, .pane.wide .block, .pane.wide .issues { max-width: 860px; }
+
+/* ===========================================================================
+   Rich text editor, carried over from the FAQ Editor
+   =========================================================================== */
+
+.rt {
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.rt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 0.35rem 0.4rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.rt-toolbar button {
+  font: inherit;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+.rt-toolbar button:hover { background: var(--surface); border-color: var(--border); }
+.rt-toolbar .sep { width: 1px; align-self: stretch; background: var(--border); margin: 2px 3px; }
+.rt-toolbar .spacer { flex: 1; }
+.rt-toolbar .var-btn { color: var(--accent); font-weight: 600; }
+.rt-toolbar .src-toggle.active {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+
+.rt-area {
+  min-height: 190px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0.8rem 0.9rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  outline: none;
+}
+.rt-area:focus { box-shadow: inset 0 0 0 2px var(--accent-soft); }
+.rt-area p { margin: 0 0 0.6rem; }
+.rt-area ul, .rt-area ol { margin: 0.4rem 0 0.6rem 1.4rem; }
+.rt-area li { margin-bottom: 0.25rem; }
+.rt-area a { color: var(--accent); }
+.rt-area .note { background: #f0f0f8; border-left: 3px solid #2d2d7a; padding: 6px 10px; margin: 8px 0; }
+.rt-area .warn { background: #fff8e6; border-left: 3px solid #e0a800; padding: 6px 10px; margin: 8px 0; }
+.rt-area .term { background: #eef4ee; border-left: 3px solid #3a7a3a; padding: 6px 10px; margin: 8px 0; }
+.rt-area table { border-collapse: collapse; margin: 8px 0; font-size: 0.85rem; width: 100%; }
+.rt-area th, .rt-area td { border: 1px solid #c7c7d6; padding: 5px 8px; text-align: left; }
+.rt-area th { background: #f0f0f8; }
+.rt-area .faq-var { cursor: default; user-select: all; }
+
+.rt-source {
+  display: none;
+  width: 100%;
+  min-height: 240px;
+  padding: 0.8rem 0.9rem;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+.rt.show-source .rt-area { display: none; }
+.rt.show-source .rt-source { display: block; }
+
+/* ---- live preview -------------------------------------------------------- */
+
+.preview-wrap {
+  margin-top: 0.7rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 9px;
+  background: #fff;
+  overflow: hidden;
+}
+.preview-label {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+  background: var(--bg);
+  border-bottom: 1px dashed var(--border);
+}
+.preview-body { padding: 0.4rem 0.9rem 1rem; }
+
+/* A mirror of the published page, so the answer is judged as it will appear. */
+.faq-preview {
+  max-width: 860px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  color: #111;
+  background: #fff;
+}
+.preview-q { padding: 0.5rem 0 0.4rem; }
+.preview-q:empty { display: none; }
+.faq-preview .faq-q-text { font-size: 15px; font-weight: 700; color: #111; line-height: 1.45; }
+
+.faq-preview .faq-a-inner {
+  padding: 8px 0 4px;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.7;
+  border-top: 1px solid #e8e8e8;
+}
+.faq-preview .faq-a-inner p { margin-bottom: 10px; }
+.faq-preview .faq-a-inner p:last-child { margin-bottom: 0; }
+.faq-preview .faq-a-inner ol,
+.faq-preview .faq-a-inner ul { margin: 8px 0 10px 22px; }
+.faq-preview .faq-a-inner li { margin-bottom: 5px; }
+.faq-preview .faq-a-inner a { color: #2d2d7a; }
+.faq-preview .faq-a-inner a:hover { text-decoration: underline; }
+
+.faq-preview .note {
+  background: #f0f0f8; border-left: 3px solid #2d2d7a;
+  padding: 8px 12px; font-size: 13.5px; margin: 10px 0; color: #333;
+}
+.faq-preview .warn {
+  background: #fff8e6; border-left: 3px solid #e0a800;
+  padding: 8px 12px; font-size: 13.5px; margin: 10px 0; color: #555;
+}
+.faq-preview .term {
+  background: #eef4ee; border-left: 3px solid #3a7a3a;
+  padding: 8px 12px; font-size: 13.5px; margin: 10px 0; color: #234;
+}
+.faq-preview .term strong { color: #111; }
+
+.faq-preview .setback-table,
+.faq-preview .facility-table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 13.5px;
+}
+.faq-preview .setback-table th, .faq-preview .setback-table td,
+.faq-preview .facility-table th, .faq-preview .facility-table td {
+  border: 1px solid #c7c7d6; padding: 8px 12px;
+  vertical-align: top; text-align: left; line-height: 1.5;
+}
+.faq-preview .setback-table thead th,
+.faq-preview .facility-table thead th {
+  background: #f0f0f8; color: #2d2d7a; font-weight: 700;
+  font-size: 12.5px; letter-spacing: 0.3px; text-transform: uppercase;
+}
+.faq-preview .setback-table tbody td:first-child,
+.faq-preview .facility-table tbody td:first-child {
+  background: #fafafc; font-weight: 700; color: #111;
+}
+
+/* Variables read as ordinary text in the preview, because that is how a
+   member of the public will see them. */
+.faq-preview .faq-var {
+  background: transparent; border: none; padding: 0;
+  color: inherit; font-weight: inherit; border-bottom: none;
+}
+
+/* ---- link modal ---------------------------------------------------------- */
+
+.fm-field { margin-bottom: 0.7rem; }
+.fm-field label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 0.2rem; }
+.fm-field input[type="text"], .fm-field select {
+  width: 100%;
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+}
+.lm-choice { display: flex; gap: 1rem; margin-bottom: 0.4rem; font-size: 0.82rem; }
+.lm-choice label { display: flex; align-items: center; gap: 0.3rem; font-weight: 400; }
+
+@media (max-width: 800px) {
+  .rt-toolbar button { font-size: 0.72rem; padding: 0.1rem 0.4rem; }
+  .rt-area { min-height: 150px; }
+}

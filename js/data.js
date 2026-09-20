@@ -62,16 +62,34 @@
    * so what you see is the current value rather than whatever was stored.
    */
   function resolveHtml(html) {
-    var withChips = String(html == null ? '' : html)
+    return refreshSpans(toChips(html), 'view');
+  }
+
+  /** The form the rich text editor works in: chips the caret cannot enter. */
+  function editableHtml(html) {
+    return refreshSpans(toChips(html), 'edit');
+  }
+
+  /** The form that gets stored: values synced, editor scaffolding removed. */
+  function canonicalHtml(html) {
+    return refreshSpans(toChips(html), 'canonical');
+  }
+
+  function toChips(html) {
+    return String(html == null ? '' : html)
       .replace(VAR_PATTERN, function (_, id) { return variableChip(id); });
-    return refreshSpans(withChips, false);
   }
 
   /**
    * Update <span data-var> text and <a data-var-href> addresses in place.
-   * `bake` strips the markup and leaves plain values behind, for exports.
+   *
+   *   view       chip styling, for reading
+   *   edit       chip styling plus contenteditable="false", so the caret
+   *              cannot land inside a value and break the reference
+   *   canonical  the stored form: value synced, editor scaffolding removed
+   *   bake       plain text, for anything leaving the app
    */
-  function refreshSpans(html, bake) {
+  function refreshSpans(html, mode) {
     if (html.indexOf('data-var') === -1) return html;
     var holder = document.createElement('div');
     holder.innerHTML = html;
@@ -79,21 +97,33 @@
     Array.prototype.forEach.call(holder.querySelectorAll('[data-var]'), function (node) {
       var v = variable(node.getAttribute('data-var'));
       if (!v) return;
-      if (bake) {
+
+      if (mode === 'bake') {
         node.replaceWith(document.createTextNode(v.value));
-      } else {
-        node.textContent = v.value;
-        node.classList.add('var-chip');
-        if (v.internal) node.classList.add('internal');
-        if (v.status === 'pending') node.classList.add('pending');
-        node.title = v.question || v.id;
+        return;
       }
+
+      node.textContent = v.value;
+
+      if (mode === 'canonical') {
+        node.className = 'faq-var';
+        node.removeAttribute('contenteditable');
+        node.removeAttribute('title');
+        return;
+      }
+
+      node.className = 'faq-var var-chip' +
+        (v.internal ? ' internal' : '') +
+        (v.status === 'pending' ? ' pending' : '');
+      node.title = v.question || v.id;
+      if (mode === 'edit') node.setAttribute('contenteditable', 'false');
+      else node.removeAttribute('contenteditable');
     });
 
     Array.prototype.forEach.call(holder.querySelectorAll('[data-var-href]'), function (node) {
       var v = variable(node.getAttribute('data-var-href'));
       if (v) node.setAttribute('href', v.value);
-      if (bake) node.removeAttribute('data-var-href');
+      if (mode === 'bake') node.removeAttribute('data-var-href');
     });
 
     return holder.innerHTML;
@@ -105,7 +135,7 @@
       var v = variable(id);
       return v ? v.value : whole;
     });
-    return refreshSpans(plain, true);
+    return refreshSpans(plain, 'bake');
   }
 
   // ---- indexes -------------------------------------------------------------
@@ -359,6 +389,8 @@
     escapeHtml: escapeHtml,
     resolveText: resolveText,
     resolveHtml: resolveHtml,
+    editableHtml: editableHtml,
+    canonicalHtml: canonicalHtml,
     refreshSpans: refreshSpans,
     freeze: freeze,
     variable: variable,

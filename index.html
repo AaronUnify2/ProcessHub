@@ -72,10 +72,35 @@
   </div>
 </div>
 
+<!-- Link builder, with the option to point at a URL variable -->
+<div class="modal" id="linkModal" hidden>
+  <div class="modal-box">
+    <h3>Insert link</h3>
+    <div class="fm-field">
+      <label>Link text</label>
+      <input type="text" id="lmText" placeholder="Text to show">
+    </div>
+    <div class="fm-field">
+      <label>Address</label>
+      <div class="lm-choice">
+        <label><input type="radio" name="lmMode" value="url" checked> Type a URL</label>
+        <label><input type="radio" name="lmMode" value="var"> Use a URL variable</label>
+      </div>
+      <input type="text" id="lmUrl" placeholder="https://…">
+      <select id="lmVar"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="lmCancel">Cancel</button>
+      <button class="btn primary" id="lmInsert">Insert link</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/storage.js"></script>
 <script src="js/data.js"></script>
 <script src="js/edit.js"></script>
 <script src="js/export.js"></script>
+<script src="js/richtext.js"></script>
 <script src="js/canvas.js"></script>
 <script src="js/ui-sidebar.js"></script>
 <script src="js/ui-detail.js"></script>
