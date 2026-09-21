@@ -1,0 +1,463 @@
+/* ===========================================================================
+   live.css — the live call view.
+
+   Calmer and larger than the editor: this gets read while someone is talking,
+   so one thing is prominent at a time and nothing needs hunting for.
+   =========================================================================== */
+
+body.live {
+  font-size: 16px;
+}
+
+/* ---- header -------------------------------------------------------------- */
+
+.live-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 20;
+}
+
+.live-brand {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  text-decoration: none;
+}
+.live-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #EAF6EE;
+  color: var(--good);
+}
+.live-process {
+  font-size: 0.92rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.live-step {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+.live-status {
+  margin-left: auto;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+.live-status.live { background: #EAF6EE; color: var(--good); }
+.live-status.draft { background: var(--warn-soft); color: var(--warn); }
+.live-status.error { background: #FBEAE8; color: var(--danger); }
+
+.picker-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  width: 34px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.lbtn {
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+}
+.lbtn:hover { border-color: var(--accent); color: var(--accent); }
+.lbtn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.lbtn.primary:hover { background: #084A8E; color: #fff; }
+.lbtn[disabled] { opacity: 0.4; cursor: default; }
+.lbtn[disabled]:hover { border-color: var(--border-strong); color: var(--text); }
+.lbtn.tiny { font-size: 0.72rem; padding: 0.12rem 0.5rem; border-radius: 6px; }
+
+/* ---- layout -------------------------------------------------------------- */
+
+.live-body { flex: 1; display: flex; min-height: 0; position: relative; }
+
+.picker {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  min-height: 0;
+}
+
+.picker-search { position: relative; padding: 0.7rem 0.8rem 0.5rem; }
+.picker-search input {
+  width: 100%;
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 0.5rem 2rem 0.5rem 0.7rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.picker-search input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+.picker-search kbd { position: absolute; right: 1.35rem; top: 1.1rem; opacity: 0.5; }
+.picker-search input:focus + kbd { display: none; }
+
+.picker-body { flex: 1; overflow-y: auto; padding: 0 0.4rem 2rem; -webkit-overflow-scrolling: touch; }
+
+.pick-head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  padding: 0.3rem 0.4rem;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  color: var(--text);
+}
+.pick-head:hover { background: var(--bg); }
+.pick-branch.depth-0 > .pick-head .pick-name {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-soft);
+}
+.pick-branch.depth-1 > .pick-head .pick-name { font-size: 0.84rem; font-weight: 600; }
+.pick-name { flex: 1; min-width: 0; }
+.pick-count { font-size: 0.68rem; color: var(--text-soft); background: var(--bg); border-radius: 999px; padding: 0 6px; }
+.pick-children { padding-left: 0.8rem; }
+
+.pick-process {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  padding: 0.35rem 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+.pick-process:hover { background: var(--accent-soft); }
+.pick-process-name { display: block; font-size: 0.85rem; color: var(--text); }
+.pick-process-where { display: none; font-size: 0.7rem; color: var(--text-soft); }
+.pick-empty { padding: 0.6rem 0.5rem; font-size: 0.85rem; color: var(--text-soft); }
+
+/* in search results the path matters, so show it */
+#pickerBody > .pick-process .pick-process-where { display: block; }
+
+/* ---- the run ------------------------------------------------------------- */
+
+.run {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+  padding: 1.4rem 1.6rem 6rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.run-empty { max-width: 46ch; margin: 12vh auto 0; text-align: center; color: var(--text-soft); }
+.run-empty h1 { font-size: 1.5rem; color: var(--text); margin-bottom: 0.5rem; }
+.run-empty p { margin-bottom: 0.6rem; }
+.run-empty-note { font-size: 0.85rem; }
+
+.run-head { max-width: 760px; margin: 0 auto 1.2rem; }
+.run-where {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-soft);
+}
+.run-head h1 { font-size: 1.45rem; letter-spacing: -0.3px; }
+.run-purpose { color: var(--text-soft); font-size: 0.92rem; margin-top: 0.2rem; }
+
+.run-step {
+  display: block;
+  max-width: 760px;
+  margin: 0 auto 0.4rem;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.run-step.collapsed {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font: inherit;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  color: var(--text-soft);
+}
+.run-step.collapsed:hover { border-color: var(--accent); color: var(--text); }
+.run-step.collapsed .run-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.92rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.run-step.current {
+  border-color: var(--accent);
+  border-width: 2px;
+  padding: 1.1rem 1.3rem 1rem;
+  box-shadow: 0 4px 20px rgba(10, 102, 194, 0.09);
+  margin-bottom: 0.9rem;
+}
+
+.run-n {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.run-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0 7px;
+}
+.run-ticks { font-size: 0.7rem; color: var(--good); font-weight: 600; }
+
+.run-step-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+.run-step-head h2 { flex: 1; font-size: 1.28rem; line-height: 1.3; min-width: 12ch; }
+.run-dept {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.run-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-soft);
+  margin: 0.9rem 0 0.25rem;
+}
+
+.run-script {
+  border-left: 4px solid var(--good);
+  background: #F4FAF6;
+  border-radius: 0 8px 8px 0;
+  padding: 0.7rem 1rem;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  font-style: italic;
+}
+
+.run-sop { font-size: 1rem; line-height: 1.65; }
+
+.run-missing {
+  font-size: 0.95rem;
+  color: var(--warn);
+  background: var(--warn-soft);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+}
+
+.run-checks { list-style: none; }
+.run-checks li { margin-bottom: 0.35rem; }
+.run-checks label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.97rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.run-checks input { margin-top: 0.35rem; width: 17px; height: 17px; flex: 0 0 auto; }
+
+.run-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+.run-spacer { flex: 1; }
+.run-foot { max-width: 760px; margin: 0.8rem auto 0; }
+
+.note-box { margin-top: 0.6rem; }
+.note-box textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.7rem;
+  border: 2px solid var(--warn);
+  border-radius: 8px;
+  resize: vertical;
+}
+.note-box textarea:focus { outline: none; box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12); }
+
+/* ---- content panels ------------------------------------------------------ */
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  margin-top: 0.8rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: pointer;
+}
+.panel-head:hover { border-color: var(--accent); }
+.panel-head.open { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+.panel-caret { color: var(--text-soft); font-size: 0.75rem; }
+.panel-label { font-size: 0.8rem; font-weight: 650; }
+.panel-summary { margin-left: auto; font-size: 0.74rem; color: var(--text-soft); }
+
+.panel-body {
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 0.7rem 0.8rem;
+  background: var(--surface);
+}
+.panel-empty { font-size: 0.86rem; color: var(--text-soft); }
+
+.content-card { margin-bottom: 0.7rem; }
+.content-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.92rem;
+}
+.content-head strong { flex: 1; }
+.content-body {
+  font-size: 0.93rem;
+  line-height: 1.65;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 0.5rem 0.7rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+}
+.content-body.faq-preview { padding: 0.5rem 0.9rem; }
+
+.suggest-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+  margin: 0.6rem 0 0.35rem;
+}
+.suggest-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 0.88rem;
+}
+.suggest-title { flex: 1; min-width: 0; }
+.suggest-why { font-size: 0.72rem; color: var(--text-soft); white-space: nowrap; }
+
+/* ---- flash --------------------------------------------------------------- */
+
+.flash {
+  position: fixed;
+  left: 50%;
+  bottom: 1.4rem;
+  transform: translateX(-50%);
+  background: #1D1D1F;
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+  z-index: 60;
+}
+.flash[hidden] { display: none; }
+
+/* ---- narrow screens ------------------------------------------------------ */
+
+@media (max-width: 860px) {
+  .picker-toggle { display: block; }
+  .live-process, .live-step { display: none; }
+
+  /* absolute inside .live-body rather than fixed, so the drawer starts under
+     the header whatever height the header happens to be */
+  .picker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(86vw, 300px);
+    transform: translateX(-102%);
+    transition: transform 0.2s ease;
+    z-index: 30;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.16);
+  }
+  body.picker-open .picker { transform: translateX(0); }
+
+  .run { padding: 1rem 0.9rem 6rem; }
+  .run-step.current { padding: 0.9rem 1rem; }
+  .run-step-head h2 { font-size: 1.15rem; }
+  .run-script { font-size: 1rem; }
+}
+
+/* Phone. The header has to stay on one row, so it sheds a piece at a time:
+   first the Live call tag and the word Export, and on the narrowest screens
+   the words New call too. Both buttons keep a title, so a long press still
+   says what they do. */
+@media (max-width: 560px) {
+  .live-header { padding: 0.55rem 0.6rem; gap: 0.4rem; }
+  .live-header .lbtn { padding: 0.35rem 0.6rem; }
+  .live-brand { font-size: 0.9rem; }
+  .live-tag { display: none; }
+  #liveExport .lbtn-text { display: none; }
+}
+
+@media (max-width: 380px) {
+  #newCall .lbtn-text { display: none; }
+}

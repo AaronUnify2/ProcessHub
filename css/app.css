@@ -130,6 +130,7 @@ code {
   color: var(--text);
   cursor: pointer;
 }
+a.btn { display: inline-block; text-decoration: none; white-space: nowrap; }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btn.primary:hover { background: #084A8E; color: #fff; }
@@ -846,6 +847,23 @@ select.edit-input { padding: 0.3rem 0.4rem; }
 @media (max-width: 800px) {
   .export-menu { width: min(88vw, 290px); }
   .step-tools { opacity: 1; }
+}
+
+/* Phone: the header stays on one row, so it sheds a word at a time — first
+   Live call, then Export. Both keep a title for a long press. */
+@media (max-width: 560px) {
+  .app-header { gap: 0.4rem; padding: 0 0.6rem; }
+  .app-header a.btn .btn-text { display: none; }
+}
+
+@media (max-width: 400px) {
+  #exportBtn .btn-text { display: none; }
+}
+
+/* Smallest phones: the drawer button and the page itself say where you are,
+   so the wordmark goes too. */
+@media (max-width: 360px) {
+  .app-brand { display: none; }
 }
 
 /* ===========================================================================
