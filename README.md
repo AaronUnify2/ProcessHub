@@ -24,7 +24,7 @@ processhub/
     library.json       KB articles + FAQ questions + publish tabs
     variables.json     variables + owners
   exports/           generated, never hand-edited
-    FAQ.json           legacy shape for the council website
+    FAQ.json           the live published FAQ content — FAQ.html reads this
   tools/             one-off migration scripts
     import-faq.py
     import-flowcharts.py
@@ -56,8 +56,8 @@ survive a reload, and never touch the published files until you export.
 
 | | |
 |---|---|
-| Export for GitHub | All four files, versions bumped, named as they sit in the repo |
-| FAQ.json only | The file the council website consumes |
+| Export for GitHub | Four files → `processhub/data/` and `processhub/exports/` |
+| FAQ.json only | → `processhub/exports/FAQ.json`, which `FAQ.html` reads |
 | Verification sheet | Every variable, grouped by owning department |
 | Issues report | The register as a readable page |
 | Discard local changes | Throw the draft away and reload the published content |
@@ -136,16 +136,18 @@ python3 processhub/tools/import-flowcharts.py
 This is a structural extraction, not a rewrite. Everything it produces is
 `status: "draft"` and anything needing judgement is recorded as an issue.
 
-**Project the data back into the legacy `FAQ.json`** that the council website
-already consumes:
+**Project the data back into the `FAQ.json`** that the public page reads. This
+writes `processhub/exports/FAQ.json`, which is the single source of truth for
+published FAQ content — `../FAQ.html` fetches it directly:
 
 ```
 python3 processhub/tools/export-faq.py
 ```
 
-**Verify the round trip.** Compares a fresh export against the original file
-and reports any difference. This is the regression test for the data model —
-if a schema change loses content, this catches it:
+**Verify the round trip.** Compares a fresh export against the frozen
+pre-Process-Hub copy at the repository root. That root `FAQ.json` is no longer
+live — it is kept purely as this baseline. If a schema change ever loses
+content, this catches it:
 
 ```
 python3 processhub/tools/export-faq.py --check FAQ.json
