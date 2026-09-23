@@ -461,3 +461,13 @@ body.live {
 @media (max-width: 380px) {
   #newCall .lbtn-text { display: none; }
 }
+
+/* ---- choosing a route at a decision -------------------------------------- */
+
+.run-choices { display: flex; flex-direction: column; gap: 0.35rem; margin: 0.3rem 0 0.8rem; }
+.lbtn.choice {
+  display: flex; align-items: baseline; gap: 0.5rem; text-align: left;
+  font-weight: 650; padding: 0.55rem 0.8rem;
+}
+.lbtn.choice kbd { flex: 0 0 auto; }
+.choice-to { font-weight: 400; color: var(--text-soft); font-size: 0.82rem; }

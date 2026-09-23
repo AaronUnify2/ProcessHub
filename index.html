@@ -32,6 +32,10 @@
         <strong>Issues report</strong>
         <span>The register as a readable page</span>
       </button>
+      <button data-export="coverage">
+        <strong>Coverage report</strong>
+        <span>Status by department, handoffs and open issues</span>
+      </button>
       <button data-export="discard" class="danger">
         <strong>Discard local changes</strong>
         <span>Reload the published content</span>
@@ -97,8 +101,75 @@
   </div>
 </div>
 
+<!-- Raising an issue by hand -->
+<div class="modal" id="issueModal" hidden>
+  <div class="modal-box">
+    <h3>Raise an issue</h3>
+    <p class="modal-sub" id="imProcess"></p>
+    <div class="fm-field">
+      <label for="imNote">What is wrong or missing?</label>
+      <textarea id="imNote" rows="3"></textarea>
+    </div>
+    <div class="fm-row">
+      <div class="fm-field">
+        <label for="imSeverity">Severity</label>
+        <select id="imSeverity">
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="fm-field">
+        <label for="imBy">Raised by</label>
+        <input type="text" id="imBy" placeholder="Your name or team">
+      </div>
+    </div>
+    <div class="fm-field">
+      <label for="imStep">About</label>
+      <select id="imStep"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="imCancel">Cancel</button>
+      <button class="btn primary" id="imSave">Raise issue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Attaching an article or FAQ answer to a step or process -->
+<div class="modal" id="attachModal" hidden>
+  <div class="modal-box">
+    <h3>Attach</h3>
+    <p class="modal-sub" id="amWhere"></p>
+    <div class="am-tabs">
+      <button class="am-tab" data-kind="article">📖 Knowledge base</button>
+      <button class="am-tab" data-kind="faq">❓ FAQ answers</button>
+    </div>
+    <input type="search" id="amSearch" placeholder="Search, or pick a suggestion below…"
+           autocomplete="off">
+    <div class="pick-list" id="amList"></div>
+    <div class="modal-actions">
+      <button class="btn" id="amClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Merging a draft with published files that moved on -->
+<div class="modal" id="mergeModal" hidden>
+  <div class="modal-box wide">
+    <h3>Review and merge</h3>
+    <p class="modal-sub">Item by item: a change made on one side only is taken
+      automatically; a change made on both sides is yours to choose.</p>
+    <div class="merge-body" id="mergeBody"></div>
+    <div class="modal-actions">
+      <button class="btn" id="mergeCancel">Cancel</button>
+      <button class="btn primary" id="mergeApply">Merge</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/storage.js"></script>
 <script src="js/data.js"></script>
+<script src="js/merge.js"></script>
 <script src="js/edit.js"></script>
 <script src="js/rules.js"></script>
 <script src="js/export.js"></script>

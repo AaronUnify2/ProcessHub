@@ -6,6 +6,12 @@
    and writes the new position once on release, so a drag is one change rather
    than one per pixel.
 
+   Arrows are edited here too:
+     - drag from the round handle on a card's right edge to another card to
+       draw a route
+     - click an arrow (or its label) to select it, then label or delete it in
+       the bar above the map
+
    Pointer events are used throughout, so the same code handles mouse, trackpad
    and touch.
    =========================================================================== */
@@ -17,20 +23,27 @@
   var MIN_ZOOM = 0.25;
   var MAX_ZOOM = 2;
 
-  var view = { processId: null, zoom: 1, panX: 40, panY: 40, detail: 'default' };
+  var view = { processId: null, zoom: 1, panX: 40, panY: 40, detail: 'default', selected: null };
   var el = {};
   var drag = null;
+  var callbacks = {};
 
   function e(text) { return Data.escapeHtml(text); }
 
   // ---- mounting ------------------------------------------------------------
 
-  function mount(processId, host, prefs) {
+  /**
+   * options.onOpenStep(stepId)  called by a card's ✎ button, so the page can
+   * switch to the step list and scroll to it.
+   */
+  function mount(processId, host, prefs, options) {
     var p = Data.state.index.processes[processId];
     if (!p) return;
 
+    if (view.processId !== processId) { view.selected = null; view.fitted = null; }
     view.processId = processId;
     view.detail = (prefs && prefs.cardDetail) || 'default';
+    callbacks = options || {};
 
     host.innerHTML =
       '<div class="canvas-toolbar">' +
@@ -43,35 +56,53 @@
       '</div>' +
       '<span class="spacer"></span>' +
       '<button class="btn small" data-canvas="tidy">Tidy layout</button>' +
-      '<button class="btn small" data-canvas="zoom-out">−</button>' +
+      '<button class="btn small" data-canvas="zoom-out" aria-label="Zoom out">−</button>' +
       '<span class="zoom-level" id="zoomLevel">100%</span>' +
-      '<button class="btn small" data-canvas="zoom-in">+</button>' +
+      '<button class="btn small" data-canvas="zoom-in" aria-label="Zoom in">+</button>' +
       '<button class="btn small" data-canvas="fit">Fit</button>' +
       '<button class="btn small primary" data-canvas="svg">⤓ SVG</button>' +
       '</div>' +
+      '<div class="canvas-selbar" id="canvasSel"></div>' +
       '<div class="canvas-viewport" id="canvasViewport">' +
       '<div class="canvas-stage" id="canvasStage">' +
       '<svg class="canvas-wires" id="canvasWires"></svg>' +
       '<div class="canvas-cards" id="canvasCards"></div>' +
       '</div></div>';
 
+    el.host = host;
     el.viewport = host.querySelector('#canvasViewport');
     el.stage = host.querySelector('#canvasStage');
     el.wires = host.querySelector('#canvasWires');
     el.cards = host.querySelector('#canvasCards');
+    el.sel = host.querySelector('#canvasSel');
     el.zoomLabel = host.querySelector('#zoomLevel');
     el.prefs = prefs;
 
     host.querySelector('.canvas-toolbar').addEventListener('click', onToolbar);
+    el.sel.addEventListener('click', onSelbar);
     el.viewport.addEventListener('pointerdown', onPointerDown);
     el.viewport.addEventListener('wheel', onWheel, { passive: false });
 
     draw();
-    fit();
+    // Coming back to the same map (after an edit redraws the page, say)
+    // keeps the zoom and pan; a different process starts fitted.
+    if (view.fitted === processId) {
+      applyTransform();
+    } else {
+      fit();
+      view.fitted = processId;
+    }
+  }
+
+  /** Redraw the whole page after a change; the zoom and pan survive it. */
+  function remount() {
+    if (global.App) global.App.route();
   }
 
   function onToolbar(event) {
-    var detail = event.target.dataset.detail;
+    var button = event.target.closest('button');
+    if (!button) return;
+    var detail = button.dataset.detail;
     if (detail) {
       view.detail = detail;
       if (el.prefs) { el.prefs.cardDetail = detail; Storage.savePrefs(el.prefs); }
@@ -81,12 +112,61 @@
       draw();
       return;
     }
-    var action = event.target.dataset.canvas;
+    var action = button.dataset.canvas;
     if (action === 'zoom-in') setZoom(view.zoom * 1.2);
     if (action === 'zoom-out') setZoom(view.zoom / 1.2);
     if (action === 'fit') fit();
     if (action === 'tidy') { tidy(); draw(); fit(); }
     if (action === 'svg') Exporter.processSvg(view.processId, view.detail);
+  }
+
+  // ---- the selected route --------------------------------------------------
+
+  function selectedConnection() {
+    var p = process();
+    if (!p || !view.selected) return null;
+    return (p.connections || []).find(function (c) { return c.id === view.selected; }) || null;
+  }
+
+  function drawSelbar() {
+    var p = process();
+    var conn = selectedConnection();
+    if (!conn) {
+      el.sel.innerHTML = '<span class="selbar-hint">Drag from a card’s ● handle to another card ' +
+        'to add a route. Click an arrow to label or remove it.</span>';
+      return;
+    }
+    var number = {};
+    p.steps.forEach(function (s, i) { number[s.id] = i + 1; });
+    el.sel.innerHTML =
+      '<span class="selbar-what">Route ' + number[conn.from] + ' → ' + number[conn.to] + '</span>' +
+      '<span class="selbar-field">' + Edit.field('connection:' + p.id + ':' + conn.id + ':condition',
+        { placeholder: 'Label, e.g. Yes / Over $500' }) + '</span>' +
+      '<button class="btn small danger" data-sel="delete">Remove route</button>' +
+      '<button class="btn small" data-sel="close">Done</button>';
+  }
+
+  function onSelbar(event) {
+    var button = event.target.closest('[data-sel]');
+    if (!button) return;
+    if (button.dataset.sel === 'delete' && view.selected) {
+      Edit.deleteConnection(view.processId, view.selected);
+      view.selected = null;
+      remount();
+      return;
+    }
+    if (button.dataset.sel === 'close') {
+      Edit.commitActive();
+      view.selected = null;
+      drawSelbar();
+      drawWires();
+    }
+  }
+
+  function select(connId) {
+    view.selected = connId;
+    drawSelbar();
+    drawWires();
   }
 
   // ---- drawing -------------------------------------------------------------
@@ -118,12 +198,11 @@
     Array.prototype.forEach.call(el.cards.querySelectorAll('[data-open]'), function (node) {
       node.addEventListener('click', function (event) {
         event.stopPropagation();
-        location.hash = '#/process/' + p.id;
-        var target = document.getElementById('step-' + node.dataset.open);
-        if (target) target.scrollIntoView({ block: 'center' });
+        if (callbacks.onOpenStep) callbacks.onOpenStep(node.dataset.open);
       });
     });
 
+    drawSelbar();
     drawWires();
     applyTransform();
   }
@@ -159,7 +238,10 @@
       '</div>' +
       (step.responsibleRole && view.detail !== 'simple'
         ? '<div class="node-role">' + e(step.responsibleRole) + '</div>' : '') +
-      body + '</div>';
+      body +
+      '<span class="node-port" title="Drag to another card to add a route" ' +
+      'aria-label="Route handle"></span>' +
+      '</div>';
   }
 
   /** Anchor on whichever edge faces the other card, so arrows never cross it. */
@@ -179,20 +261,30 @@
       : { from: [ax + CARD_W / 2, ay], to: [bx + CARD_W / 2, by + bh], axis: 'y' };
   }
 
+  function curve(x1, y1, x2, y2, axis) {
+    var bend = Math.max(40, Math.abs(axis === 'x' ? x2 - x1 : y2 - y1) / 2);
+    var c1 = axis === 'x' ? [x1 + (x2 > x1 ? bend : -bend), y1] : [x1, y1 + (y2 > y1 ? bend : -bend)];
+    var c2 = axis === 'x' ? [x2 - (x2 > x1 ? bend : -bend), y2] : [x2, y2 - (y2 > y1 ? bend : -bend)];
+    return 'M ' + x1 + ' ' + y1 + ' C ' + c1[0] + ' ' + c1[1] + ', ' +
+      c2[0] + ' ' + c2[1] + ', ' + x2 + ' ' + y2;
+  }
+
   function wirePath(a, b) {
     var pt = anchors(a, b);
-    var x1 = pt.from[0], y1 = pt.from[1], x2 = pt.to[0], y2 = pt.to[1];
-    var bend = Math.max(40, Math.abs(pt.axis === 'x' ? x2 - x1 : y2 - y1) / 2);
-    var c1 = pt.axis === 'x' ? [x1 + (x2 > x1 ? bend : -bend), y1] : [x1, y1 + (y2 > y1 ? bend : -bend)];
-    var c2 = pt.axis === 'x' ? [x2 - (x2 > x1 ? bend : -bend), y2] : [x2, y2 - (y2 > y1 ? bend : -bend)];
     return {
-      d: 'M ' + x1 + ' ' + y1 + ' C ' + c1[0] + ' ' + c1[1] + ', ' +
-        c2[0] + ' ' + c2[1] + ', ' + x2 + ' ' + y2,
-      mid: [(x1 + x2) / 2, (y1 + y2) / 2]
+      d: curve(pt.from[0], pt.from[1], pt.to[0], pt.to[1], pt.axis),
+      mid: [(pt.from[0] + pt.to[0]) / 2, (pt.from[1] + pt.to[1]) / 2]
     };
   }
 
-  function drawWires() {
+  var MARKERS = '<defs>' +
+    '<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" ' +
+    'orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8A93A0"/></marker>' +
+    '<marker id="arrowSel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" ' +
+    'orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0A66C2"/></marker>' +
+    '</defs>';
+
+  function drawWires(extra) {
     var p = process();
     var bounds = contentBounds();
     el.wires.setAttribute('width', bounds.width);
@@ -201,24 +293,31 @@
     var byId = {};
     p.steps.forEach(function (s) { byId[s.id] = s; });
 
-    var parts = ['<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" ' +
-      'markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
-      '<path d="M 0 0 L 10 5 L 0 10 z" fill="#8A93A0"/></marker></defs>'];
+    var parts = [MARKERS];
 
     (p.connections || []).forEach(function (conn) {
       var a = byId[conn.from], b = byId[conn.to];
       if (!a || !b) return;
       var wire = wirePath(a, b);
       var crosses = a.departmentId !== b.departmentId;
-      parts.push('<path d="' + wire.d + '" fill="none" stroke="' +
-        (crosses ? '#B45309' : '#8A93A0') + '" stroke-width="' + (crosses ? 2.2 : 1.6) +
-        '" marker-end="url(#arrow)"' + (crosses ? ' stroke-dasharray="6 4"' : '') + '/>');
+      var selected = conn.id === view.selected;
+      var colour = selected ? '#0A66C2' : (crosses ? '#B45309' : '#8A93A0');
+      // A wide invisible stroke underneath makes a thin arrow easy to hit,
+      // on a phone as much as with a mouse.
+      parts.push('<path class="wire-hit" data-conn="' + e(conn.id) + '" d="' + wire.d +
+        '" fill="none" stroke="transparent" stroke-width="16"/>');
+      parts.push('<path d="' + wire.d + '" fill="none" stroke="' + colour +
+        '" stroke-width="' + (selected ? 2.8 : crosses ? 2.2 : 1.6) +
+        '" marker-end="url(#' + (selected ? 'arrowSel' : 'arrow') + ')"' +
+        (crosses && !selected ? ' stroke-dasharray="6 4"' : '') + ' pointer-events="none"/>');
       if (conn.condition) {
         parts.push('<text x="' + wire.mid[0] + '" y="' + (wire.mid[1] - 6) +
-          '" class="wire-label" text-anchor="middle">' + e(conn.condition) + '</text>');
+          '" class="wire-label' + (selected ? ' selected' : '') + '" data-conn="' + e(conn.id) +
+          '" text-anchor="middle">' + e(Data.freeze(conn.condition)) + '</text>');
       }
     });
 
+    if (extra) parts.push(extra);
     el.wires.innerHTML = parts.join('');
   }
 
@@ -272,6 +371,15 @@
       event.clientX - box.left, event.clientY - box.top);
   }
 
+  /** A pointer position in map coordinates. */
+  function toStage(event) {
+    var box = el.viewport.getBoundingClientRect();
+    return [
+      (event.clientX - box.left - view.panX) / view.zoom,
+      (event.clientY - box.top - view.panY) / view.zoom
+    ];
+  }
+
   // ---- dragging ------------------------------------------------------------
 
   function onCardDown(event) {
@@ -282,29 +390,66 @@
     var step = p.steps.find(function (s) { return s.id === node.dataset.step; });
     if (!step) return;
 
+    if (event.target.closest('.node-port')) {
+      startLink(event, node, step);
+      return;
+    }
+
     drag = {
       kind: 'card', node: node, step: step,
       startX: event.clientX, startY: event.clientY,
       originX: step.x || 0, originY: step.y || 0, moved: false
     };
-    node.setPointerCapture(event.pointerId);
+    capture(node, event);
     node.classList.add('dragging');
+  }
+
+  /** Begin drawing a route from a card's handle. */
+  function startLink(event, node, step) {
+    drag = { kind: 'link', node: node, step: step, over: null };
+    capture(node, event);
+    node.classList.add('linking');
+    el.viewport.classList.add('linking');
+  }
+
+  function onPointerDown(event) {
+    if (event.target.closest('.node')) return;
+    var wire = event.target.closest('[data-conn]');
+    if (wire) {
+      event.stopPropagation();
+      select(wire.getAttribute('data-conn'));
+      return;
+    }
+    drag = {
+      kind: 'pan', startX: event.clientX, startY: event.clientY,
+      originX: view.panX, originY: view.panY, moved: false
+    };
+    capture(el.viewport, event);
+    el.viewport.classList.add('panning');
+  }
+
+  function capture(node, event) {
+    drag.target = node;
+    drag.pointerId = event.pointerId;
+    node.setPointerCapture(event.pointerId);
     node.addEventListener('pointermove', onDragMove);
     node.addEventListener('pointerup', onDragEnd);
     node.addEventListener('pointercancel', onDragEnd);
   }
 
-  function onPointerDown(event) {
-    if (event.target.closest('.node')) return;
-    drag = {
-      kind: 'pan', startX: event.clientX, startY: event.clientY,
-      originX: view.panX, originY: view.panY
-    };
-    el.viewport.setPointerCapture(event.pointerId);
-    el.viewport.classList.add('panning');
-    el.viewport.addEventListener('pointermove', onDragMove);
-    el.viewport.addEventListener('pointerup', onDragEnd);
-    el.viewport.addEventListener('pointercancel', onDragEnd);
+  function release() {
+    var node = drag.target;
+    try { node.releasePointerCapture(drag.pointerId); } catch (err) { /* already released */ }
+    node.removeEventListener('pointermove', onDragMove);
+    node.removeEventListener('pointerup', onDragEnd);
+    node.removeEventListener('pointercancel', onDragEnd);
+  }
+
+  /** The card under a pointer, other than the one being dragged from. */
+  function cardAt(event, except) {
+    var hit = document.elementFromPoint(event.clientX, event.clientY);
+    var node = hit && hit.closest ? hit.closest('.node') : null;
+    return node && node !== except ? node : null;
   }
 
   function onDragMove(event) {
@@ -313,9 +458,24 @@
     var dy = event.clientY - drag.startY;
 
     if (drag.kind === 'pan') {
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) drag.moved = true;
       view.panX = drag.originX + dx;
       view.panY = drag.originY + dy;
       applyTransform();
+      return;
+    }
+
+    if (drag.kind === 'link') {
+      var over = cardAt(event, drag.node);
+      if (drag.over && drag.over !== over) drag.over.classList.remove('link-target');
+      if (over) over.classList.add('link-target');
+      drag.over = over;
+      var s = drag.step;
+      var from = [(s.x || 0) + CARD_W, (s.y || 0) + cardHeight(s) / 2];
+      var to = toStage(event);
+      drawWires('<path d="' + curve(from[0], from[1], to[0], to[1], 'x') +
+        '" fill="none" stroke="#0A66C2" stroke-width="2" stroke-dasharray="4 3" ' +
+        'marker-end="url(#arrowSel)" pointer-events="none"/>');
       return;
     }
 
@@ -333,23 +493,35 @@
   function onDragEnd(event) {
     if (!drag) return;
     var finished = drag;
+    release();
     drag = null;
 
     if (finished.kind === 'pan') {
       el.viewport.classList.remove('panning');
-      el.viewport.releasePointerCapture(event.pointerId);
-      el.viewport.removeEventListener('pointermove', onDragMove);
-      el.viewport.removeEventListener('pointerup', onDragEnd);
-      el.viewport.removeEventListener('pointercancel', onDragEnd);
+      // A plain click on the background clears a selected route.
+      if (!finished.moved && view.selected) {
+        Edit.commitActive();
+        select(null);
+      }
+      return;
+    }
+
+    if (finished.kind === 'link') {
+      finished.node.classList.remove('linking');
+      el.viewport.classList.remove('linking');
+      if (finished.over) finished.over.classList.remove('link-target');
+      var target = event.type === 'pointerup' ? cardAt(event, finished.node) : null;
+      if (target) {
+        var id = Edit.addConnection(view.processId, finished.step.id, target.dataset.step, '');
+        if (id) view.selected = id;
+        remount();
+      } else {
+        drawWires();
+      }
       return;
     }
 
     finished.node.classList.remove('dragging');
-    finished.node.releasePointerCapture(event.pointerId);
-    finished.node.removeEventListener('pointermove', onDragMove);
-    finished.node.removeEventListener('pointerup', onDragEnd);
-    finished.node.removeEventListener('pointercancel', onDragEnd);
-
     if (finished.moved) {
       // The live drag already moved the object; record it as one change.
       var x = finished.step.x, y = finished.step.y;
@@ -374,9 +546,6 @@
     var p = process();
     if (!p || !p.steps.length) return;
 
-    var byId = {};
-    p.steps.forEach(function (s) { byId[s.id] = s; });
-
     var outgoing = {};
     var hasIncoming = {};
     (p.connections || []).forEach(function (c) {
@@ -384,14 +553,18 @@
       hasIncoming[c.to] = true;
     });
 
+    // Longest path from an entry, capped so a loop cannot run forever. A
+    // step reached two ways sits after the later of them.
     var depth = {};
     var roots = p.steps.filter(function (s) { return !hasIncoming[s.id]; });
     if (!roots.length) roots = [p.steps[0]];
 
     var queue = roots.map(function (s) { return { id: s.id, d: 0 }; });
     var guard = 0;
+    var limit = p.steps.length;
     while (queue.length && guard++ < 5000) {
       var item = queue.shift();
+      if (item.d > limit) continue;
       if (depth[item.id] != null && depth[item.id] >= item.d) continue;
       depth[item.id] = item.d;
       (outgoing[item.id] || []).forEach(function (next) {

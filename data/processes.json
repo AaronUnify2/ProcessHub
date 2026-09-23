@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": 3,
-  "updated": "2026-09-20",
+  "version": 4,
+  "updated": "2026-09-23",
   "taxonomy": [
     {
       "id": "tax_building",
@@ -17302,7 +17302,9 @@
       "kind": "text",
       "match": {
         "mode": "phrase",
-        "value": "Merit"
+        "value": "Merit",
+        "caseSensitive": true,
+        "wholeWord": true
       },
       "scope": [
         "process",
@@ -17340,7 +17342,8 @@
       "severity": "medium",
       "message": "This process has not been reviewed within the last 12 months.",
       "enabled": true,
-      "created": "2026-09-20"
+      "created": "2026-09-20",
+      "ignoreDraft": true
     },
     {
       "id": "rule_unverified_variable",
@@ -17354,7 +17357,8 @@
       "severity": "medium",
       "message": "This value has not been confirmed by its owning department within the last 12 months.",
       "enabled": true,
-      "created": "2026-09-20"
+      "created": "2026-09-20",
+      "ignoreDraft": true
     },
     {
       "id": "rule_unused_article",

@@ -110,6 +110,15 @@
     Array.prototype.forEach.call(el.tree.querySelectorAll('[data-route]'), function (node) {
       node.addEventListener('click', function () { onNavigate(node.dataset.route); });
     });
+    Array.prototype.forEach.call(el.tree.querySelectorAll('[data-new-process]'), function (node) {
+      node.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var name = prompt('Name of the new process in ' + Data.taxonomyPath(node.dataset.newProcess) + ':', '');
+        if (!name || !name.trim()) return;
+        var id = Edit.createProcess(node.dataset.newProcess, name.trim());
+        onNavigate('#/process/' + id);
+      });
+    });
 
     var total = Data.state.processes.processes.length;
     el.count.textContent = total + ' processes · ' +
@@ -132,6 +141,9 @@
         : '<span class="caret empty"></span>') +
       '<span class="tree-label">' + Data.escapeHtml(node.name) + '</span>' +
       (count ? '<span class="tree-count">' + count + '</span>' : '') +
+      '<button class="tree-add" data-new-process="' + Data.escapeHtml(node.id) + '" ' +
+      'title="New process in ' + Data.escapeHtml(node.name) + '" aria-label="New process in ' +
+      Data.escapeHtml(node.name) + '">+</button>' +
       '</div>';
 
     if (!collapsed) {
@@ -149,11 +161,12 @@
 
   function renderProcessRow(p, activeId) {
     var flags = '';
-    if (p.handoffs) {
-      flags += '<span class="flag handoff" title="' + p.handoffs +
-        ' department handoff(s)">⇄ ' + p.handoffs + '</span>';
+    var handoffs = Data.flow(p).handoffs;
+    if (handoffs) {
+      flags += '<span class="flag handoff" title="' + handoffs +
+        ' department handoff(s)">⇄ ' + handoffs + '</span>';
     }
-    var high = (p.issues || []).filter(function (i) { return i.severity === 'high'; }).length;
+    var high = Data.openIssues(p).filter(function (i) { return i.severity === 'high'; }).length;
     if (high) {
       flags += '<span class="flag issue" title="' + high +
         ' high severity issue(s)">● ' + high + '</span>';
@@ -173,6 +186,8 @@
       '<button class="tree-link" data-route="#/variables">Variables</button>' +
       '<button class="tree-link" data-route="#/issues">Issues register</button>' +
       '<button class="tree-link" data-route="#/rules">Content rules</button>' +
+      '<button class="tree-link" data-route="#/coverage">Coverage</button>' +
+      '<button class="tree-link" data-route="#/departments">Departments</button>' +
       '</div>';
   }
 

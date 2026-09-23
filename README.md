@@ -18,7 +18,7 @@ processhub/
   index.html         the app
   live.html          the live call view
   css/app.css · css/live.css
-  js/                storage.js · data.js · edit.js · rules.js · export.js
+  js/                storage.js · data.js · merge.js · edit.js · rules.js · export.js
                      richtext.js · canvas.js · ui-sidebar.js · ui-detail.js · app.js
                      live.js
   data/              source content, fetched by the app at load
@@ -43,8 +43,9 @@ Keyboard: <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd> jumps to search,
 processes, articles, FAQ questions and variables at once.
 
 Every view has its own address — `#/process/<id>`, `#/article/<id>`,
-`#/faq/<id>`, `#/variable/<id>`, plus `#/articles`, `#/faqs`, `#/variables` and
-`#/issues` — so back, forward and copied links all work.
+`#/faq/<id>`, `#/variable/<id>`, plus `#/articles`, `#/faqs`, `#/variables`,
+`#/issues`, `#/rules`, `#/coverage` and `#/departments` — so back, forward and
+copied links all work.
 
 **Editing.** Click any field to change it. Enter saves a single-line field,
 Ctrl+Enter a multi-line one, Esc cancels. The `+ Variable` button on the edit
@@ -52,7 +53,41 @@ toolbar inserts a reference that stays in step with the variable. Steps can be
 added, reordered and deleted; checks and issues likewise.
 
 Changes go to a draft in IndexedDB about half a second after you stop typing,
-survive a reload, and never touch the published files until you export.
+survive a reload, and never touch the published files until you export. The
+browser only asks "leave site?" if something typed has not reached the draft
+yet.
+
+**Creating and deleting.** The `+` beside any department in the tree starts a
+new process there (an entry step joined to a resolution step). The article,
+FAQ and variable lists each have a `+ New` button, and every item has a
+delete button on its own page. Deleting an article or FAQ detaches it from
+every step first; a variable can only be deleted once nothing uses it.
+Departments are managed at `#/departments`: rename, move under a new parent,
+reorder, add sub-departments, and delete once nothing points at them.
+
+**Attaching content.** Each step, and the process as a whole, has
+`+ Article` and `+ FAQ`. The picker opens on suggestions for that step (the
+same scoring the live call view uses) and searches the library as you type.
+
+**Issues.** `⚑ Raise issue` on a process, or `⚑` on a single step, records an
+issue by hand. Resolving keeps the issue, stamped with the date and an
+optional note on how it was fixed, under *resolved* on the process page and in
+the register — the report and CSV carry the history too. Reopen puts it back.
+
+**When the published files move on.** If the files on GitHub have a newer
+version than your draft started from, you stay on your draft and a bar offers
+three ways forward:
+
+| | |
+|---|---|
+| Review and merge | Item by item. Changed only on your side → yours is kept. Changed only in published → theirs is taken. Changed on both → you choose. |
+| Keep my draft | Yours wins everywhere. The draft adopts the newer version numbers, so the bar does not come back and your next export numbers itself above theirs. |
+| Take published | Throw the draft away. |
+
+The draft keeps a copy of the published files it started from, which is what
+lets the merge tell a one-sided change from a two-sided one. Drafts saved
+before this existed have no copy, so every difference is listed for you to
+choose, yours selected by default.
 
 **Export** (the button in the header):
 
@@ -92,13 +127,40 @@ processes, and everything now wrong appears in the issues register.
 Four kinds: text that should no longer appear, a field that ought to be filled
 in, a date untouched for N months, and library content nothing references.
 Each rule carries a severity, the scopes it applies to, and a message
-explaining what to do.
+explaining what to do. Text rules can match whole words only and exact
+capitals — the Merit rule does both, so "sufficient merit" in a planning
+answer is not flagged. Any rule can leave drafts alone: "not reviewed in 12
+months" is true of every imported draft and says nothing new until a process
+is marked mapped or beyond.
 
 Findings are computed on every load and never stored, so fixing the content
 makes the finding disappear by itself. A recorded issue has to be ticked off by
 hand; a rule finding cannot lie about being fixed.
 
-Manage them at `#/rules`. They export with the issues report and CSV.
+Manage them at `#/rules`. They export with the issues report and CSV. In the
+register, recorded issues come first; each rule's findings sit collapsed under
+its name and count until you open them.
+
+**Coverage.** `#/coverage` shows each department's processes by status, its
+handoffs, open issues and rule findings, plus variable verification by owning
+department. The same page is in the Export menu as a self-contained report.
+
+**Routes and branching.** The arrows between steps are the process's flow. A
+decision step can lead to several places, each route with a label ("Yes",
+"Over $500"). On the Steps view every step shows where it leads: click a label
+to edit it, `×` to remove a route, and *+ Add a route to…* to draw a new one.
+Adding, deleting or reordering steps never rebuilds the arrows or moves cards
+on the map:
+
+- a step inserted after another takes over where that step led, and the
+  earlier step now leads to it
+- a deleted step's incoming arrows are joined to wherever it led
+- in a straight-line process ↑ ↓ reorder the flow and swap the two cards;
+  once a process branches, the list is reading order only and the arrows are
+  left as you drew them
+
+Handoffs are counted along the arrows, so each branch into another
+department counts.
 
 **The map.** Every process has a Steps view and a Map view. On the map, cards
 drag on a 20px grid, the background pans, Ctrl and the wheel zooms, and
@@ -106,6 +168,10 @@ drag on a 20px grid, the background pans, Ctrl and the wheel zooms, and
 five columns and running alternate rows backwards, so a ten step process reads
 as two rows rather than one very long line. Arrows that cross a department
 boundary are drawn dashed and orange.
+
+Drag from the round handle on a card's right edge to another card to draw a
+route. Click an arrow or its label to select it, then label or remove it in the
+bar above the map. `✎` on a card opens that step in the Steps view.
 
 Three card detail levels (Simple / Default / Context) control how much each
 card shows, and the same setting drives the SVG.
@@ -126,6 +192,10 @@ Open it, pick a process — the tree for finding your way, <kbd>/</kbd> for
 search when you already know the name — and the first step fills the screen
 with the rest of the process collapsed above and below it. Click any collapsed
 step to jump there.
+
+Next follows the arrows. Where a step has more than one route, it asks
+*Which way?* with a button per route label; <kbd>1</kbd>–<kbd>9</kbd> pick one.
+Back retraces the steps actually taken, not the list.
 
 Each step carries two panels:
 
@@ -150,7 +220,8 @@ Mid-call you can also:
 - Tick the checks as you work through them.
 
 Keyboard: <kbd>→</kbd> or <kbd>Space</kbd> for the next step, <kbd>←</kbd> to
-go back, <kbd>n</kbd> for a note, <kbd>/</kbd> for search.
+go back, <kbd>1</kbd>–<kbd>9</kbd> to choose a route, <kbd>n</kbd> for a note,
+<kbd>/</kbd> for search.
 
 **Nothing is recorded about the call.** No timings, no counts, no log of who
 opened what — the only things that persist are the edits you deliberately make:
@@ -215,6 +286,7 @@ Works — an addition rather than a loss, so it is reported as a note.
 | Variable references | 332 across processes and articles, no orphans |
 | Issues raised | 86 (32 high, 48 medium, 6 low) |
 | Cross-department | 29 processes, 53 handoffs |
+| Rule findings | 132 — 19 Merit (high), 112 processes without an owner (low), 1 unused article; 252 draft items left alone by the review-date rules |
 
 ## Known limits of the flowchart import
 

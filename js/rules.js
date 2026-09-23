@@ -15,6 +15,13 @@
      empty    a field that ought to be filled in
      stale    a date that has not been touched for N months
      unused   library content nothing references
+
+   Two options narrow what a rule looks at:
+     match.caseSensitive / match.wholeWord  (text rules) — so "Merit" the
+       retired system is caught but "sufficient merit" is not
+     ignoreDraft  skip anything still in draft (or a variable still pending).
+       Imported content is all draft, and "never reviewed" is true of every
+       item of it — which buries the findings that actually need action.
    =========================================================================== */
 
 (function (global) {
@@ -100,10 +107,20 @@
     if (!value) return null;
     try {
       var pattern = match.mode === 'regex' ? value : escapeRegex(value);
-      return new RegExp(pattern, 'i');
+      if (isOn(match.wholeWord)) pattern = '\\b(?:' + pattern + ')\\b';
+      return new RegExp(pattern, isOn(match.caseSensitive) ? '' : 'i');
     } catch (err) {
       return { invalid: true, message: err.message };
     }
+  }
+
+  /** Options arrive from selects as strings as well as booleans. */
+  function isOn(value) { return value === true || value === 'true'; }
+
+  /** Still being drafted, so a "not reviewed" style finding says nothing new. */
+  function isDraft(entity) {
+    var obj = entity.kind === 'step' ? entity.process : entity.obj;
+    return obj.status === 'draft' || obj.status === 'pending';
   }
 
   function escapeRegex(text) {
@@ -125,6 +142,17 @@
     var findings = [];
     var scopes = (rule.scope && rule.scope.length ? rule.scope : SCOPES)
       .filter(function (s) { return SCOPES.indexOf(s) !== -1; });
+    var skipDraft = isOn(rule.ignoreDraft);
+    var skipped = 0;
+
+    // Every entity in the rule's scopes, less any still in draft when the
+    // rule says to leave those alone.
+    function each(scope, fn) {
+      entities(scope).forEach(function (entity) {
+        if (skipDraft && isDraft(entity)) { skipped++; return; }
+        fn(entity);
+      });
+    }
 
     if (rule.kind === 'text') {
       var matcher = buildMatcher(rule);
@@ -133,7 +161,7 @@
         return { rule: rule, findings: [], error: 'Invalid pattern: ' + matcher.message };
       }
       scopes.forEach(function (scope) {
-        entities(scope).forEach(function (entity) {
+        each(scope, function (entity) {
           // Search what a reader would see, so a value held in a variable is
           // still caught.
           var seen = Data.freeze(entity.text);
@@ -145,7 +173,7 @@
 
     if (rule.kind === 'empty') {
       scopes.forEach(function (scope) {
-        entities(scope).forEach(function (entity) {
+        each(scope, function (entity) {
           var value = entity.obj[rule.field];
           var blank = value == null || String(value).trim() === '' ||
             (Array.isArray(value) && !value.length);
@@ -157,7 +185,7 @@
     if (rule.kind === 'stale') {
       var limit = Number(rule.months) || 12;
       scopes.forEach(function (scope) {
-        entities(scope).forEach(function (entity) {
+        each(scope, function (entity) {
           var age = monthsSince(entity.obj[rule.field]);
           if (age >= limit) {
             findings.push(finding(rule, entity,
@@ -169,14 +197,14 @@
 
     if (rule.kind === 'unused') {
       scopes.forEach(function (scope) {
-        entities(scope).forEach(function (entity) {
+        each(scope, function (entity) {
           var usage = Data.state.index.usage[entity.id];
           if (!usage || !usage.processes.length) findings.push(finding(rule, entity, ''));
         });
       });
     }
 
-    return { rule: rule, findings: findings };
+    return { rule: rule, findings: findings, draftsSkipped: skipped };
   }
 
   function finding(rule, entity, detail) {
@@ -199,12 +227,32 @@
     return (start > 0 ? '…' : '') + text.slice(start, end).trim() + (end < text.length ? '…' : '');
   }
 
+  // Results are kept until the content next changes. Every edit rebuilds
+  // the index, so a new index object means the cache is stale.
+  var cache = { index: null, results: null };
+
   /** Every enabled rule, evaluated, worst severity first. */
   function run() {
+    if (cache.index === Data.state.index && cache.results) return cache.results;
     var weight = { high: 0, medium: 1, low: 2 };
-    return rules().map(evaluate).sort(function (a, b) {
+    var results = rules().map(evaluate).sort(function (a, b) {
       return (weight[a.rule.severity] || 1) - (weight[b.rule.severity] || 1);
     });
+    cache = { index: Data.state.index, results: results };
+    return results;
+  }
+
+  /** Findings per process, for the coverage report and the tree. */
+  function byProcess() {
+    var out = {};
+    run().forEach(function (result) {
+      if (result.skipped) return;
+      result.findings.forEach(function (f) {
+        var m = /^#\/process\/(.+)$/.exec(f.route || '');
+        if (m) out[m[1]] = (out[m[1]] || 0) + 1;
+      });
+    });
+    return out;
   }
 
   function totals() {
@@ -259,7 +307,7 @@
         id: 'rule_retired_merit',
         name: 'Merit has been replaced by the CRM',
         kind: 'text',
-        match: { mode: 'phrase', value: 'Merit' },
+        match: { mode: 'phrase', value: 'Merit', caseSensitive: true, wholeWord: true },
         scope: ['process', 'step', 'article', 'faq'],
         severity: 'high',
         message: 'Still refers to Merit. The CRM replaced it — the request ID now goes ' +
@@ -283,6 +331,7 @@
         field: 'lastReviewed',
         months: 12,
         scope: ['process'],
+        ignoreDraft: true,
         severity: 'medium',
         message: 'This process has not been reviewed within the last 12 months.',
         enabled: true
@@ -294,6 +343,7 @@
         field: 'lastVerified',
         months: 12,
         scope: ['variable'],
+        ignoreDraft: true,
         severity: 'medium',
         message: 'This value has not been confirmed by its owning department ' +
           'within the last 12 months.',
@@ -321,6 +371,8 @@
     run: run,
     evaluate: evaluate,
     totals: totals,
+    byProcess: byProcess,
+    isOn: isOn,
     defaults: defaults
   };
 }(window));

@@ -126,9 +126,16 @@
   /**
    * Download all four files, named as they sit in the repository. Versions are
    * bumped first so the next load compares cleanly against what you commit.
+   * What was exported becomes the draft's base: once committed, it is what
+   * the published files will hold.
    */
   function exportForGitHub() {
     bumpVersions();
+    Storage.setBase({
+      processes: Data.state.processes,
+      library: Data.state.library,
+      variables: Data.state.variables
+    });
     download('processes.json', json(Data.state.processes));
     setTimeout(function () { download('library.json', json(Data.state.library)); }, 150);
     setTimeout(function () { download('variables.json', json(Data.state.variables)); }, 300);
@@ -220,7 +227,13 @@
       (s.checks || []).forEach(function (c) { c.text = Data.freeze(c.text); });
       s.department = Data.taxonomyName(s.departmentId);
     });
-    delete copy.departments;
+    (copy.connections || []).forEach(function (c) {
+      if (c.condition) c.condition = Data.freeze(c.condition);
+    });
+    // Handy for whoever reads the file, and harmless: this copy is a report,
+    // never read back into the app.
+    copy.departments = Data.flow(p).departments.map(Data.taxonomyName);
+    copy.handoffs = Data.flow(p).handoffs;
     return copy;
   }
 
@@ -228,9 +241,24 @@
     var p = Data.state.index.processes[processId];
     if (!p) return;
 
+    var flow = Data.flow(p);
+    var number = {};
+    p.steps.forEach(function (s, i) { number[s.id] = i + 1; });
+
     var steps = p.steps.map(function (s, i) {
-      var handoff = s.isHandoff
+      var handoff = flow.handoffSteps[s.id]
         ? '<div class="handoff">Handoff to ' + e(Data.taxonomyName(s.departmentId)) + '</div>'
+        : '';
+      // Where the arrows go, when it is anything other than simply the next
+      // step down the page.
+      var out = flow.outgoing[s.id] || [];
+      var plain = out.length === 1 && !out[0].condition && number[out[0].to] === i + 2;
+      var routes = out.length && !plain
+        ? '<ul class="routes">' + out.map(function (c) {
+            var to = p.steps[number[c.to] - 1];
+            return '<li>' + (c.condition ? e(Data.freeze(c.condition)) + ' → ' : '→ ') +
+              'step ' + number[c.to] + (to ? ': ' + e(Data.freeze(to.title)) : '') + '</li>';
+          }).join('') + '</ul>'
         : '';
       return handoff + '<div class="step ' + e(s.type) + '">' +
         '<div class="step-head"><span class="n">' + (i + 1) + '</span>' +
@@ -250,11 +278,13 @@
           ? '<p class="trigger"><strong>Done when:</strong> ' +
             e(Data.freeze(s.completionTrigger)) + '</p>'
           : '') +
+        routes +
         '</div>';
     }).join('');
 
-    var issues = (p.issues || []).length
-      ? '<h2>Issues</h2>' + p.issues.map(function (i) {
+    var open = Data.openIssues(p);
+    var issues = open.length
+      ? '<h2>Issues</h2>' + open.map(function (i) {
           return '<div class="issue ' + e(i.severity) + '"><strong>' + e(i.severity) +
             '</strong> ' + e(i.note) + '</div>';
         }).join('')
@@ -264,8 +294,8 @@
       '<div class="crumbs">' + e(Data.taxonomyPath(p.taxonomyId)) + '</div>' +
       '<h1>' + e(p.name) + '</h1>' +
       '<p class="lede">' + e(Data.freeze(p.purpose || '')) + '</p>' +
-      '<p class="stamp">' + p.steps.length + ' steps · ' + p.handoffs + ' handoff' +
-      (p.handoffs === 1 ? '' : 's') + ' · status: ' + e(p.status) +
+      '<p class="stamp">' + p.steps.length + ' steps · ' + flow.handoffs + ' handoff' +
+      (flow.handoffs === 1 ? '' : 's') + ' · status: ' + e(p.status) +
       ' · exported ' + e(today()) + '</p>' +
       steps + issues), 'text/html');
   }
@@ -396,19 +426,20 @@
       }
     });
 
-    var departments = p.departments.map(Data.taxonomyName);
+    var flow = Data.flow(p);
+    var departments = flow.departments.map(Data.taxonomyName);
     var header =
       '<rect x="0" y="0" width="' + bounds.width + '" height="' + HEADER_H + '" fill="#FFFFFF"/>' +
       '<text x="36" y="34" font-size="19" font-weight="700" fill="#1D1D1F">' +
       e(p.name) + '</text>' +
       '<text x="36" y="54" font-size="11" fill="#6E6E73">' +
       e(Data.taxonomyPath(p.taxonomyId)) + '  ·  ' + p.steps.length + ' steps  ·  ' +
-      p.handoffs + ' handoff' + (p.handoffs === 1 ? '' : 's') + '  ·  ' + e(p.status) + '</text>' +
+      flow.handoffs + ' handoff' + (flow.handoffs === 1 ? '' : 's') + '  ·  ' + e(p.status) + '</text>' +
       '<text x="36" y="71" font-size="10" fill="#8A93A0">' +
       e(departments.join('  →  ')) + '</text>' +
       '<text x="' + (bounds.width - 36) + '" y="34" text-anchor="end" font-size="10" ' +
       'fill="#8A93A0">Exported ' + e(today()) + '</text>' +
-      (p.handoffs
+      (flow.handoffs
         ? '<line x1="' + (bounds.width - 128) + '" y1="52" x2="' + (bounds.width - 100) +
           '" y2="52" stroke="#B45309" stroke-width="2.2" stroke-dasharray="6 4"/>' +
           '<text x="' + (bounds.width - 94) + '" y="55" font-size="10" fill="#B45309">' +
@@ -461,7 +492,17 @@
     }).join('');
 
     var counts = { high: 0, medium: 0, low: 0 };
-    all.forEach(function (x) { counts[x.issue.severity]++; });
+    all.forEach(function (x) { counts[x.issue.severity] = (counts[x.issue.severity] || 0) + 1; });
+
+    var resolved = Data.allIssues({ resolved: 'only' });
+    var resolvedRows = resolved.map(function (entry) {
+      return '<tr><td>' + e(entry.issue.resolved) + '</td>' +
+        '<td>' + e(entry.process.name) + '<div class="note">' +
+        e(Data.taxonomyPath(entry.process.taxonomyId)) + '</div></td>' +
+        '<td>' + e(entry.issue.note) +
+        (entry.issue.resolution ? '<div class="note">Resolved: ' + e(entry.issue.resolution) + '</div>' : '') +
+        '</td><td>' + e(entry.issue.raised) + '</td></tr>';
+    }).join('');
 
     var ruleTotals = Rules.totals();
     download('process-issues.html', page('Process issues register',
@@ -473,21 +514,27 @@
       ruleBlocks +
       '<h2>Recorded issues <span class="count">' + all.length + '</span></h2>' +
       '<table><thead><tr><th>Severity</th><th>Process</th><th>Issue</th>' +
-      '<th>Raised</th></tr></thead><tbody>' + rows + '</tbody></table>'), 'text/html');
+      '<th>Raised</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      (resolved.length
+        ? '<h2>Resolved <span class="count">' + resolved.length + '</span></h2>' +
+          '<table><thead><tr><th>Resolved</th><th>Process</th><th>Issue</th>' +
+          '<th>Raised</th></tr></thead><tbody>' + resolvedRows + '</tbody></table>'
+        : '')), 'text/html');
   }
 
   function issuesCsv() {
-    var rows = [['source', 'severity', 'subject', 'where', 'issue', 'raised', 'raised_by']];
+    var rows = [['source', 'severity', 'subject', 'where', 'issue', 'raised', 'raised_by',
+      'status', 'resolved', 'resolution']];
 
     Rules.run().forEach(function (result) {
       if (result.skipped) return;
       result.findings.forEach(function (f) {
         rows.push(['rule: ' + result.rule.name, f.severity, f.label, f.where,
-          f.message + (f.detail ? ' (' + f.detail + ')' : ''), '', 'Content rule']);
+          f.message + (f.detail ? ' (' + f.detail + ')' : ''), '', 'Content rule', 'open', '', '']);
       });
     });
 
-    Data.allIssues().forEach(function (entry) {
+    Data.allIssues({ resolved: 'include' }).forEach(function (entry) {
       rows.push([
         'recorded',
         entry.issue.severity,
@@ -495,7 +542,10 @@
         Data.taxonomyPath(entry.process.taxonomyId),
         entry.issue.note,
         entry.issue.raised,
-        entry.issue.raisedBy || ''
+        entry.issue.raisedBy || '',
+        entry.issue.resolved ? 'resolved' : 'open',
+        entry.issue.resolved || '',
+        entry.issue.resolution || ''
       ]);
     });
     var csv = rows.map(function (row) {
@@ -504,6 +554,68 @@
       }).join(',');
     }).join('\n');
     download('process-issues.csv', csv, 'text/csv');
+  }
+
+  // ---- coverage report -----------------------------------------------------
+
+  // Checked with the dataviz palette validator. Draft is a deliberate
+  // neutral — it means "not started" — and every bar also has its numbers in
+  // the table beside it, so no reading depends on colour alone.
+  var STATUS_COLOUR = {
+    draft: '#A7AFBA', mapped: '#3B8FD9', reviewed: '#26519F',
+    published: '#2E7D53', needs_rework: '#C2410C'
+  };
+
+  function statusBar(row, statuses) {
+    if (!row.processes) return '<div class="bar empty"></div>';
+    return '<div class="bar">' + statuses.map(function (s) {
+      var n = row.byStatus[s] || 0;
+      if (!n) return '';
+      return '<span style="flex:' + n + ';background:' +
+        STATUS_COLOUR[s] + '" title="' + e(s.replace('_', ' ')) + ': ' + n + '"></span>';
+    }).join('') + '</div>';
+  }
+
+  function coverageHtml() {
+    var cov = Data.coverage(Rules.byProcess());
+    var statuses = cov.statuses;
+    var t = cov.total;
+    var done = (t.byStatus.reviewed || 0) + (t.byStatus.published || 0);
+
+    var legend = '<p class="legend">' + statuses.map(function (s) {
+      return '<span><i style="background:' + STATUS_COLOUR[s] + '"></i>' +
+        e(s.replace('_', ' ')) + '</span>';
+    }).join('') + '</p>';
+
+    var rows = cov.rows.filter(function (r) { return r.processes; }).map(function (r) {
+      return '<tr class="depth-' + r.depth + '"><td>' + e(r.node.name) + '</td>' +
+        '<td class="num">' + r.processes + '</td>' +
+        '<td class="barcell">' + statusBar(r, statuses) + '</td>' +
+        '<td class="num">' + ((r.byStatus.reviewed || 0) + (r.byStatus.published || 0)) + '</td>' +
+        '<td class="num">' + r.handoffs + '</td>' +
+        '<td class="num">' + r.issues + (r.high ? ' <span class="hi">(' + r.high + ' high)</span>' : '') + '</td>' +
+        '<td class="num">' + r.findings + '</td></tr>';
+    }).join('');
+
+    var vars = cov.variables.map(function (v) {
+      return '<tr><td>' + e(v.ownerId ? Data.taxonomyName(v.ownerId) : 'Unassigned') + '</td>' +
+        '<td class="num">' + v.total + '</td><td class="num">' + (v.current || 0) + '</td>' +
+        '<td class="num">' + (v.pending || 0) + '</td><td class="num">' + (v.stale || 0) + '</td></tr>';
+    }).join('');
+
+    download('process-coverage.html', page('Process coverage',
+      '<h1>Process coverage</h1>' +
+      '<p class="lede">' + t.processes + ' processes identified, ' + done +
+      ' reviewed or published. ' + t.handoffs + ' handoffs between departments, ' +
+      t.issues + ' open issues. Generated ' + e(new Date().toLocaleDateString('en-AU')) + '.</p>' +
+      legend +
+      '<table><thead><tr><th>Department</th><th>Processes</th><th>Status</th>' +
+      '<th>Reviewed</th><th>Handoffs</th><th>Open issues</th><th>Rule findings</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<h2>Variables by owning department</h2>' +
+      '<table><thead><tr><th>Department</th><th>Total</th><th>Current</th>' +
+      '<th>Pending</th><th>Stale</th></tr></thead><tbody>' + vars + '</tbody></table>'),
+      'text/html');
   }
 
   // ---- shared HTML wrapper -------------------------------------------------
@@ -564,6 +676,15 @@
     '.q{font-weight:600}.note,.uses{font-size:.76rem;color:#6E6E73}',
     '.sev{font-size:.65rem;font-weight:700;text-transform:uppercase}',
     'tr.high .sev{color:#C0392B}tr.medium .sev{color:#B45309}',
+    '.routes{list-style:none;margin:.5rem 0 0;font-size:.84rem;color:#B45309}',
+    'td.num{text-align:right;white-space:nowrap;width:1%}td .hi{color:#C0392B;font-size:.75rem}',
+    'tr.depth-0 td{font-weight:650;background:#FAFBFC}tr.depth-1 td:first-child{padding-left:22px}',
+    'tr.depth-2 td:first-child{padding-left:36px}',
+    'td.barcell{width:34%}.bar{display:flex;gap:2px;height:12px}',
+    '.bar span{display:block;height:100%;border-radius:2px;min-width:3px}',
+    '.legend{display:flex;flex-wrap:wrap;gap:.9rem;font-size:.78rem;color:#6E6E73;margin-top:.6rem}',
+    '.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem;vertical-align:-1px}',
+    '@media (max-width:640px){table{font-size:.78rem}th,td{padding:6px}}',
     '@media print{body{background:#fff;padding:0}.step{break-inside:avoid}}'
   ].join('');
 
@@ -576,6 +697,8 @@
     processSvg: processSvg,
     wrapText: wrapText,
     issuesHtml: issuesHtml,
+    coverageHtml: coverageHtml,
+    STATUS_COLOUR: STATUS_COLOUR,
     issuesCsv: issuesCsv,
     verificationText: verificationText,
     verificationHtml: verificationHtml,

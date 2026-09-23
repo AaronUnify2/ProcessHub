@@ -19,119 +19,13 @@
 
   var el = {};
   var prefs = {};
-  var call = { processId: null, stepIndex: 0, ticked: {}, openPanels: {} };
-  var suggestIndex = null;
+  var call = { processId: null, stepIndex: 0, ticked: {}, openPanels: {}, trail: [] };
 
   function e(text) { return Data.escapeHtml(text); }
   function today() { return new Date().toISOString().slice(0, 10); }
 
-  // ---- term matching for suggestions ---------------------------------------
-
-  var STOPWORDS = ('the a an and or of to in on for with by at from is are was ' +
-    'be been it its this that these those if then when where what which who how ' +
-    'you your we our they their he she them can could should would may might must ' +
-    'will shall do does did not no yes any all some more most other into out up ' +
-    'down over under about after before during while also please note only both ' +
-    'each every such than too very just own same so nor but customer council ' +
-    'officer call caller provide check advise refer ' +
-    // Words that carry no subject at all in council prose, and which were
-    // otherwise pairing unrelated answers together.
-    'make makes made making available need needs needed take takes taken give ' +
-    'given put one two three way ways new old general information details ' +
-    'contact further first second next following include includes including ' +
-    'use used using within via per see back through around member letter ' +
-    'template email phone form forms apply applying required require requires ' +
-    'ensure must may relevant appropriate current existing').split(' ');
-
-  var STOP = {};
-  STOPWORDS.forEach(function (w) { STOP[w] = true; });
-
-  function terms(text) {
-    return String(text || '')
-      .replace(/<[^>]+>/g, ' ')
-      .toLowerCase()
-      .split(/[^a-z0-9]+/)
-      .filter(function (w) { return w.length > 2 && !STOP[w]; });
-  }
-
-  function unique(list) {
-    var seen = {};
-    return list.filter(function (w) {
-      if (seen[w]) return false;
-      seen[w] = true;
-      return true;
-    });
-  }
-
-  /**
-   * Index the library once. Document frequency is kept so that a word
-   * appearing in half the answers counts for much less than a rare one —
-   * without it, "approval" matches everything and nothing useful surfaces.
-   */
-  function buildSuggestIndex() {
-    var docs = [];
-    Data.state.library.articles.forEach(function (a) {
-      docs.push({ kind: 'article', id: a.id, title: a.title, body: a.body });
-    });
-    Data.state.library.faqs.forEach(function (f) {
-      docs.push({ kind: 'faq', id: f.id, title: f.q, body: f.a });
-    });
-
-    var df = {};
-    docs.forEach(function (doc) {
-      doc.titleTerms = {};
-      unique(terms(doc.title)).forEach(function (w) { doc.titleTerms[w] = true; });
-      doc.allTerms = {};
-      unique(terms(doc.title + ' ' + doc.body)).forEach(function (w) {
-        doc.allTerms[w] = true;
-        df[w] = (df[w] || 0) + 1;
-      });
-    });
-
-    return { docs: docs, df: df, total: docs.length || 1 };
-  }
-
-  // A word in more than a fifth of the library tells you nothing about a
-  // particular step. Without this cutoff, an Airbnb answer surfaces against a
-  // water leak because both mention "sdrc", "lodge" and "whether".
-  var COMMON_TERM_RATIO = 0.2;
-  var RELATIVE_FLOOR = 0.45;
-
-  function suggest(step, process, kind, alreadyAttached) {
-    if (!suggestIndex) suggestIndex = buildSuggestIndex();
-    var query = unique(terms([step.title, step.sop, step.script, process.name].join(' ')));
-    if (!query.length) return [];
-
-    var taken = {};
-    (alreadyAttached || []).forEach(function (id) { taken[id] = true; });
-
-    var scored = [];
-    suggestIndex.docs.forEach(function (doc) {
-      if (doc.kind !== kind || taken[doc.id]) return;
-
-      var score = 0;
-      var hits = [];
-      query.forEach(function (word) {
-        if (!doc.allTerms[word]) return;
-        var ratio = (suggestIndex.df[word] || 1) / suggestIndex.total;
-        if (ratio > COMMON_TERM_RATIO) return;
-        score += Math.log(1 / ratio) * (doc.titleTerms[word] ? 2.2 : 1);
-        hits.push({ word: word, ratio: ratio });
-      });
-
-      if (hits.length < 2) return;
-      hits.sort(function (a, b) { return a.ratio - b.ratio; });
-      scored.push({ doc: doc, score: score, hits: hits.map(function (h) { return h.word; }) });
-    });
-
-    scored.sort(function (a, b) { return b.score - a.score; });
-    if (!scored.length) return [];
-
-    // Keep only what is in the same league as the best match, so a thin tail
-    // of half-relevant answers does not pad the list out to five.
-    var floor = scored[0].score * RELATIVE_FLOOR;
-    return scored.filter(function (s) { return s.score >= floor; }).slice(0, 5);
-  }
+  // Suggestions — library content whose wording overlaps a step — come from
+  // Data.suggest, which the editor's attach picker shares.
 
   // ---- state ---------------------------------------------------------------
 
@@ -142,21 +36,27 @@
   }
 
   function startCall(processId) {
-    call = { processId: processId, stepIndex: 0, ticked: {}, openPanels: {} };
+    call = { processId: processId, stepIndex: 0, ticked: {}, openPanels: {}, trail: [] };
     location.hash = '#' + processId;
     render();
   }
 
   function endCall() {
-    call = { processId: null, stepIndex: 0, ticked: {}, openPanels: {} };
+    call = { processId: null, stepIndex: 0, ticked: {}, openPanels: {}, trail: [] };
     location.hash = '';
     render();
   }
 
-  function goto(index) {
+  /**
+   * Move to a step. The trail remembers the steps actually taken, so Back
+   * retraces a branch rather than stepping up the list.
+   */
+  function goto(index, isBack) {
     var p = process();
     if (!p) return;
-    call.stepIndex = Math.max(0, Math.min(p.steps.length - 1, index));
+    var next = Math.max(0, Math.min(p.steps.length - 1, index));
+    if (!isBack && next !== call.stepIndex) call.trail.push(call.stepIndex);
+    call.stepIndex = next;
     render();
     var node = document.querySelector('.run-step.current');
     if (node) node.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -208,6 +108,30 @@
       '<span class="pick-process-name">' + e(p.name) + '</span>' +
       '<span class="pick-process-where">' + e(Data.taxonomyPath(p.taxonomyId)) + '</span>' +
       '</button>';
+  }
+
+  /** Where the current step leads: [{ index, label }], following the arrows. */
+  function routesFrom(step, p) {
+    var out = Data.flow(p).outgoing[step.id] || [];
+    return out.map(function (c) {
+      return {
+        index: p.steps.findIndex(function (s) { return s.id === c.to; }),
+        label: c.condition ? Data.freeze(c.condition) : ''
+      };
+    }).filter(function (r) { return r.index !== -1; });
+  }
+
+  function goBack() {
+    if (call.trail.length) goto(call.trail.pop(), true);
+  }
+
+  /** Next, when there is only one way to go. */
+  function goNext() {
+    var p = process();
+    var step = currentStep();
+    if (!p || !step) return;
+    var routes = routesFrom(step, p);
+    if (routes.length === 1) goto(routes[0].index);
   }
 
   // ---- the run -------------------------------------------------------------
@@ -290,14 +214,28 @@
     html += renderPanel('article', 'Knowledge base', step, p, attachedArticles);
     html += renderPanel('faq', 'What the customer can read', step, p, attachedFaqs);
 
+    // A step with more than one way out asks the question: one button per
+    // route, labelled with the route's condition.
+    var routes = routesFrom(step, p);
+    if (routes.length > 1) {
+      html += '<div class="run-label">Which way?</div><div class="run-choices">' +
+        routes.map(function (r, n) {
+          return '<button class="lbtn choice" data-choose="' + r.index + '">' +
+            '<kbd>' + (n + 1) + '</kbd> ' + e(r.label || 'Step ' + (r.index + 1)) +
+            ' <span class="choice-to">→ ' + e(Data.freeze(p.steps[r.index].title)) + '</span></button>';
+        }).join('') + '</div>';
+    }
+
     html += '<div class="run-actions">' +
       '<button class="lbtn" data-act="note">✎ Note</button>' +
       '<button class="lbtn" data-act="add-step">+ Step after this</button>' +
       '<a class="lbtn" href="index.html#/process/' + e(p.id) + '" target="_blank">Open in Process Hub</a>' +
       '<span class="run-spacer"></span>' +
-      '<button class="lbtn" data-act="prev"' + (call.stepIndex === 0 ? ' disabled' : '') + '>← Back</button>' +
-      '<button class="lbtn primary" data-act="next"' +
-      (call.stepIndex >= p.steps.length - 1 ? ' disabled' : '') + '>Next →</button>' +
+      '<button class="lbtn" data-act="prev"' + (call.trail.length ? '' : ' disabled') + '>← Back</button>' +
+      (routes.length > 1
+        ? ''
+        : '<button class="lbtn primary" data-act="next"' + (routes.length ? '' : ' disabled') + '>' +
+          (routes.length ? 'Next →' : 'End of process') + '</button>') +
       '</div>';
 
     html += '<div class="note-box" id="noteBox" hidden>' +
@@ -310,7 +248,7 @@
   function renderPanel(kind, label, step, p, attached) {
     var key = step.id + ':' + kind;
     var open = call.openPanels[key];
-    var suggestions = suggest(step, p, kind, attached);
+    var suggestions = Data.suggest(step, p, kind, attached);
     var lookup = kind === 'article' ? Data.state.index.articles : Data.state.index.faqs;
 
     var summary = attached.length
@@ -471,13 +409,18 @@
       return;
     }
 
+    if ((node = event.target.closest('[data-choose]'))) {
+      goto(Number(node.dataset.choose));
+      return;
+    }
+
     var act = (event.target.closest('[data-act]') || {}).dataset;
     if (!act) {
       if ((node = event.target.closest('[data-goto]'))) goto(Number(node.dataset.goto));
       return;
     }
-    if (act.act === 'next') goto(call.stepIndex + 1);
-    if (act.act === 'prev') goto(call.stepIndex - 1);
+    if (act.act === 'next') goNext();
+    if (act.act === 'prev') goBack();
     if (act.act === 'note') openNote();
     if (act.act === 'add-step') addStep(false);
     if (act.act === 'add-step-end') addStep(true);
@@ -516,11 +459,19 @@
 
     if (event.key === 'ArrowRight' || event.key === ' ') {
       event.preventDefault();
-      goto(call.stepIndex + 1);
+      goNext();
     }
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      goto(call.stepIndex - 1);
+      goBack();
+    }
+    if (/^[1-9]$/.test(event.key)) {
+      var routes = routesFrom(currentStep(), process());
+      var pick = routes[Number(event.key) - 1];
+      if (routes.length > 1 && pick) {
+        event.preventDefault();
+        goto(pick.index);
+      }
     }
     if (event.key.toLowerCase() === 'n') {
       event.preventDefault();
@@ -535,7 +486,6 @@
 
   function start(data, source) {
     Data.load(data);
-    suggestIndex = null;
 
     Edit.init({
       onChange: function (count) {
@@ -608,10 +558,15 @@
         var result = Storage.reconcile(results[0], results[1]);
         // The live view never arbitrates a conflict mid-call; it takes the
         // draft when there is one, and Process Hub handles reconciliation.
-        if (result.state === 'draft' || result.state === 'conflict') {
-          start(result.draft ? result.draft.data : result.live, 'draft');
+        if (result.state === 'conflict') {
+          Storage.setBase(result.draft.base || null);
+          start(result.draft.data, 'draft');
+        } else if (result.state === 'draft') {
+          Storage.setBase(result.draft.base || result.live);
+          start(result.draft.data, 'draft');
         } else {
-          start(result.live, 'live');
+          Storage.setBase(result.live);
+          start(Storage.clone(result.live), 'live');
         }
       })
       .catch(fail);

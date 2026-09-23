@@ -5,6 +5,11 @@
    localStorage caps out at roughly five, with a silent failure when it does.
    localStorage is still used, but only for preferences small enough that
    losing them costs nothing.
+
+   A draft carries two copies of the content: the working data, and the
+   published files it was started from (its base). The base is what makes a
+   proper merge possible when the published files move on — with it, a change
+   made on only one side can be told apart from a change made on both.
    =========================================================================== */
 
 (function (global) {
@@ -50,7 +55,8 @@
 
   /**
    * The saved draft, or null when there isn't one.
-   * Shape: { baseVersions, data, savedAt, changeCount }
+   * Shape: { baseVersions, base, data, savedAt, changeCount }
+   * Drafts saved by older versions of the app have no base.
    */
   function loadDraft() {
     return withStore('readonly', function (store) {
@@ -75,6 +81,18 @@
       return store.delete(DRAFT_KEY);
     });
   }
+
+  // ---- the base the draft was started from ---------------------------------
+
+  var base = null;
+
+  /** A deep copy, so later edits to the working data never reach the base. */
+  function clone(value) {
+    return value == null ? value : JSON.parse(JSON.stringify(value));
+  }
+
+  function setBase(data) { base = data ? clone(data) : null; }
+  function getBase() { return base; }
 
   // ---- preferences ---------------------------------------------------------
   // Every read and write is guarded: storage can be unavailable in a private
@@ -139,7 +157,7 @@
 
     var liveVersions = versionsOf(live);
     var stale = FILES.filter(function (name) {
-      return liveVersions[name] > (draft.baseVersions || {})[name];
+      return liveVersions[name] > ((draft.baseVersions || {})[name] || 0);
     });
 
     if (stale.length) {
@@ -148,14 +166,33 @@
     return { state: 'draft', live: live, draft: draft };
   }
 
+  /**
+   * Adopt the published version numbers without taking the published
+   * content. After "keep my draft" or a merge, the draft now knows about the
+   * newer files, so the next export numbers itself above them rather than
+   * colliding with them, and the conflict does not come back on every load.
+   */
+  function adoptVersions(data, live) {
+    FILES.forEach(function (name) {
+      if (data[name] && live[name]) {
+        data[name].version = live[name].version;
+      }
+    });
+    return data;
+  }
+
   global.Storage = {
     FILES: FILES,
     fetchLive: fetchLive,
     versionsOf: versionsOf,
     reconcile: reconcile,
+    adoptVersions: adoptVersions,
     loadDraft: loadDraft,
     saveDraft: saveDraft,
     clearDraft: clearDraft,
+    setBase: setBase,
+    getBase: getBase,
+    clone: clone,
     loadPrefs: loadPrefs,
     savePrefs: savePrefs
   };

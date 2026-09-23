@@ -11,7 +11,8 @@
 
   var prefs = Storage.loadPrefs();
   var activeProcessId = null;
-  var source = 'live';
+
+  function e(text) { return Data.escapeHtml(text); }
 
   // ---- routing -------------------------------------------------------------
 
@@ -24,7 +25,9 @@
     [/^#\/faqs$/, function () { Detail.faqList(); }],
     [/^#\/variables$/, function () { Detail.variableList(); }],
     [/^#\/issues$/, function () { Detail.issues(); }],
-    [/^#\/rules$/, function () { Detail.rules(); }]
+    [/^#\/rules$/, function () { Detail.rules(); }],
+    [/^#\/coverage$/, function () { Detail.coverage(); }],
+    [/^#\/departments$/, function () { Detail.departments(); }]
   ];
 
   function route() {
@@ -32,6 +35,7 @@
     for (var i = 0; i < ROUTES.length; i++) {
       var match = hash.match(ROUTES[i][0]);
       if (match) {
+        if (!/^#\/process\//.test(hash)) activeProcessId = null;
         ROUTES[i][1](decodeURIComponent(match[1] || ''));
         Sidebar.render(activeProcessId);
         closeDrawer();
@@ -63,15 +67,15 @@
 
   // Fields whose value changes more than their own box: a department move
   // redraws the handoff markers, a status change redraws the badge and the
-  // tree, a reparent moves the process.
-  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal)$/;
+  // tree, a reparent moves the process, a publish tab moves an FAQ.
+  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal|publish\.tabId|parentId|name|severity|condition)$/;
 
   function showDirty(count, spec) {
     if (!count) return;
-    source = 'draft';
     setStatus('draft', 'Draft · ' + count + ' change' + (count === 1 ? '' : 's'));
     // Every part of a rule changes what it finds, so any rule edit redraws.
-    if (spec && (STRUCTURAL.test(spec) || spec.indexOf('rule:') === 0)) route();
+    if (spec && (STRUCTURAL.test(spec) || spec.indexOf('rule:') === 0 ||
+        spec.indexOf('taxonomy:') === 0)) route();
     else if (spec) Sidebar.render(activeProcessId);
   }
 
@@ -80,33 +84,120 @@
     setStatus('draft', 'Draft saved · ' + count + ' change' + (count === 1 ? '' : 's'));
   }
 
+  function currentData() {
+    return {
+      processes: Data.state.processes,
+      library: Data.state.library,
+      variables: Data.state.variables
+    };
+  }
+
   // ---- the conflict bar ----------------------------------------------------
 
   function showConflict(result) {
     var bar = document.getElementById('conflictBar');
     var draftDate = (result.draft.savedAt || '').slice(0, 10);
     bar.innerHTML =
-      '<span>The published content was updated since your draft of ' +
-      Data.escapeHtml(draftDate) + ' (' + result.stale.join(', ') + ').</span>' +
+      '<span>The published content has been updated since your draft of ' +
+      e(draftDate) + ' (' + e(result.stale.join(', ')) + '). You are looking at your draft.</span>' +
+      '<button class="btn primary" id="reviewMerge">Review and merge…</button>' +
       '<button class="btn" id="keepMine">Keep my draft</button>' +
-      '<button class="btn primary" id="takePublished">Take published</button>';
+      '<button class="btn" id="takePublished">Take published</button>';
     bar.hidden = false;
 
-    document.getElementById('keepMine').addEventListener('click', function () {
-      bar.hidden = true;
-      Data.load(result.draft.data);
-      route();
-      setStatus('draft', 'Local draft');
+    document.getElementById('reviewMerge').addEventListener('click', function () {
+      openMerge(result);
     });
+
+    document.getElementById('keepMine').addEventListener('click', function () {
+      if (!confirm('Keep your draft as it is? The next export will replace the ' +
+          'newer published files with your version, so anything changed there ' +
+          'since your draft will be lost. "Review and merge" keeps both.')) return;
+      // Record that the newer files have been seen, so the next export
+      // numbers itself above them and this bar does not come back.
+      Storage.adoptVersions(currentData(), result.live);
+      Storage.setBase(result.live);
+      bar.hidden = true;
+      Edit.touch();
+      route();
+    });
+
     document.getElementById('takePublished').addEventListener('click', function () {
+      if (!confirm('Throw your draft away and load the published content?')) return;
       Storage.clearDraft().then(function () {
         bar.hidden = true;
-        Data.load(result.live);
+        Storage.setBase(result.live);
+        Data.load(Storage.clone(result.live));
         Edit.resetDirty();
         route();
         setStatus('live', 'Published · v' + (result.live.processes.version || 1));
       });
     });
+  }
+
+  // ---- merging -------------------------------------------------------------
+
+  function openMerge(result) {
+    var modal = document.getElementById('mergeModal');
+    var body = document.getElementById('mergeBody');
+    var plan = Merge.plan(currentData(), result.live, Storage.getBase());
+
+    function row(entry, i, isConflict) {
+      var key = entry.c.key + ':' + entry.id;
+      var who = entry.take === 'live' ? 'Published' : 'Yours';
+      var html = '<div class="merge-row' + (isConflict ? ' conflict' : '') + '">' +
+        '<span class="merge-kind">' + e(entry.c.kind) + '</span>' +
+        '<span class="merge-label">' + e(entry.label) + '</span>' +
+        '<span class="merge-note">' + e(entry.note) +
+        (entry.fields.length ? ' · ' + e(entry.fields.slice(0, 5).join(', ')) : '') + '</span>';
+      if (isConflict) {
+        html += '<span class="merge-choice">' +
+          '<label><input type="radio" name="m' + i + '" value="mine" data-key="' + e(key) +
+          '" checked> Mine</label>' +
+          '<label><input type="radio" name="m' + i + '" value="live" data-key="' + e(key) +
+          '"> Published</label></span>';
+      } else {
+        html += '<span class="merge-who ' + (entry.take === 'live' ? 'live' : 'mine') + '">' +
+          who + '</span>';
+      }
+      return html + '</div>';
+    }
+
+    var html = '';
+    if (!plan.hasBase) {
+      html += '<p class="modal-sub">This draft was saved by an older version of Process ' +
+        'Hub, which did not keep a copy of what it started from, so every difference ' +
+        'is listed for you to choose. Yours is selected by default.</p>';
+    }
+    if (plan.conflicts.length) {
+      html += '<h4>Choose ' + plan.conflicts.length + '</h4>' +
+        plan.conflicts.map(function (entry, i) { return row(entry, i, true); }).join('');
+    }
+    if (plan.clean.length) {
+      html += '<h4>Combine automatically · ' + plan.clean.length + '</h4>' +
+        plan.clean.map(function (entry, i) { return row(entry, i, false); }).join('');
+    }
+    if (!plan.conflicts.length && !plan.clean.length) {
+      html += '<p class="empty">Your draft and the published files hold the same ' +
+        'content. Merging just brings the version numbers up to date.</p>';
+    }
+    body.innerHTML = html;
+    modal.hidden = false;
+
+    document.getElementById('mergeCancel').onclick = function () { modal.hidden = true; };
+    document.getElementById('mergeApply').onclick = function () {
+      var choices = {};
+      Array.prototype.forEach.call(body.querySelectorAll('input[type="radio"]:checked'), function (input) {
+        choices[input.dataset.key] = input.value;
+      });
+      var merged = Merge.apply(currentData(), result.live, plan, choices);
+      Storage.setBase(result.live);
+      Data.load(merged);
+      modal.hidden = true;
+      document.getElementById('conflictBar').hidden = true;
+      Edit.touch();
+      route();
+    };
   }
 
   // ---- export menu ---------------------------------------------------------
@@ -130,6 +221,7 @@
       if (!chosen) return;
       var action = chosen.dataset.export;
       menu.hidden = true;
+      Edit.commitActive();
 
       if (action === 'github') {
         Exporter.exportForGitHub().then(function () {
@@ -138,6 +230,7 @@
       }
       if (action === 'faq') Exporter.exportFaqOnly();
       if (action === 'issues') Exporter.issuesHtml();
+      if (action === 'coverage') Exporter.coverageHtml();
       if (action === 'verification') {
         Exporter.download('verification-all.html',
           Exporter.verificationHtml(''), 'text/html');
@@ -152,7 +245,6 @@
   // ---- start ---------------------------------------------------------------
 
   function start(data, from) {
-    source = from;
     Data.load(data);
     Sidebar.init({ prefs: prefs, onNavigate: navigate });
     Detail.init({ onNavigate: navigate, prefs: prefs });
@@ -166,8 +258,12 @@
     }
 
     window.addEventListener('hashchange', route);
+    // Only ask when something typed has genuinely not reached the draft yet.
+    // Once saved, a draft survives closing the tab, so there is nothing to
+    // warn about.
     window.addEventListener('beforeunload', function (event) {
-      if (Edit.dirtyCount() > 0) {
+      if (Edit.unsaved()) {
+        Edit.commitActive();
         Edit.save();
         event.preventDefault();
         event.returnValue = '';
@@ -199,14 +295,23 @@
 
   Promise.all([Storage.fetchLive(), Storage.loadDraft()])
     .then(function (results) {
-      var result = Storage.reconcile(results[0], results[1]);
+      var live = results[0];
+      var result = Storage.reconcile(live, results[1]);
       if (result.state === 'conflict') {
-        start(result.live, 'live');
+        // Show the draft, not the published files: editing while the bar is
+        // up must add to your work, never quietly replace it.
+        Storage.setBase(result.draft.base || null);
+        start(result.draft.data, 'draft');
         showConflict(result);
       } else if (result.state === 'draft') {
+        // Same version numbers means the published files are exactly what
+        // the draft started from, so they serve as its base when an older
+        // draft did not keep one.
+        Storage.setBase(result.draft.base || live);
         start(result.draft.data, 'draft');
       } else {
-        start(result.live, 'live');
+        Storage.setBase(live);
+        start(Storage.clone(live), 'live');
       }
     })
     .catch(fail);
