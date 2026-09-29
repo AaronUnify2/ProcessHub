@@ -23,7 +23,8 @@ Process Hub started as a folder in
 [UnifyVersion1](https://github.com/AaronUnify2/UnifyVersion1) and moved here.
 The content, with its history, is in the private repository. Older commits in
 this repository's history still contain the content files from before the
-split; rewriting that history is a separate, pending step.
+split. That was a deliberate choice: the aim is council hosting, and the
+content in those older public copies was judged acceptable to leave.
 
 ## Layout
 
