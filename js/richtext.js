@@ -219,7 +219,13 @@
      * The preview updates on every keystroke, but the model does not: a commit
      * rebuilds every index, which is far too much work to do per character.
      */
+    // Only a real edit is saved. Loading content into the editor tidies its
+    // markup slightly; committing on every blur would record that tidying as
+    // a change to something nobody touched, and publish it.
+    var edited = false;
+
     function sync() {
+      edited = true;
       updatePreview();
       clearTimeout(timer);
       timer = setTimeout(commit, 500);
@@ -227,6 +233,8 @@
 
     function commit() {
       clearTimeout(timer);
+      if (!edited) return;
+      edited = false;
       if (opts.onChange) opts.onChange(Data.canonicalHtml(rawHtml()));
     }
 

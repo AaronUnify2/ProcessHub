@@ -57,6 +57,31 @@ first if there are unpublished changes.
 If GitHub cannot be reached, a draft already on the computer still opens, so
 work can carry on offline and be published later.
 
+## Sections
+
+The switch at the top of the sidebar has eight sections. Each gives the
+sidebar a list for jumping straight to anything in it, and the content area
+a dashboard for the section as a whole.
+
+| Section | Sidebar | Dashboard |
+|---|---|---|
+| Processes | the department tree | totals, handoffs, the processes with most handoffs |
+| FAQ | publish tabs, headings and questions — drag to reorder (below) | what needs attention, figures per tab |
+| Articles | knowledge base articles by owning department | current vs draft, not attached, without an owner |
+| Variables | variables by owning department, coloured by verification | verified, pending, stale, unused; a verification email or sheet per department |
+| Issues | open issues by severity, then resolved | severity counts, issues by department, the full register and rule findings |
+| Rules | every content rule with its severity and finding count | findings by severity; each rule opens on its own page with everything it finds |
+| Coverage | the department tree with a status bar per department | status by department; each department opens on its processes |
+| Depts | the department tree | the tree editor; each department opens on everything filed under, done by or owned by it |
+
+Search looks at FAQ questions, articles or variables only when in those
+sections, and at everything elsewhere.
+
+Single issues, rules, departments and a department's coverage each have a
+page of their own (`#/issue/<process>/<issue>`, `#/rule/<id>`,
+`#/department/<id>`, `#/coverage/<id>`), so choosing one in the sidebar keeps
+you in that section.
+
 ## The FAQ section
 
 The switch at the top of the sidebar moves between **Processes** and **FAQ**.
@@ -100,10 +125,10 @@ Keyboard: <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd> jumps to search,
 <kbd>Esc</kbd> clears it. The tree is the default view; search filters across
 processes, articles, FAQ questions and variables at once.
 
-Every view has its own address — `#/process/<id>`, `#/article/<id>`,
-`#/faq/<id>`, `#/variable/<id>`, plus `#/articles`, `#/faqs`, `#/variables`,
-`#/issues`, `#/rules`, `#/coverage` and `#/departments` — so back, forward and
-copied links all work.
+Every view has its own address — `#/process/<id>`, `#/faq/<id>`,
+`#/tab/<id>`, `#/article/<id>`, `#/variable/<id>`, `#/issue/<process>/<id>`,
+`#/rule/<id>`, `#/coverage/<id>`, `#/department/<id>`, and each section's
+dashboard — so back, forward and copied links all work.
 
 **Editing.** Click any field to change it. Enter saves a single-line field,
 Ctrl+Enter a multi-line one, Esc cancels. The `+ Variable` button on the edit
