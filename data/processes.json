@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": 4,
-  "updated": "2026-09-23",
+  "version": 5,
+  "updated": "2026-09-29",
   "taxonomy": [
     {
       "id": "tax_building",
@@ -2669,8 +2669,8 @@
           "faqRefs": [],
           "custom": {},
           "id": "step_proc_building_pay_application_fees_call_received",
-          "x": 80,
-          "y": 80
+          "x": 0,
+          "y": 20
         },
         {
           "type": "action",
@@ -2689,7 +2689,7 @@
           "custom": {},
           "id": "step_proc_building_pay_application_fees_confirm_the_fee_with_the_",
           "x": 400,
-          "y": 80
+          "y": 320
         },
         {
           "type": "action",
@@ -2707,8 +2707,8 @@
           "faqRefs": [],
           "custom": {},
           "id": "step_proc_building_pay_application_fees_process_payment_in_bpoint",
-          "x": 720,
-          "y": 80
+          "x": 740,
+          "y": 0
         },
         {
           "type": "resolution",
@@ -2726,8 +2726,8 @@
           "faqRefs": [],
           "custom": {},
           "id": "step_proc_building_pay_application_fees_payment_processed",
-          "x": 1040,
-          "y": 80
+          "x": 1000,
+          "y": 380
         }
       ],
       "connections": [
@@ -3271,7 +3271,7 @@
           "title": "Call received",
           "departmentId": "tax_customer_service_customer_service",
           "sop": "1. Listen and take notes as the customer explains why they are calling\n2. Ask follow-up questions until the reason is clear\n3. Confirm the service or information you are about to provide\n4. Verify name, address, mobile and email against {{var_sys_property}} where the enquiry requires it",
-          "script": "Southern Downs Regional Council, this is [name] speaking. How can I help you today?",
+          "script": "This is the test",
           "completionTrigger": "Reason for the call understood and caller details verified",
           "systems": [
             "TechOne"
@@ -3358,7 +3358,7 @@
         "cardDetail": "default"
       },
       "created": "2026-09-20",
-      "updated": "2026-09-20",
+      "updated": "2026-09-29",
       "custom": {
         "sourceNode": "BGuide1",
         "sourceSection": "buildingguide",
