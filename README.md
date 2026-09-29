@@ -20,8 +20,8 @@ be limited to this repository alone.
   live.html          the live call view
   css/app.css · css/live.css
   js/                storage.js · data.js · merge.js · edit.js · rules.js · export.js
-                     richtext.js · canvas.js · ui-sidebar.js · ui-detail.js · app.js
-                     live.js
+                     github.js · richtext.js · canvas.js · ui-sidebar.js · ui-detail.js
+                     app.js · live.js
   data/              source content, fetched by the app at load
     processes.json     taxonomy + process maps
     library.json       KB articles + FAQ questions + publish tabs
@@ -96,7 +96,9 @@ choose, yours selected by default.
 
 | | |
 |---|---|
-| Export for GitHub | Four files → `data/` and `exports/` |
+| Publish to GitHub | All four files as one commit on `main` — see below |
+| GitHub connection… | Save, test or forget the token this computer publishes with |
+| Download the files instead | The same four files, to commit by hand |
 | FAQ.json only | → `exports/FAQ.json`, which the public FAQ page reads |
 | Verification sheet | Every variable, grouped by owning department |
 | Issues report | The register as a readable page |
@@ -183,6 +185,33 @@ card shows, and the same setting drives the SVG.
 header carrying the process name, department path, step and handoff counts,
 and a legend. Variables are frozen to their values, since an SVG cannot
 resolve anything when it is opened.
+
+## Publishing
+
+**Publish to GitHub** writes `data/processes.json`, `data/library.json`,
+`data/variables.json` and `exports/FAQ.json` to this repository as **one
+commit on `main`**. Pages serves `main`, so it is live within a minute or two,
+and the public FAQ page picks up the new `FAQ.json` with it.
+
+The dialog lists what changed since the last publish — worked out the same way
+as the merge, by comparing the draft with what it started from — and offers a
+commit message built from it ("Process Hub: 2 processes, 1 FAQ question"),
+with the list of items in the commit body.
+
+Before writing anything it reads the version numbers of the files on GitHub.
+If someone has published since your draft started, it stops and sends you to
+**Review and merge** instead of overwriting their work. The final step asks
+GitHub to move `main` only if nobody moved it in the meantime, so two people
+publishing at once cannot clobber each other either. Nothing in the app
+changes until GitHub has accepted the commit.
+
+**The token.** Publishing uses a fine-grained personal access token with
+access to this repository only and *Contents: Read and write*. Paste it once
+under **GitHub connection…**; it is checked with GitHub before being kept. It
+is stored in this browser's `localStorage` on this computer — never in the
+draft, an export or the repository — and is only ever sent to
+`api.github.com`. *Forget it* removes it from the computer; to stop it working
+everywhere, delete it on GitHub as well. Each computer needs its own token.
 
 ## The live call view
 

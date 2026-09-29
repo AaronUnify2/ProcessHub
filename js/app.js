@@ -200,6 +200,198 @@
     };
   }
 
+  // ---- connecting to GitHub ------------------------------------------------
+
+  /** afterConnect, if given, runs once a token has been checked and saved. */
+  function openConnect(afterConnect) {
+    var modal = document.getElementById('ghConnectModal');
+    var input = document.getElementById('ghToken');
+    var result = document.getElementById('ghResult');
+    var saved = document.getElementById('ghSaved');
+
+    function showSaved() {
+      saved.hidden = !GitHub.hasToken();
+    }
+
+    input.value = '';
+    result.textContent = '';
+    result.className = 'gh-result';
+    showSaved();
+    modal.hidden = false;
+    input.focus();
+
+    function report(kind, text) {
+      result.className = 'gh-result ' + kind;
+      result.textContent = text;
+    }
+
+    document.getElementById('ghCheck').onclick = function () {
+      var token = input.value.trim();
+      if (!token) { input.focus(); return; }
+      report('busy', 'Checking with GitHub…');
+      GitHub.check(token).then(function (who) {
+        if (!GitHub.setToken(token)) {
+          report('bad', 'This browser will not store the token (private window, or ' +
+            'storage blocked). Publishing needs it to be stored.');
+          return;
+        }
+        input.value = '';
+        showSaved();
+        report('good', 'Connected as ' + (who.login || 'you') + ' — the token can see ' +
+          who.repo + '. Writing is confirmed the first time you publish.');
+        if (afterConnect) {
+          setTimeout(function () { modal.hidden = true; afterConnect(); }, 900);
+        }
+      }).catch(function (err) {
+        report('bad', err.message);
+      });
+    };
+
+    document.getElementById('ghTest').onclick = function () {
+      report('busy', 'Checking the saved token…');
+      GitHub.check(GitHub.getToken()).then(function (who) {
+        report('good', 'The saved token works — connected as ' + (who.login || 'you') + '.');
+      }).catch(function (err) { report('bad', err.message); });
+    };
+
+    document.getElementById('ghForget').onclick = function () {
+      GitHub.forgetToken();
+      showSaved();
+      report('good', 'Token removed from this computer. To stop it working everywhere, ' +
+        'delete it on GitHub too.');
+    };
+
+    document.getElementById('ghClose').onclick = function () { modal.hidden = true; };
+  }
+
+  // ---- publishing ----------------------------------------------------------
+
+  var FRIENDLY_NOTE = { 'you changed it': 'changed', 'you added it': 'added', 'you deleted it': 'deleted' };
+
+  /**
+   * What has changed since the draft's base, item by item, reusing the merge
+   * comparison: the draft against its own base is exactly "what I changed".
+   */
+  function changesSinceBase() {
+    var base = Storage.getBase();
+    if (!base) return null;
+    return Merge.plan(currentData(), base, base).clean;
+  }
+
+  function summarise(changes) {
+    if (!changes) return 'Process Hub: update content';
+    var counts = {};
+    changes.forEach(function (c) { counts[c.c.kind] = (counts[c.c.kind] || 0) + 1; });
+    var NOUNS = {
+      Process: ['process', 'processes'], Department: ['department', 'departments'],
+      Rule: ['rule', 'rules'], Article: ['article', 'articles'],
+      FAQ: ['FAQ question', 'FAQ questions'], 'Publish tab': ['publish tab', 'publish tabs'],
+      Variable: ['variable', 'variables']
+    };
+    var parts = Object.keys(counts).map(function (kind) {
+      var n = counts[kind];
+      var noun = NOUNS[kind] || [kind, kind + 's'];
+      return n + ' ' + noun[n === 1 ? 0 : 1];
+    });
+    return 'Process Hub: ' + (parts.join(', ') || 'no content changes');
+  }
+
+  function commitBody(changes) {
+    if (!changes || !changes.length) return '';
+    var lines = changes.slice(0, 30).map(function (c) {
+      return '- ' + c.c.kind + ': ' + c.label + ' (' + (FRIENDLY_NOTE[c.note] || c.note) + ')';
+    });
+    if (changes.length > 30) lines.push('- and ' + (changes.length - 30) + ' more');
+    return '\n\n' + lines.join('\n');
+  }
+
+  function openPublish() {
+    Edit.commitActive();
+
+    if (!document.getElementById('conflictBar').hidden) {
+      alert('The published files changed since your draft started. Use "Review and merge" ' +
+        'in the bar at the top first, then publish.');
+      return;
+    }
+    if (!GitHub.hasToken()) {
+      openConnect(openPublish);
+      return;
+    }
+
+    var modal = document.getElementById('publishModal');
+    var list = document.getElementById('pubChanges');
+    var message = document.getElementById('pubMessage');
+    var status = document.getElementById('pubStatus');
+    var go = document.getElementById('pubGo');
+    var changes = changesSinceBase();
+
+    document.getElementById('pubWhere').textContent =
+      GitHub.OWNER + '/' + GitHub.REPO + ' · ' + GitHub.BRANCH;
+
+    if (changes && !changes.length) {
+      list.innerHTML = '<p class="empty">Nothing has changed since the last publish.</p>';
+    } else if (changes) {
+      list.innerHTML = changes.map(function (c) {
+        return '<div class="pub-row"><span class="merge-kind">' + e(c.c.kind) + '</span>' +
+          '<span class="pub-label">' + e(c.label) + '</span>' +
+          '<span class="pub-note">' + e(FRIENDLY_NOTE[c.note] || c.note) + '</span></div>';
+      }).join('');
+    } else {
+      list.innerHTML = '<p class="modal-sub">This draft does not know what it started from, ' +
+        'so the changes cannot be listed. Everything is published as it stands.</p>';
+    }
+
+    message.value = summarise(changes);
+    status.textContent = '';
+    status.className = 'gh-result';
+    go.disabled = !!(changes && !changes.length);
+    go.textContent = 'Publish';
+    modal.hidden = false;
+
+    document.getElementById('pubCancel').onclick = function () { modal.hidden = true; };
+    document.getElementById('pubConnection').onclick = function () {
+      modal.hidden = true;
+      openConnect();
+    };
+
+    go.onclick = function () {
+      var built = Exporter.buildFiles();
+      go.disabled = true;
+      status.className = 'gh-result busy';
+
+      GitHub.publish({
+        files: built.files,
+        message: (message.value.trim() || summarise(changes)) + commitBody(changes),
+        baseVersions: Storage.versionsOf(currentData()),
+        onProgress: function (text) { status.textContent = text; }
+      }).then(function (done) {
+        return Exporter.adopt(built).then(function () { return done; });
+      }).then(function (done) {
+        setStatus('live', 'Published · v' + Data.state.processes.version);
+        status.className = 'gh-result good';
+        status.innerHTML = 'Published. It will be live at <a href="' + e(GitHub.SITE) +
+          '" target="_blank" rel="noopener">' + e(GitHub.SITE) + '</a> within a minute or ' +
+          'two. <a href="' + e(done.url) + '" target="_blank" rel="noopener">See the commit</a>.';
+        go.textContent = 'Done';
+        go.disabled = false;
+        go.onclick = function () { modal.hidden = true; };
+      }).catch(function (err) {
+        status.className = 'gh-result bad';
+        status.textContent = err.message;
+        go.disabled = false;
+        go.textContent = 'Try again';
+        if (err.status === 401) {
+          status.textContent += ' ';
+          var fix = document.createElement('button');
+          fix.className = 'btn small';
+          fix.textContent = 'Connect again';
+          fix.onclick = function () { modal.hidden = true; openConnect(openPublish); };
+          status.appendChild(fix);
+        }
+      });
+    };
+  }
+
   // ---- export menu ---------------------------------------------------------
 
   function wireExportMenu() {
@@ -223,6 +415,8 @@
       menu.hidden = true;
       Edit.commitActive();
 
+      if (action === 'publish') openPublish();
+      if (action === 'connect') openConnect();
       if (action === 'github') {
         Exporter.exportForGitHub().then(function () {
           setStatus('live', 'Exported · v' + Data.state.processes.version);
@@ -316,5 +510,5 @@
     })
     .catch(fail);
 
-  global.App = { route: route, navigate: navigate };
+  global.App = { route: route, navigate: navigate, publish: openPublish };
 }(window));

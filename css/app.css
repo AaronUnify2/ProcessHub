@@ -1446,3 +1446,44 @@ button.rule-head[disabled] { cursor: default; }
   .dept-row.depth-1 { margin-left: 0.6rem; }
   .dept-row.depth-2 { margin-left: 1.2rem; }
 }
+
+/* ===========================================================================
+   Publishing to GitHub
+   =========================================================================== */
+
+.gh-saved {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
+  background: #EAF6EE; border-radius: 8px; padding: 0.45rem 0.6rem;
+  font-size: 0.82rem; margin-bottom: 0.7rem;
+}
+.gh-saved[hidden] { display: none; }
+.gh-saved span { flex: 1; min-width: 10rem; color: var(--good); font-weight: 600; }
+.fm-field input[type="password"] {
+  width: 100%; font: inherit; font-size: 0.88rem; padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border-strong); border-radius: 8px;
+}
+.gh-result { font-size: 0.82rem; min-height: 1.2em; margin: 0.2rem 0 0.4rem; line-height: 1.45; }
+.gh-result:empty { display: none; }
+.gh-result.busy { color: var(--text-soft); }
+.gh-result.good { color: var(--good); }
+.gh-result.bad { color: var(--danger); }
+.gh-result a { color: inherit; font-weight: 600; }
+.gh-result .btn { margin-left: 0.3rem; }
+.gh-help { font-size: 0.8rem; color: var(--text-soft); margin-top: 0.3rem; }
+.gh-help summary { cursor: pointer; }
+.gh-help ol { margin: 0.4rem 0 0 1.2rem; }
+.gh-help li { margin-bottom: 0.2rem; }
+.gh-help a { color: var(--accent); }
+
+.pub-row {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 0.6rem; align-items: center;
+  padding: 0.35rem 0.6rem; border: 1px solid var(--border); border-radius: 8px;
+  margin-bottom: 0.25rem; font-size: 0.84rem;
+}
+.pub-label { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pub-note { font-size: 0.72rem; color: var(--text-soft); }
+#publishModal .merge-body { max-height: 38vh; margin-bottom: 0.6rem; }
+.modal-actions .spacer { flex: 1; }
+.btn.quiet-link { border: none; background: none; color: var(--accent); padding-left: 0; }
+.fm-field input#pubMessage { width: 100%; font: inherit; font-size: 0.88rem; padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border-strong); border-radius: 8px; }

@@ -454,6 +454,11 @@ just-committed update would otherwise appear not to have landed.
 
 ### 9.3 Publish
 
+*As built:* **Publish to GitHub** commits the four files to `main` in one
+commit through the GitHub API, using a fine-grained token kept in the
+browser, after checking nobody else has published since the draft started.
+The download described below remains as a fallback.
+
 One button: **Export for GitHub**. Downloads all four files, named exactly as
 they sit in the repo, each with `version` incremented and `updated` stamped.
 Drag into the repo, commit. The app then advances the draft's `baseVersions` so
