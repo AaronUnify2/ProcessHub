@@ -9,7 +9,7 @@ so the output must match the schema it already expects:
 
 Run from the repository root:
 
-    python3 processhub/tools/export-faq.py [--out PATH] [--check]
+    python3 tools/export-faq.py [--out PATH] [--check]
 
 --check compares the result against the current FAQ.json and reports any
 difference, which is how the import is verified as lossless.
@@ -21,8 +21,8 @@ import os
 import re
 import sys
 
-DATA_DIR = os.path.join('processhub', 'data')
-DEFAULT_OUT = os.path.join('processhub', 'exports', 'FAQ.json')
+DATA_DIR = 'data'
+DEFAULT_OUT = os.path.join('exports', 'FAQ.json')
 
 
 def load(name):
@@ -116,7 +116,7 @@ def stepper_from_process(process_id, processes):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', default=DEFAULT_OUT)
-    ap.add_argument('--check', metavar='PATH', nargs='?', const='FAQ.json',
+    ap.add_argument('--check', metavar='PATH', nargs='?', const=os.path.join('tools', 'sources', 'FAQ.json'),
                     help='compare the result against an existing FAQ.json')
     args = ap.parse_args()
 

@@ -2,19 +2,20 @@
 
 Process maps, knowledge base articles and public FAQ content in one editor.
 
-See [`../ProcessHub-SPEC.md`](../ProcessHub-SPEC.md) for the data model and
-[`../TERMINOLOGY-AUDIT.md`](../TERMINOLOGY-AUDIT.md) for the terminology
-checklist.
+See [`SPEC.md`](SPEC.md) for the data model and
+[`TERMINOLOGY-AUDIT.md`](TERMINOLOGY-AUDIT.md) for the terminology checklist.
 
-> **This folder is self-contained** so it can be lifted into its own repository
-> without changes. It deliberately breaks the one-file-per-project rule in the
-> root `CLAUDE.md`, because this is a multi-file app with its own content files
-> rather than a standalone page.
+Live at **https://aaronunify2.github.io/processhub/** — every push to `main`
+deploys the whole repository through `.github/workflows/static.yml`.
+
+Process Hub started as a folder in
+[UnifyVersion1](https://github.com/AaronUnify2/UnifyVersion1) and moved here
+with its history, so that a GitHub token used to publish from the browser can
+be limited to this repository alone.
 
 ## Layout
 
 ```
-processhub/
   index.html         the app
   live.html          the live call view
   css/app.css · css/live.css
@@ -26,11 +27,13 @@ processhub/
     library.json       KB articles + FAQ questions + publish tabs
     variables.json     variables + owners
   exports/           generated, never hand-edited
-    FAQ.json           the live published FAQ content — FAQ.html reads this
+    FAQ.json           the live published FAQ content — the public FAQ page reads this
   tools/             one-off migration scripts
     import-faq.py
     import-flowcharts.py
     export-faq.py
+    sources/           what the imports read, frozen: FAQ.json, CustomerService.html
+  SPEC.md · TERMINOLOGY-AUDIT.md
 ```
 
 ## Running the app
@@ -93,8 +96,8 @@ choose, yours selected by default.
 
 | | |
 |---|---|
-| Export for GitHub | Four files → `processhub/data/` and `processhub/exports/` |
-| FAQ.json only | → `processhub/exports/FAQ.json`, which `FAQ.html` reads |
+| Export for GitHub | Four files → `data/` and `exports/` |
+| FAQ.json only | → `exports/FAQ.json`, which the public FAQ page reads |
 | Verification sheet | Every variable, grouped by owning department |
 | Issues report | The register as a readable page |
 | Discard local changes | Throw the draft away and reload the published content |
@@ -237,7 +240,7 @@ The scripts run from the repository root and need nothing installed.
 in `data/`, so it is only for seeding.
 
 ```
-python3 processhub/tools/import-faq.py
+python3 tools/import-faq.py
 ```
 
 **Import the call flowcharts.** Merges into the files above, so run it second.
@@ -246,27 +249,28 @@ Each leaf node of the diagram becomes one process: numbered items become steps,
 call script, and context chips become article references.
 
 ```
-python3 processhub/tools/import-flowcharts.py
+python3 tools/import-flowcharts.py
 ```
 
 This is a structural extraction, not a rewrite. Everything it produces is
 `status: "draft"` and anything needing judgement is recorded as an issue.
 
 **Project the data back into the `FAQ.json`** that the public page reads. This
-writes `processhub/exports/FAQ.json`, which is the single source of truth for
-published FAQ content — `../FAQ.html` fetches it directly:
+writes `exports/FAQ.json`, which is the single source of truth for published
+FAQ content. The public page, `FAQ.html` in UnifyVersion1, fetches it from
+`https://aaronunify2.github.io/processhub/exports/FAQ.json`:
 
 ```
-python3 processhub/tools/export-faq.py
+python3 tools/export-faq.py
 ```
 
 **Verify the round trip.** Compares a fresh export against the frozen
-pre-Process-Hub copy at the repository root. That root `FAQ.json` is no longer
-live — it is kept purely as this baseline. If a schema change ever loses
-content, this catches it:
+pre-Process-Hub copy in `tools/sources/FAQ.json`. That file is no longer live —
+it is kept purely as this baseline. If a schema change ever loses content,
+this catches it:
 
 ```
-python3 processhub/tools/export-faq.py --check FAQ.json
+python3 tools/export-faq.py --check
 ```
 
 At the last run: 129 variables, 14 tabs, 197 items, no published content lost.

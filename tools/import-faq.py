@@ -4,13 +4,13 @@ Import FAQ.json into the Process Hub three-file data model.
 
 Reads the published FAQ content and writes:
 
-    processhub/data/variables.json   variables + the department register
-    processhub/data/library.json     FAQ questions + publish tabs (+ empty article list)
-    processhub/data/processes.json   taxonomy only; processes come from the flowchart import
+    data/variables.json   variables + the department register
+    data/library.json     FAQ questions + publish tabs (+ empty article list)
+    data/processes.json   taxonomy only; processes come from the flowchart import
 
 Run from the repository root:
 
-    python3 processhub/tools/import-faq.py
+    python3 tools/import-faq.py
 
 The script is a one-off migration, but it is written to be re-runnable: it
 reads only from FAQ.json and overwrites its outputs completely.
@@ -22,8 +22,8 @@ import re
 import sys
 from datetime import date
 
-SOURCE = 'FAQ.json'
-OUT_DIR = os.path.join('processhub', 'data')
+SOURCE = os.path.join('tools', 'sources', 'FAQ.json')
+OUT_DIR = 'data'
 TODAY = date.today().isoformat()
 SCHEMA = 1
 VERSION = 1

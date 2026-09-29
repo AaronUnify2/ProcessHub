@@ -13,7 +13,7 @@ an issue on the process rather than guessed at.
 
 Run from the repository root, AFTER import-faq.py:
 
-    python3 processhub/tools/import-flowcharts.py
+    python3 tools/import-flowcharts.py
 
 It merges into the existing data files rather than overwriting them.
 """
@@ -25,8 +25,8 @@ import re
 import sys
 from datetime import date
 
-SOURCE = 'CustomerService.html'
-DATA_DIR = os.path.join('processhub', 'data')
+SOURCE = os.path.join('tools', 'sources', 'CustomerService.html')
+DATA_DIR = 'data'
 TODAY = date.today().isoformat()
 
 # ---------------------------------------------------------------------------
