@@ -14,7 +14,9 @@
 (function (global) {
   'use strict';
 
-  var active = null;
+  // Every editor on the current page. A page can hold more than one (a tab's
+  // intro and footer), and each must be flushed before the page is redrawn.
+  var actives = [];
 
   function e(text) { return Data.escapeHtml(text); }
 
@@ -240,13 +242,16 @@
     host.appendChild(previewWrap);
     updatePreview();
 
-    active = { commit: commit, setHeader: setHeader };
-    return active;
+    var instance = { commit: commit, setHeader: setHeader };
+    actives.push(instance);
+    return instance;
   }
 
   /** Flush any pending edit — call before navigating away. */
   function flush() {
-    if (active) active.commit();
+    var list = actives;
+    actives = [];
+    list.forEach(function (instance) { instance.commit(); });
   }
 
   function selectionText() {

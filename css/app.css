@@ -1518,3 +1518,137 @@ body.gated > :not(.gate) { visibility: hidden; }
 .gate-result.bad { color: var(--danger); }
 .btn.gate-go { width: 100%; justify-content: center; padding: 0.55rem; font-size: 0.92rem; margin: 0.4rem 0 0.8rem; }
 .gate .gh-help p { margin-top: 0.4rem; }
+
+/* ===========================================================================
+   Sidebar sections, and the FAQ tree
+   =========================================================================== */
+
+.section-switch {
+  display: flex; gap: 2px; margin: 0.7rem 0.8rem 0; padding: 2px;
+  background: var(--bg); border-radius: 9px;
+}
+.section-switch button {
+  flex: 1; font: inherit; font-size: 0.82rem; font-weight: 650; border: none;
+  border-radius: 7px; background: none; color: var(--text-soft); padding: 0.35rem 0.5rem;
+  cursor: pointer;
+}
+.section-switch button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+
+.faq-tab { margin-top: 0.35rem; }
+.faq-tab-head {
+  display: flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.4rem; border-radius: 6px;
+}
+.faq-tab-head.active { background: var(--accent-soft); }
+.faq-tab-name {
+  flex: 1; min-width: 0; font: inherit; font-size: 0.8rem; font-weight: 700; text-align: left;
+  letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-soft);
+  background: none; border: none; padding: 0; cursor: pointer;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.faq-tab-name:hover { color: var(--accent); }
+.faq-tab-name.quiet { cursor: default; font-style: italic; }
+.faq-tab-name.quiet:hover { color: var(--text-soft); }
+.faq-new {
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.04em; font-style: normal;
+  background: var(--accent); color: #fff; border-radius: 3px; padding: 1px 4px;
+}
+
+.faq-rows { padding-left: 0.9rem; min-height: 0.4rem; }
+.faq-row {
+  display: flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.4rem;
+  border-radius: 6px; cursor: pointer; font-size: 0.84rem; line-height: 1.3;
+  border-top: 2px solid transparent; border-bottom: 2px solid transparent;
+}
+.faq-row:hover { background: var(--bg); }
+.faq-row.active { background: var(--accent-soft); }
+.faq-row .grip { color: #B7BEC8; font-size: 0.7rem; cursor: grab; letter-spacing: -2px; flex: 0 0 auto; }
+.faq-row.dragging { opacity: 0.4; }
+.faq-q-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.faq-row.active .faq-q-text { white-space: normal; font-weight: 600; }
+.faq-row .status-dot { flex: 0 0 auto; }
+
+.faq-heading {
+  margin-top: 0.35rem; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--accent); cursor: grab;
+}
+.faq-heading-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.faq-heading.pending { color: var(--text-soft); font-style: italic; }
+.faq-heading .faq-mini, .faq-heading .faq-nudge { opacity: 0; }
+.faq-heading:hover .faq-mini, .faq-heading:hover .faq-nudge,
+.faq-heading:focus-within .faq-mini, .faq-heading:focus-within .faq-nudge { opacity: 1; }
+@media (hover: none) { .faq-heading .faq-mini, .faq-heading .faq-nudge { opacity: 0.7; } }
+
+.faq-nudge { display: inline-flex; gap: 2px; flex: 0 0 auto; }
+.faq-mini {
+  flex: 0 0 auto; font: inherit; font-size: 0.72rem; line-height: 1; min-width: 22px; height: 22px;
+  border: 1px solid var(--border); border-radius: 5px; background: var(--surface);
+  color: var(--text-soft); cursor: pointer; text-transform: none; letter-spacing: 0; font-weight: 600;
+}
+.faq-mini:hover:not([disabled]) { border-color: var(--accent); color: var(--accent); }
+.faq-mini[disabled] { opacity: 0.35; cursor: default; }
+.faq-mini.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+.faq-add { display: flex; gap: 0.3rem; padding: 0.3rem 0.4rem 0.2rem; }
+.faq-tree-foot { padding: 0.6rem 0.4rem 0; }
+
+/* Where a dragged row will land */
+.faq-row.drop-before { border-top-color: var(--accent); }
+.faq-row.drop-after { border-bottom-color: var(--accent); }
+.drop-into { outline: 2px dashed var(--accent); outline-offset: -2px; border-radius: 6px; }
+
+/* ---- the FAQ dashboard and tab page -------------------------------------- */
+
+.cov-table.faq-tabs .cov-row {
+  grid-template-columns: minmax(8rem, 2fr) 5rem 5rem 6.5rem 4.5rem minmax(6rem, 1fr);
+}
+button.cov-row.cov-link {
+  width: 100%; font: inherit; text-align: left; background: none; border: none;
+  border-top: 1px solid var(--border); cursor: pointer; color: inherit;
+}
+button.cov-row.cov-link:hover { background: var(--bg); }
+.cov-row .num.warn { color: var(--warn); font-weight: 700; }
+.cov-row .when { font-size: 0.78rem; color: var(--text-soft); }
+@media (max-width: 700px) {
+  .cov-table.faq-tabs .cov-row { grid-template-columns: minmax(0, 1fr) 4.6rem 5.5rem; }
+  .cov-table.faq-tabs .cov-row > :nth-child(3),
+  .cov-table.faq-tabs .cov-row > :nth-child(5),
+  .cov-table.faq-tabs .cov-row > :nth-child(6) { display: none; }
+  .cov-table.faq-tabs .cov-row > :nth-child(4) { display: block; }
+}
+
+.inline-select {
+  font: inherit; font-size: 0.88rem; padding: 0.3rem 0.5rem; max-width: 100%;
+  border: 1px solid var(--border-strong); border-radius: 7px; background: var(--surface);
+}
+.faq-position { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+.faq-position .hint { margin-left: 0.3rem; }
+.crumbs a { color: inherit; }
+.crumbs a:hover { color: var(--accent); }
+
+.tab-stepper-source { margin-bottom: 0.6rem; font-size: 0.88rem; }
+.stepper-rows { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.5rem; }
+.stepper-row {
+  display: grid; grid-template-columns: 7rem 1fr auto; gap: 0.5rem; align-items: center;
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: 7px; padding: 0.35rem 0.55rem; font-size: 0.86rem;
+}
+.stepper-row .sr-label { font-weight: 700; font-size: 0.76rem; color: var(--accent); }
+.stepper-preview { display: flex; flex-wrap: wrap; gap: 6px; }
+.sp-step {
+  flex: 1 1 0; min-width: 120px; background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent); padding: 0.4rem 0.6rem; font-size: 0.8rem; border-radius: 5px;
+}
+.sp-step b { display: block; font-size: 0.66rem; color: var(--accent); letter-spacing: 0.04em; }
+.tab-q-heading {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--accent); margin: 0.9rem 0 0.35rem;
+}
+@media (max-width: 560px) {
+  .stepper-row { grid-template-columns: 1fr auto; }
+  .stepper-row .sr-label { grid-column: 1 / -1; }
+}
+
+/* The sidebar keeps its width whatever it holds: long FAQ questions would
+   otherwise widen it, because a flex item will not shrink below its content. */
+.sidebar { min-width: 0; width: var(--sidebar-w); }
+.sidebar-body, #tree, .faq-tab, .faq-rows { min-width: 0; }

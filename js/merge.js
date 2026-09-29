@@ -22,8 +22,8 @@
     { file: 'processes', key: 'taxonomy', kind: 'Department', label: function (x) { return x.name; } },
     { file: 'processes', key: 'rules', kind: 'Rule', label: function (x) { return x.name; } },
     { file: 'library', key: 'articles', kind: 'Article', label: function (x) { return x.title; } },
-    { file: 'library', key: 'faqs', kind: 'FAQ', label: function (x) { return x.q; } },
-    { file: 'library', key: 'publishTabs', kind: 'Publish tab', label: function (x) { return x.label; } },
+    { file: 'library', key: 'faqs', kind: 'FAQ', label: function (x) { return Data.plainText(x.q); } },
+    { file: 'library', key: 'publishTabs', kind: 'Publish tab', label: function (x) { return Data.plainText(x.label); } },
     { file: 'variables', key: 'variables', kind: 'Variable', label: function (x) { return x.value; } }
   ];
 

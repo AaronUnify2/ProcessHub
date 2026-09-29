@@ -10,24 +10,27 @@
   'use strict';
 
   var prefs = Storage.loadPrefs();
-  var activeProcessId = null;
 
   function e(text) { return Data.escapeHtml(text); }
 
   // ---- routing -------------------------------------------------------------
 
+  // Each route names the sidebar section it belongs to and what to highlight.
+  // A route with no section (articles, variables…) leaves the sidebar on
+  // whichever section was showing.
   var ROUTES = [
-    [/^#\/process\/(.+)$/, function (id) { activeProcessId = id; Detail.process(id); }],
-    [/^#\/article\/(.+)$/, function (id) { Detail.article(id); }],
-    [/^#\/faq\/(.+)$/, function (id) { Detail.faq(id); }],
-    [/^#\/variable\/(.+)$/, function (id) { Detail.variable(id); }],
-    [/^#\/articles$/, function () { Detail.articleList(); }],
-    [/^#\/faqs$/, function () { Detail.faqList(); }],
-    [/^#\/variables$/, function () { Detail.variableList(); }],
-    [/^#\/issues$/, function () { Detail.issues(); }],
-    [/^#\/rules$/, function () { Detail.rules(); }],
-    [/^#\/coverage$/, function () { Detail.coverage(); }],
-    [/^#\/departments$/, function () { Detail.departments(); }]
+    [/^#\/process\/(.+)$/, 'processes', function (id) { Detail.process(id); return id; }],
+    [/^#\/faq\/(.+)$/, 'faq', function (id) { Detail.faq(id); return id; }],
+    [/^#\/faqs$/, 'faq', function () { Detail.faqDashboard(); }],
+    [/^#\/tab\/(.+)$/, 'faq', function (id) { Detail.tab(id); return 'tab:' + id; }],
+    [/^#\/article\/(.+)$/, null, function (id) { Detail.article(id); }],
+    [/^#\/variable\/(.+)$/, null, function (id) { Detail.variable(id); }],
+    [/^#\/articles$/, null, function () { Detail.articleList(); }],
+    [/^#\/variables$/, null, function () { Detail.variableList(); }],
+    [/^#\/issues$/, null, function () { Detail.issues(); }],
+    [/^#\/rules$/, null, function () { Detail.rules(); }],
+    [/^#\/coverage$/, null, function () { Detail.coverage(); }],
+    [/^#\/departments$/, null, function () { Detail.departments(); }]
   ];
 
   function route() {
@@ -35,16 +38,14 @@
     for (var i = 0; i < ROUTES.length; i++) {
       var match = hash.match(ROUTES[i][0]);
       if (match) {
-        if (!/^#\/process\//.test(hash)) activeProcessId = null;
-        ROUTES[i][1](decodeURIComponent(match[1] || ''));
-        Sidebar.render(activeProcessId);
+        var active = ROUTES[i][2](decodeURIComponent(match[1] || ''));
+        Sidebar.render({ section: ROUTES[i][1], active: active || null });
         closeDrawer();
         return;
       }
     }
-    activeProcessId = null;
     Detail.home();
-    Sidebar.render(null);
+    Sidebar.render({ section: 'processes', active: null });
     closeDrawer();
   }
 
@@ -68,7 +69,7 @@
   // Fields whose value changes more than their own box: a department move
   // redraws the handoff markers, a status change redraws the badge and the
   // tree, a reparent moves the process, a publish tab moves an FAQ.
-  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal|publish\.tabId|parentId|name|severity|condition)$/;
+  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal|publish\.tabId|parentId|name|severity|condition|stepperFrom|label|new)$/;
 
   function showDirty(count, spec) {
     if (!count) return;
@@ -76,7 +77,7 @@
     // Every part of a rule changes what it finds, so any rule edit redraws.
     if (spec && (STRUCTURAL.test(spec) || spec.indexOf('rule:') === 0 ||
         spec.indexOf('taxonomy:') === 0)) route();
-    else if (spec) Sidebar.render(activeProcessId);
+    else if (spec) Sidebar.render();
   }
 
   function showSaved(count, err) {

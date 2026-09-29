@@ -172,6 +172,49 @@
       else alert('This variable is still used. Replace those references first.');
     }
 
+    // -- the FAQ: order, tabs and step strips
+    if (act === 'faq-up' || act === 'faq-down') {
+      FaqOrder.nudge(d.tab || '', Number(d.index), act === 'faq-up' ? -1 : 1);
+      refresh();
+    }
+    if (act === 'faq-add-question') {
+      name = ask('The new question, as a customer would ask it:');
+      if (name) onNavigate('#/faq/' + FaqOrder.addQuestion(d.tab || '', name));
+    }
+    if (act === 'faq-new-tab') {
+      name = ask('Label for the new tab on the FAQ page:');
+      if (name) onNavigate('#/tab/' + FaqOrder.createTab(name));
+    }
+    if (act === 'tab-up' || act === 'tab-down') {
+      FaqOrder.moveTab(d.tab, act === 'tab-up' ? -1 : 1);
+      refresh();
+    }
+    if (act === 'tab-delete') {
+      var inTab = FaqOrder.questionsIn(d.tab).length;
+      if (confirm('Delete this tab from the FAQ page?' + (inTab
+          ? ' Its ' + plural(inTab, 'question') + ' move to "Not published" — nothing is lost.' : ''))) {
+        FaqOrder.deleteTab(d.tab);
+        onNavigate('#/faqs');
+      }
+    }
+    if (act === 'tab-step-add') {
+      var t1 = FaqOrder.tab(d.tab);
+      if (t1) {
+        t1.stepper = t1.stepper || [];
+        t1.stepper.push({ label: 'STEP ' + (t1.stepper.length + 1), text: '' });
+        Edit.touch();
+        refresh();
+      }
+    }
+    if (act === 'tab-step-del') {
+      var t2 = FaqOrder.tab(d.tab);
+      if (t2 && t2.stepper) {
+        t2.stepper.splice(Number(d.index), 1);
+        Edit.touch();
+        refresh();
+      }
+    }
+
     // -- departments
     if (act === 'new-dept') {
       name = ask(d.parent ? 'Name of the new sub-department:' : 'Name of the new department:');
@@ -254,6 +297,12 @@
 
   /** The "+ route to…" menus on each step. */
   function handleChange(event) {
+    var mover = event.target.closest('select[data-move-faq]');
+    if (mover) {
+      FaqOrder.moveToTab(mover.dataset.moveFaq, mover.value);
+      refresh();
+      return;
+    }
     var select = event.target.closest('select[data-add-route]');
     if (!select || !select.value) return;
     Edit.addConnection(select.dataset.process, select.dataset.addRoute, select.value, '');
@@ -721,21 +770,34 @@
     });
   }
 
+  var PUBLIC_FAQ = 'https://aaronunify2.github.io/UnifyVersion1/FAQ.html';
+
   function renderFaq(id) {
     var q = Data.state.index.faqs[id];
     if (!q) return paint(notFound('FAQ question', id));
     var usage = Data.state.index.usage[id] || { processes: [], steps: 0 };
 
-    var tabs = [{ value: '', label: 'Not published' }].concat(
+    var tabId = (q.publish && q.publish.tabId) || '';
+    var tab = tabId ? FaqOrder.tab(tabId) : null;
+    var at = FaqOrder.indexOf(id);
+    var rows = FaqOrder.rows(tabId);
+    var questions = rows.filter(function (r) { return r.type === 'faq'; });
+    var position = questions.findIndex(function (r) { return r.faq.id === id; }) + 1;
+    var heading = tabId && q.publish && q.publish.groupTitle;
+
+    var tabOptions = '<option value="">Not published</option>' +
       Data.state.library.publishTabs.map(function (t) {
-        return { value: t.id, label: t.label };
-      }));
-    var published = q.publish && q.publish.tabId;
+        return '<option value="' + e(t.id) + '"' + (t.id === tabId ? ' selected' : '') + '>' +
+          e(Data.plainText(t.label)) + '</option>';
+      }).join('');
 
     paint('<article class="pane">' +
       '<header class="pane-head">' +
-      '<div class="crumbs">FAQ · ' + (published ? 'published' : 'not published') + '</div>' +
-      '<h1 class="editable-h1">' + f('faq:' + id + ':q') + '</h1>' +
+      '<div class="crumbs">FAQ · ' + (tab
+        ? '<a href="#/tab/' + e(tabId) + '">' + e(Data.plainText(tab.label)) + '</a>' +
+          (heading ? ' › ' + e(heading) : '')
+        : 'not published') + '</div>' +
+      '<h1 class="editable-h1">' + f('faq:' + id + ':q', { type: 'inlinehtml' }) + '</h1>' +
       '<div class="badges">' +
       '<span class="badge status-' + e(q.status) + '">' + f('faq:' + id + ':status',
         { type: 'select', options: options(['draft', 'review', 'approved', 'published']) }) +
@@ -744,16 +806,25 @@
         { type: 'select', options: departmentOptions('No owner yet'), placeholder: 'No owner yet' }) + '</span>' +
       (q.lastReviewed ? '<span class="badge quiet">' + e(q.lastReviewed) + '</span>' : '') +
       '</div>' + renderUsage(usage) +
-      '<div class="row-actions"><span class="spacer"></span>' +
+      '<div class="row-actions">' +
+      (tabId
+        ? '<a class="btn small" href="' + e(PUBLIC_FAQ + '#' + tabId) + '" target="_blank" ' +
+          'rel="noopener" title="Shows what is published, not your draft">View the public tab ↗</a>'
+        : '') +
+      '<span class="spacer"></span>' +
       btn('del-faq', { faq: id }, 'Delete question', 'small danger') + '</div>' +
       '</header>' +
       '<section class="block meta"><h2>Where it is published</h2><dl>' +
-      '<dt>Tab on the FAQ page</dt><dd>' + f('faq:' + id + ':publish.tabId',
-        { type: 'select', options: tabs, placeholder: 'Not published' }) + '</dd>' +
-      '<dt>Position in the tab</dt><dd>' + f('faq:' + id + ':publish.order',
-        { placeholder: 'A number — lower comes first' }) + '</dd>' +
-      '<dt>Group heading</dt><dd>' + f('faq:' + id + ':publish.groupTitle',
-        { placeholder: 'Starts a new group when it differs from the question above' }) + '</dd>' +
+      '<dt>Tab on the FAQ page</dt><dd><select class="inline-select" data-move-faq="' + e(id) +
+      '" aria-label="Tab on the FAQ page">' + tabOptions + '</select></dd>' +
+      '<dt>Position</dt><dd class="faq-position">' +
+      (position ? position + ' of ' + questions.length : '—') +
+      (heading ? ', under <strong>' + e(heading) + '</strong>' : '') +
+      (at && at.index !== -1
+        ? ' ' + btn('faq-up', { tab: tabId, index: at.index }, '↑', 'tiny', 'Move up') +
+          btn('faq-down', { tab: tabId, index: at.index }, '↓', 'tiny', 'Move down')
+        : '') +
+      '<span class="hint">Or drag it in the list on the left.</span></dd>' +
       '<dt>Internal only</dt><dd>' + f('faq:' + id + ':internal',
         { type: 'select', options: YES_NO }) + '</dd>' +
       '</dl></section>' +
@@ -762,8 +833,211 @@
 
     RichText.mount(document.getElementById('richHost'), {
       html: q.a,
-      headerHtml: Data.escapeHtml(q.q),
+      headerHtml: q.q,
       onChange: function (html) { Edit.set('faq:' + id + ':a', html); }
+    });
+  }
+
+  // ---- the FAQ dashboard ---------------------------------------------------
+
+  function faqStats() {
+    var faqs = Data.state.library.faqs;
+    var findings = {};
+    Rules.run().forEach(function (result) {
+      if (result.skipped) return;
+      result.findings.forEach(function (fd) {
+        if (fd.kind === 'faq') (findings[fd.id] = findings[fd.id] || []).push(fd);
+      });
+    });
+
+    var VAR_REF = /data-var(?:-href)?="(var_[a-z0-9_]+)"|\{\{(var_[a-z0-9_]+)\}\}/gi;
+    function unconfirmed(f) {
+      var m;
+      VAR_REF.lastIndex = 0;
+      while ((m = VAR_REF.exec(f.a || ''))) {
+        var v = Data.variable(m[1] || m[2]);
+        if (v && v.status !== 'current') return true;
+      }
+      return false;
+    }
+
+    return faqs.map(function (f) {
+      var usage = Data.state.index.usage[f.id];
+      return {
+        faq: f,
+        tabId: (f.publish && f.publish.tabId) || '',
+        ready: f.status === 'published' || f.status === 'approved',
+        owned: !!f.ownerId,
+        linked: !!(usage && usage.processes.length),
+        unconfirmed: unconfirmed(f),
+        findings: findings[f.id] || []
+      };
+    });
+  }
+
+  function renderFaqDashboard() {
+    var stats = faqStats();
+    var tabs = Data.state.library.publishTabs;
+    var count = function (test) { return stats.filter(test).length; };
+
+    var total = stats.length;
+    var unpublished = count(function (x) { return !x.tabId; });
+    var notReady = count(function (x) { return !x.ready; });
+    var noOwner = count(function (x) { return !x.owned; });
+    var linked = count(function (x) { return x.linked; });
+    var unconfirmed = count(function (x) { return x.unconfirmed; });
+    var flagged = count(function (x) { return x.findings.length; });
+
+    var html = '<div class="row-actions">' +
+      btn('new-faq', {}, '+ New question') +
+      btn('faq-new-tab', {}, '+ New tab') +
+      '<span class="spacer"></span>' +
+      '<a class="btn small" href="' + PUBLIC_FAQ + '" target="_blank" rel="noopener" ' +
+      'title="Shows what is published, not your draft">Public FAQ page ↗</a>' +
+      '</div>' +
+      '<section class="tiles">' +
+      tile(total, 'questions', 'across ' + plural(tabs.length, 'tab'), '') +
+      tile(unpublished, 'not published', unpublished ? 'in no tab yet' : 'every question is placed', '') +
+      tile(notReady, 'not yet approved', 'draft or in review', '') +
+      tile(noOwner, 'without an owner', 'no department accountable', '') +
+      tile(linked, 'linked to processes', (total - linked) + ' not attached to any step', '') +
+      tile(unconfirmed, 'use unconfirmed values', 'a fee, time or link not yet verified', '#/variables') +
+      '</section>';
+
+    // --- by tab
+    html += '<h2 class="group">By tab</h2>' +
+      '<div class="cov-table faq-tabs" role="table">' +
+      '<div class="cov-row cov-headrow" role="row"><span>Tab</span><span>Questions</span>' +
+      '<span>Sections</span><span>Not approved</span><span>Linked</span><span>Last reviewed</span></div>' +
+      tabs.map(function (tab) {
+        var mine = stats.filter(function (x) { return x.tabId === tab.id; });
+        var sections = FaqOrder.rows(tab.id).filter(function (r) { return r.type === 'group'; }).length;
+        var waiting = mine.filter(function (x) { return !x.ready; }).length;
+        var joined = mine.filter(function (x) { return x.linked; }).length;
+        return '<button class="cov-row cov-link" role="row" data-route="#/tab/' + e(tab.id) + '">' +
+          '<span class="cov-name">' + e(Data.plainText(tab.label)) + (tab['new'] ? ' <em class="faq-new">NEW</em>' : '') +
+          '</span>' +
+          '<span class="num">' + mine.length + '</span>' +
+          '<span class="num">' + (sections || '—') + '</span>' +
+          '<span class="num' + (waiting ? ' warn' : '') + '">' + waiting + '</span>' +
+          '<span class="num">' + joined + '</span>' +
+          '<span class="when">' + e(tab.lastReviewed || '—') + '</span></button>';
+      }).join('') + '</div>';
+
+    // --- needs attention
+    var attention = stats.filter(function (x) {
+      return !x.tabId || !x.ready || !x.owned || x.findings.length;
+    }).slice(0, 12);
+    html += '<h2 class="group">Needs attention <span>' +
+      count(function (x) { return !x.tabId || !x.ready || !x.owned || x.findings.length; }) +
+      '</span></h2>' +
+      (attention.length
+        ? attention.map(function (x) {
+            var why = [];
+            if (!x.tabId) why.push('not published');
+            if (!x.ready) why.push(x.faq.status || 'no status');
+            if (!x.owned) why.push('no owner');
+            x.findings.forEach(function (fd) { why.push(fd.message); });
+            var tab = x.tabId ? FaqOrder.tab(x.tabId) : null;
+            return listRow('#/faq/' + x.faq.id, Data.plainText(x.faq.q),
+              (tab ? Data.plainText(tab.label) + ' · ' : '') + why.join(' · '), '');
+          }).join('')
+        : '<p class="empty">Nothing outstanding.</p>') +
+      (flagged ? '<p class="hint-block">' + plural(flagged, 'question') + ' flagged by content ' +
+        'rules — see the <a href="#/issues">issues register</a>.</p>' : '');
+
+    paint(listPane('FAQ', total + ' questions on the public FAQ page, in ' +
+      plural(tabs.length, 'tab') + '. Pick a question on the left to edit it, or drag to reorder.',
+      html));
+  }
+
+  // ---- a publish tab -------------------------------------------------------
+
+  function renderTab(id) {
+    var tab = FaqOrder.tab(id);
+    if (!tab) return paint(notFound('FAQ tab', id));
+    var tabs = Data.state.library.publishTabs;
+    var at = tabs.indexOf(tab);
+    var rows = FaqOrder.rows(id);
+    var questions = rows.filter(function (r) { return r.type === 'faq'; });
+    var spec = 'tab:' + id + ':';
+
+    var processOptions = [{ value: '', label: 'Written by hand, below' }].concat(
+      Data.state.processes.processes.map(function (p) {
+        return { value: p.id, label: 'Generated from: ' + p.name };
+      }).sort(function (a, b) { return a.label.localeCompare(b.label); }));
+
+    var stepper;
+    if (tab.stepperFrom) {
+      var source = Data.state.index.processes[tab.stepperFrom];
+      stepper = '<p class="hint-block">The steps are generated from the process map every time ' +
+        'you publish, so they never drift from it.' +
+        (source ? ' <a href="#/process/' + e(source.id) + '">Open ' + e(source.name) + '</a>' : '') +
+        '</p><div class="stepper-preview">' +
+        (source ? source.steps.filter(function (st) { return st.type !== 'decision'; })
+          .map(function (st, i) {
+            return '<span class="sp-step"><b>STEP ' + (i + 1) + '</b>' + e(Data.freeze(st.title)) + '</span>';
+          }).join('') : '<p class="empty">That process no longer exists.</p>') + '</div>';
+    } else {
+      stepper = '<div class="stepper-rows">' + (tab.stepper || []).map(function (st, i) {
+        return '<div class="stepper-row">' +
+          '<span class="sr-label">' + f('tabstep:' + id + ':' + i + ':label', { placeholder: 'STEP ' + (i + 1) }) + '</span>' +
+          '<span class="sr-text">' + f('tabstep:' + id + ':' + i + ':text', { placeholder: 'Short description' }) + '</span>' +
+          btn('tab-step-del', { tab: id, index: i }, '×', 'tiny danger', 'Remove step') +
+          '</div>';
+      }).join('') + '</div>' +
+        btn('tab-step-add', { tab: id }, '+ Step', 'tiny');
+    }
+
+    paint('<article class="pane">' +
+      '<header class="pane-head">' +
+      '<div class="crumbs"><a href="#/faqs">FAQ</a> · tab ' + (at + 1) + ' of ' + tabs.length + '</div>' +
+      '<h1 class="editable-h1">' + f(spec + 'label', { type: 'inlinehtml' }) + '</h1>' +
+      '<div class="badges">' +
+      '<span class="badge quiet">' + plural(questions.length, 'question') + '</span>' +
+      '<span class="badge quiet">NEW badge: ' + f(spec + 'new', { type: 'select', options: YES_NO }) + '</span>' +
+      '<span class="badge quiet">Last reviewed: ' + f(spec + 'lastReviewed', { placeholder: 'e.g. October 2026' }) + '</span>' +
+      '</div>' +
+      '<p class="usage">Public link: <code>FAQ.html#' + e(id) + '</code></p>' +
+      '<div class="row-actions">' +
+      btn('faq-add-question', { tab: id }, '+ Question in this tab') +
+      '<a class="btn small" href="' + e(PUBLIC_FAQ + '#' + id) + '" target="_blank" rel="noopener" ' +
+      'title="Shows what is published, not your draft">View the public tab ↗</a>' +
+      '<span class="spacer"></span>' +
+      btn('tab-up', { tab: id }, '↑ Move tab up', 'small', '') +
+      btn('tab-down', { tab: id }, '↓ Move tab down', 'small', '') +
+      btn('tab-delete', { tab: id }, 'Delete tab', 'small danger') +
+      '</div></header>' +
+
+      '<section class="block"><h2>Intro box <span class="count">optional</span></h2>' +
+      '<div id="tabIntro"></div></section>' +
+
+      '<section class="block"><h2>Step strip <span class="count">optional</span></h2>' +
+      '<div class="tab-stepper-source">' + f(spec + 'stepperFrom',
+        { type: 'select', options: processOptions, placeholder: 'Written by hand, below' }) + '</div>' +
+      stepper + '</section>' +
+
+      '<section class="block"><h2>Footer links <span class="count">optional</span></h2>' +
+      '<div id="tabFooter"></div></section>' +
+
+      '<section class="block"><h2>Questions</h2>' +
+      (rows.length
+        ? rows.map(function (r) {
+            if (r.type === 'group') return '<h3 class="tab-q-heading">' + e(r.title) + '</h3>';
+            return listRow('#/faq/' + r.faq.id, Data.plainText(r.faq.q), '', '');
+          }).join('') + '<p class="hint-block">Reorder them in the list on the left.</p>'
+        : '<p class="empty">No questions yet.</p>') +
+      '</section></article>');
+
+    RichText.mount(document.getElementById('tabIntro'), {
+      html: tab.intro || '',
+      headerHtml: '',
+      onChange: function (html) { Edit.set(spec + 'intro', html); }
+    });
+    RichText.mount(document.getElementById('tabFooter'), {
+      html: tab.footer || '',
+      headerHtml: '',
+      onChange: function (html) { Edit.set(spec + 'footer', html); }
     });
   }
 
@@ -797,34 +1071,6 @@
         return listRow('#/article/' + a.id, a.title, Data.taxonomyPath(a.ownerId),
           usage.processes.length ? usage.processes.length + ' uses' : 'unused');
       }).join('')));
-  }
-
-  function renderFaqList() {
-    var labels = {};
-    Data.state.library.publishTabs.forEach(function (t) { labels[t.id] = t.label; });
-    var byTab = {};
-    Data.state.library.faqs.forEach(function (q) {
-      var tab = (q.publish && q.publish.tabId) || '';
-      (byTab[tab] = byTab[tab] || []).push(q);
-    });
-    // Published tabs in their published order, then anything not yet placed.
-    var order = Data.state.library.publishTabs.map(function (t) { return t.id; })
-      .filter(function (t) { return byTab[t]; });
-    if (byTab['']) order.push('');
-
-    var html = '<div class="row-actions">' + btn('new-faq', {}, '+ New question') + '</div>' +
-      order.map(function (tab) {
-        return '<h2 class="group">' + e(tab ? labels[tab] || tab : 'Not published') +
-          ' <span>' + byTab[tab].length + '</span></h2>' +
-          byTab[tab].slice().sort(function (a, b) {
-            return ((a.publish || {}).order || 0) - ((b.publish || {}).order || 0);
-          }).map(function (q) {
-            return listRow('#/faq/' + q.id, q.q, q.ownerId ? Data.taxonomyName(q.ownerId) : '', '');
-          }).join('');
-      }).join('');
-    paint(listPane('FAQ questions',
-      plural(Data.state.library.faqs.length, 'question') + ' across ' +
-      plural(Data.state.library.publishTabs.length, 'published tab'), html));
   }
 
   function renderVariableList() {
@@ -1316,7 +1562,8 @@
     article: renderArticle,
     faq: renderFaq,
     articleList: renderArticleList,
-    faqList: renderFaqList,
+    faqDashboard: renderFaqDashboard,
+    tab: renderTab,
     variableList: renderVariableList,
     variable: renderVariable,
     issues: renderIssueRegister,

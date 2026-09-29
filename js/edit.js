@@ -15,6 +15,8 @@
      taxonomy:<tid>:<key>
      article:<aid>:<key>
      faq:<fid>:<key>        (key may be dotted, e.g. publish.tabId)
+     tab:<tabid>:<key>      a publish tab on the FAQ page
+     tabstep:<tabid>:<n>:<key>  one step of a tab's step strip
      variable:<vid>:<key>
 
    Structural changes (adding a step, deleting an article, drawing an arrow)
@@ -91,6 +93,15 @@
     if (kind === 'taxonomy') {
       var node = index.taxonomy[parts[1]];
       return node ? { obj: node, key: parts[2] } : null;
+    }
+    if (kind === 'tab') {
+      var tab = findIn(Data.state.library.publishTabs, parts[1]);
+      return tab ? { obj: tab, key: parts[2] } : null;
+    }
+    if (kind === 'tabstep') {
+      var owning = findIn(Data.state.library.publishTabs, parts[1]);
+      var stepItem = owning && (owning.stepper || [])[Number(parts[2])];
+      return stepItem ? { obj: stepItem, key: parts[3] } : null;
     }
     if (kind === 'article') return index.articles[parts[1]] ? { obj: index.articles[parts[1]], key: parts[2] } : null;
     if (kind === 'faq') return index.faqs[parts[1]] ? { obj: index.faqs[parts[1]], key: parts[2] } : null;
@@ -197,13 +208,15 @@
 
   /**
    * opts.type  'text' (default) | 'multiline' | 'select' | 'html'
+   *            | 'inlinehtml' — a short piece of HTML (a tab label, an FAQ
+   *              question) shown rendered and edited on one line
    * opts.options  [{value,label}] for a select
    * opts.placeholder  shown when the value is empty
    */
   function display(value, opts) {
     value = value == null ? '' : String(value);
     if (!value) return placeholder(opts);
-    if (opts.type === 'html') return Data.resolveHtml(value);
+    if (opts.type === 'html' || opts.type === 'inlinehtml') return Data.resolveHtml(value);
     if (opts.type === 'select') {
       var chosen = (opts.options || []).find(function (o) {
         return String(o.value) === value;
@@ -284,7 +297,7 @@
 
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') { e.preventDefault(); cancel(); }
-      if (e.key === 'Enter' && (type === 'text' || e.metaKey || e.ctrlKey)) {
+      if (e.key === 'Enter' && (type === 'text' || type === 'inlinehtml' || e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         commit();
       }
@@ -296,7 +309,8 @@
       bar.className = 'edit-bar';
       bar.innerHTML = '<button class="btn small" data-act="var">+ Variable</button>' +
         '<span class="edit-hint">' +
-        (type === 'text' ? 'Enter to save' : 'Ctrl+Enter to save') + ' · Esc to cancel</span>' +
+        (type === 'text' || type === 'inlinehtml' ? 'Enter to save' : 'Ctrl+Enter to save') +
+        ' · Esc to cancel</span>' +
         '<button class="btn small primary" data-act="save">Save</button>';
       bar.addEventListener('click', function (e) {
         // The detail pane listens for data-act too; this bar's buttons are
