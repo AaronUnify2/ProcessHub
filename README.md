@@ -5,7 +5,7 @@ Process maps, knowledge base articles and public FAQ content in one editor.
 See [`SPEC.md`](SPEC.md) for the data model and
 [`TERMINOLOGY-AUDIT.md`](TERMINOLOGY-AUDIT.md) for the terminology checklist.
 
-Live at **https://aaronunify2.github.io/processhub/** — every push to `main`
+Live at **https://aaronunify2.github.io/ProcessHub/** — every push to `main`
 deploys the whole repository through `.github/workflows/static.yml`.
 
 Process Hub started as a folder in
@@ -258,7 +258,7 @@ This is a structural extraction, not a rewrite. Everything it produces is
 **Project the data back into the `FAQ.json`** that the public page reads. This
 writes `exports/FAQ.json`, which is the single source of truth for published
 FAQ content. The public page, `FAQ.html` in UnifyVersion1, fetches it from
-`https://aaronunify2.github.io/processhub/exports/FAQ.json`:
+`https://aaronunify2.github.io/ProcessHub/exports/FAQ.json`:
 
 ```
 python3 tools/export-faq.py

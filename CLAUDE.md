@@ -46,11 +46,11 @@ GitHub Pages serves this repository via `.github/workflows/static.yml`, which
 deploys the **entire repository** on every push to `main`:
 
 ```
-https://aaronunify2.github.io/processhub/
+https://aaronunify2.github.io/ProcessHub/
 ```
 
 The public FAQ page, `FAQ.html` in the UnifyVersion1 repository, reads
-`https://aaronunify2.github.io/processhub/exports/FAQ.json`. Changing the shape
+`https://aaronunify2.github.io/ProcessHub/exports/FAQ.json`. Changing the shape
 of that file breaks the public page.
 
 ## Workflow
