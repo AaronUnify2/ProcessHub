@@ -115,32 +115,54 @@
 
   // ---- export for GitHub ---------------------------------------------------
 
-  function bumpVersions() {
-    ['processes', 'library', 'variables'].forEach(function (name) {
+  var SOURCE_FILES = ['processes', 'library', 'variables'];
+
+  /**
+   * The four files as they should sit in the repository, each source file
+   * with its version bumped and today's date stamped — built from copies, so
+   * nothing changes in the app until the files have actually gone somewhere.
+   * Download and Publish both start here, so they always write the same bytes.
+   */
+  function buildFiles() {
+    var stamp = today();
+    var versions = {};
+    var files = SOURCE_FILES.map(function (name) {
       var file = Data.state[name];
-      file.version = (file.version || 1) + 1;
-      file.updated = today();
+      versions[name] = (file.version || 1) + 1;
+      // Object.assign keeps the original key order, so the diff on GitHub
+      // shows only the lines that really changed.
+      var copy = Object.assign({}, file, { version: versions[name], updated: stamp });
+      return { path: 'data/' + name + '.json', name: name + '.json', content: json(copy) };
     });
+    files.push({ path: 'exports/FAQ.json', name: 'FAQ.json', content: json(faqProjection()) });
+    return { files: files, versions: versions, updated: stamp };
   }
 
   /**
-   * Download all four files, named as they sit in the repository. Versions are
-   * bumped first so the next load compares cleanly against what you commit.
-   * What was exported becomes the draft's base: once committed, it is what
-   * the published files will hold.
+   * Once the files have gone out, the app takes on their version numbers and
+   * they become the draft's base: they are what the published files now hold
+   * (or will, once a download is committed).
    */
-  function exportForGitHub() {
-    bumpVersions();
+  function adopt(built) {
+    SOURCE_FILES.forEach(function (name) {
+      Data.state[name].version = built.versions[name];
+      Data.state[name].updated = built.updated;
+    });
     Storage.setBase({
       processes: Data.state.processes,
       library: Data.state.library,
       variables: Data.state.variables
     });
-    download('processes.json', json(Data.state.processes));
-    setTimeout(function () { download('library.json', json(Data.state.library)); }, 150);
-    setTimeout(function () { download('variables.json', json(Data.state.variables)); }, 300);
-    setTimeout(function () { download('FAQ.json', json(faqProjection())); }, 450);
     return Edit.save();
+  }
+
+  /** Download all four files, named as they sit in the repository. */
+  function exportForGitHub() {
+    var built = buildFiles();
+    built.files.forEach(function (file, i) {
+      setTimeout(function () { download(file.name, file.content); }, i * 150);
+    });
+    return adopt(built);
   }
 
   function exportFaqOnly() {
@@ -690,6 +712,8 @@
 
   global.Exporter = {
     exportForGitHub: exportForGitHub,
+    buildFiles: buildFiles,
+    adopt: adopt,
     exportFaqOnly: exportFaqOnly,
     faqProjection: faqProjection,
     processJson: processJson,

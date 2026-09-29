@@ -40,6 +40,14 @@ an edit without a bump can be silently overwritten by an older draft.
 `tools/export-faq.py --check` must stay clean: it proves no published FAQ
 content has been lost against the frozen baseline in `tools/sources/`.
 
+## Publishing from the browser
+
+`js/github.js` commits the four files straight to `main` through the GitHub
+API, using a fine-grained token the person pastes into the app. The token
+lives in `localStorage` under `processhub.github.token` and must never be
+written anywhere else — not the draft, not an export, not a log. Never ask
+Aaron for the token or put one in the repository.
+
 ## Hosting
 
 GitHub Pages serves this repository straight from the `main` branch (Settings →
