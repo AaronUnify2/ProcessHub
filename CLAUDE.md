@@ -42,8 +42,10 @@ content has been lost against the frozen baseline in `tools/sources/`.
 
 ## Hosting
 
-GitHub Pages serves this repository via `.github/workflows/static.yml`, which
-deploys the **entire repository** on every push to `main`:
+GitHub Pages serves this repository straight from the `main` branch (Settings →
+Pages → Deploy from a branch → `main`, root). Every push to `main` is live
+within a minute or two. `.nojekyll` tells Pages to serve the files exactly as
+they are, without running Jekyll over them:
 
 ```
 https://aaronunify2.github.io/ProcessHub/

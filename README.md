@@ -5,8 +5,8 @@ Process maps, knowledge base articles and public FAQ content in one editor.
 See [`SPEC.md`](SPEC.md) for the data model and
 [`TERMINOLOGY-AUDIT.md`](TERMINOLOGY-AUDIT.md) for the terminology checklist.
 
-Live at **https://aaronunify2.github.io/ProcessHub/** — every push to `main`
-deploys the whole repository through `.github/workflows/static.yml`.
+Live at **https://aaronunify2.github.io/ProcessHub/** — Pages serves the `main`
+branch as it stands, so every push to `main` is live within a minute or two.
 
 Process Hub started as a folder in
 [UnifyVersion1](https://github.com/AaronUnify2/UnifyVersion1) and moved here
