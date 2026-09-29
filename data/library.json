@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": 2,
-  "updated": "2026-09-20",
+  "version": 3,
+  "updated": "2026-09-29",
   "articles": [
     {
       "id": "art_plangpart1",
@@ -61,7 +61,7 @@
       "id": "art_planobjection",
       "title": "Why this matters Appeal rights",
       "summary": "",
-      "body": "<br/>Submissions that do not meet all of the checklist criteria are <b>not considered properly made</b> and submitters will not have third-party appeal rights.<br/><br/>If a submission is properly made and Council approves the application, the submitter has the right to appeal Council's decision in the Planning and Environment Court.<br/><br/>If Council refuses the application, all submitters (properly made or not) are notified after the decision is made and receive a copy of the Decision Notice.",
+      "body": "<br>Submissions that do not meet all of the checklist criteria are <b>not considered properly made</b> and submitters will not have third-party appeal rights.<br><br>If a submission is properly made and Council approves the application, the submitter has the right to appeal Council's decision in the Planning and Environment Court.<br><br>If Council refuses the application, all submitters (properly made or not) are notified after the decision is made and receive a copy of the Decision Notice.",
       "audience": "internal",
       "ownerId": "tax_planning_planning",
       "status": "draft",
