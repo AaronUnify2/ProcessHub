@@ -11,8 +11,12 @@
                 rearrange. Drag a row to move it (into another tab too), or use
                 ↑ ↓ on the open question, which also works on a phone.
 
-   Search is one keystroke away in both, and in the FAQ section it searches
-   FAQ questions only.
+   And one each for the knowledge base, variables, the issues register,
+   content rules, coverage and departments: a list to jump straight to
+   anything, while the content area shows that section's dashboard.
+
+   Search is one keystroke away everywhere. In the FAQ, knowledge base and
+   variables sections it searches only that kind of content.
    =========================================================================== */
 
 (function (global) {
@@ -22,6 +26,18 @@
   var prefs = {};
   var onNavigate = function () {};
   var view = { section: 'processes', active: null };
+
+  // Where each section's button leads: its dashboard.
+  var SECTION_HOME = {
+    processes: '#/', faq: '#/faqs', articles: '#/articles', variables: '#/variables',
+    issues: '#/issues', rules: '#/rules', coverage: '#/coverage', departments: '#/departments'
+  };
+
+  // Sections whose search looks at one kind of content only.
+  var SEARCH_KIND = { faq: 'faq', articles: 'article', variables: 'variable' };
+  var PLACEHOLDER = {
+    faq: 'Search FAQ questions…', articles: 'Search articles…', variables: 'Search variables…'
+  };
 
   function e(text) { return Data.escapeHtml(text); }
 
@@ -37,6 +53,7 @@
 
     if (!prefs.collapsed) prefs.collapsed = {};
     if (!prefs.faqCollapsed) prefs.faqCollapsed = {};
+    if (!prefs.sideCollapsed) prefs.sideCollapsed = {};
 
     el.search.addEventListener('input', function () { renderSearch(); });
     el.search.addEventListener('keydown', function (ev) {
@@ -65,7 +82,7 @@
     el.switcher.addEventListener('click', function (ev) {
       var button = ev.target.closest('[data-section]');
       if (!button) return;
-      onNavigate(button.dataset.section === 'faq' ? '#/faqs' : '#/');
+      onNavigate(SECTION_HOME[button.dataset.section] || '#/');
     });
 
     // One set of listeners for the whole tree, rather than one per row.
@@ -90,12 +107,20 @@
     Array.prototype.forEach.call(el.switcher.querySelectorAll('[data-section]'), function (b) {
       b.classList.toggle('on', b.dataset.section === view.section);
     });
-    el.search.placeholder = view.section === 'faq' ? 'Search FAQ questions…' : 'Search everything…';
+    el.search.placeholder = PLACEHOLDER[view.section] || 'Search everything…';
 
     // Keep the scroll position: the menu redraws on every edit.
     var top = el.body.scrollTop;
-    if (view.section === 'faq') renderFaqTree();
-    else renderTree();
+    var draw = {
+      faq: renderFaqTree,
+      articles: renderArticlesTree,
+      variables: renderVariablesTree,
+      issues: renderIssuesTree,
+      rules: renderRulesTree,
+      coverage: renderCoverageTree,
+      departments: renderDepartmentsTree
+    }[view.section] || renderTree;
+    draw();
     el.body.scrollTop = top;
     if (el.search.value.trim().length >= 2) renderSearch();
   }
@@ -115,9 +140,10 @@
       return;
     }
 
-    var matches = Data.search(query, view.section === 'faq' ? 200 : 50);
-    if (view.section === 'faq') {
-      matches = matches.filter(function (m) { return m.kind === 'faq'; }).slice(0, 50);
+    var only = SEARCH_KIND[view.section];
+    var matches = Data.search(query, only ? 300 : 50);
+    if (only) {
+      matches = matches.filter(function (m) { return m.kind === only; }).slice(0, 50);
     }
     el.tree.hidden = true;
     el.results.hidden = false;
@@ -172,6 +198,19 @@
       onNavigate('#/process/' + Edit.createProcess(node.dataset.newProcess, name.trim()));
       return;
     }
+    if ((node = ev.target.closest('[data-side-toggle]'))) {
+      ev.stopPropagation();
+      var sk = node.dataset.sideToggle;
+      prefs.sideCollapsed[sk] = !isCollapsed(sk);
+      Storage.savePrefs(prefs);
+      render();
+      return;
+    }
+    if ((node = ev.target.closest('[data-side-act]'))) {
+      ev.stopPropagation();
+      sideAction(node.dataset.sideAct);
+      return;
+    }
     if ((node = ev.target.closest('[data-faq-act]'))) {
       ev.stopPropagation();
       faqAction(node.dataset.faqAct, node.dataset);
@@ -189,7 +228,7 @@
     var roots = index.children.__root__ || [];
     el.tree.innerHTML = roots.map(function (node) {
       return renderNode(node, index, 0);
-    }).join('') + renderLibraryLinks();
+    }).join('');
 
     el.count.textContent = Data.state.processes.processes.length + ' processes · ' +
       Data.state.library.articles.length + ' articles · ' +
@@ -266,7 +305,7 @@
     html += renderFaqTab(FaqOrder.UNPUBLISHED, 'Not published', false, openTab);
     html += '<div class="faq-tree-foot">' +
       '<button class="btn tiny" data-faq-act="new-tab">+ New tab</button></div>';
-    el.tree.innerHTML = html + renderLibraryLinks();
+    el.tree.innerHTML = html;
 
     var total = Data.state.library.faqs.length;
     el.count.textContent = tabs.length + ' tabs · ' + total + ' questions' +
@@ -465,17 +504,227 @@
       function (n) { n.classList.remove('dragging'); });
   }
 
-  // ---- links to everything else --------------------------------------------
+  // ---- the other sections -------------------------------------------------
+  // Each is a list of groups, each group a list of rows that open an item.
 
-  function renderLibraryLinks() {
-    return '<div class="tree-extra">' +
-      '<button class="tree-link" data-route="#/articles">Knowledge base articles</button>' +
-      '<button class="tree-link" data-route="#/variables">Variables</button>' +
-      '<button class="tree-link" data-route="#/issues">Issues register</button>' +
-      '<button class="tree-link" data-route="#/rules">Content rules</button>' +
-      '<button class="tree-link" data-route="#/coverage">Coverage</button>' +
-      '<button class="tree-link" data-route="#/departments">Departments</button>' +
+  /** Collapsed state; groups named in startClosed begin collapsed. */
+  function isCollapsed(key) {
+    if (key in prefs.sideCollapsed) return prefs.sideCollapsed[key];
+    return /:resolved$/.test(key);
+  }
+
+  function group(key, label, count, rowsHtml, open) {
+    var collapsed = isCollapsed(key) && !open;
+    return '<div class="side-group">' +
+      '<div class="side-group-head">' +
+      '<button class="caret" data-side-toggle="' + e(key) + '" aria-label="Expand or collapse">' +
+      (collapsed ? '▸' : '▾') + '</button>' +
+      '<span class="side-group-name">' + e(label) + '</span>' +
+      '<span class="tree-count">' + count + '</span></div>' +
+      (collapsed ? '' : '<div class="side-rows">' + rowsHtml + '</div>') +
       '</div>';
+  }
+
+  function row(route, active, label, extra, tail, title) {
+    return '<button class="side-row' + (active ? ' active' : '') + '" data-route="' + e(route) + '"' +
+      (title ? ' title="' + e(title) + '"' : '') + '>' +
+      (extra || '') +
+      '<span class="side-row-text">' + label + '</span>' +
+      (tail ? '<span class="side-tail">' + tail + '</span>' : '') + '</button>';
+  }
+
+  function foot(buttons) {
+    return '<div class="faq-tree-foot">' + buttons + '</div>';
+  }
+
+  function sideAction(act) {
+    var name;
+    if (act === 'new-article') {
+      name = prompt('Title of the new article:', '');
+      if (name && name.trim()) onNavigate('#/article/' + Edit.createArticle(name.trim()));
+    }
+    if (act === 'new-variable') {
+      name = prompt('The value (for example $300, or a phone number):', '');
+      if (name && name.trim()) onNavigate('#/variable/' + Edit.createVariable(name.trim()));
+    }
+    if (act === 'new-rule') {
+      onNavigate('#/rule/' + Rules.add({
+        name: 'New rule', kind: 'text', match: { mode: 'phrase', value: '' },
+        scope: ['process', 'step', 'article', 'faq'], severity: 'medium', message: ''
+      }));
+    }
+    if (act === 'seed-rules') {
+      Rules.defaults().forEach(function (r) { if (!Rules.get(r.id)) Rules.add(r); });
+      if (global.App) App.route();
+    }
+    if (act === 'new-dept') {
+      name = prompt('Name of the new department:', '');
+      if (name && name.trim()) onNavigate('#/department/' + Edit.createTaxonomy(null, name.trim()));
+    }
+  }
+
+  /** Items grouped by owning department, "No owner" last. */
+  function ownerGroups(items) {
+    var groups = {};
+    items.forEach(function (x) {
+      var key = x.ownerId && Data.state.index.taxonomy[x.ownerId] ? x.ownerId : '';
+      (groups[key] = groups[key] || []).push(x);
+    });
+    return Object.keys(groups).map(function (key) {
+      return { key: key, label: key ? Data.taxonomyPath(key) : 'No owner', items: groups[key] };
+    }).sort(function (a, b) {
+      if (!a.key) return 1;
+      if (!b.key) return -1;
+      return a.label.localeCompare(b.label);
+    });
+  }
+
+  function usesOf(id) {
+    var usage = Data.state.index.usage[id];
+    return usage ? usage.processes.length : 0;
+  }
+
+  // ---- knowledge base
+
+  function renderArticlesTree() {
+    var articles = Data.state.library.articles;
+    var html = ownerGroups(articles).map(function (g) {
+      var list = g.items.slice().sort(function (a, b) { return a.title.localeCompare(b.title); });
+      var open = list.some(function (a) { return a.id === view.active; });
+      return group('articles:' + g.key, g.label, list.length, list.map(function (a) {
+        return row('#/article/' + a.id, a.id === view.active, e(a.title),
+          a.status !== 'current' ? '<span class="status-dot status-draft" title="' + e(a.status) + '"></span>' : '',
+          usesOf(a.id) ? '' : 'unused');
+      }).join(''), open);
+    }).join('');
+    el.tree.innerHTML = html + foot('<button class="btn tiny" data-side-act="new-article">+ New article</button>');
+    el.count.textContent = articles.length + ' articles · ' +
+      articles.filter(function (a) { return !usesOf(a.id); }).length + ' not attached';
+  }
+
+  // ---- variables
+
+  /**
+   * A web address makes a poor label, so URL variables show what they point
+   * to — their verification question, less the "Is this still the correct
+   * web address for" every one of them starts with.
+   */
+  function variableLabel(v) {
+    if (v.type !== 'url' || !v.question) return String(v.value);
+    return v.question
+      .replace(/^is this (still )?the (correct|right) (web )?(address|url|link) for (the )?/i, '')
+      .replace(/\?$/, '')
+      .replace(/^./, function (c) { return c.toUpperCase(); });
+  }
+
+  function renderVariablesTree() {
+    var vars = Data.state.variables.variables;
+    var html = ownerGroups(vars).map(function (g) {
+      var list = g.items.slice().sort(function (a, b) { return String(a.value).localeCompare(String(b.value)); });
+      var open = list.some(function (v) { return v.id === view.active; });
+      return group('variables:' + g.key, g.label, list.length, list.map(function (v) {
+        return row('#/variable/' + v.id, v.id === view.active,
+          e(variableLabel(v)) + (v.internal === true ? ' 🔒' : ''),
+          '<span class="status-dot var-' + e(v.status) + '" title="' + e(v.status) + '"></span>',
+          usesOf(v.id) ? '' : 'unused', v.question);
+      }).join(''), open);
+    }).join('');
+    el.tree.innerHTML = html + foot('<button class="btn tiny" data-side-act="new-variable">+ New variable</button>');
+    var pending = vars.filter(function (v) { return v.status !== 'current'; }).length;
+    el.count.textContent = vars.length + ' variables · ' + pending + ' not yet verified';
+  }
+
+  // ---- issues
+
+  function renderIssuesTree() {
+    var open = Data.allIssues();
+    var resolved = Data.allIssues({ resolved: 'only' });
+    var issueRow = function (x) {
+      var key = 'issue:' + x.process.id + ':' + x.issue.id;
+      return row('#/issue/' + x.process.id + '/' + x.issue.id, key === view.active,
+        '<span class="side-row-title">' + e(x.process.name) + '</span>' +
+        '<span class="side-row-sub">' + e(x.issue.note) + '</span>', '', '', '');
+    };
+    var html = ['high', 'medium', 'low'].map(function (sev) {
+      var list = open.filter(function (x) { return x.issue.severity === sev; });
+      if (!list.length) return '';
+      var isOpen = list.some(function (x) { return view.active === 'issue:' + x.process.id + ':' + x.issue.id; });
+      return group('issues:' + sev, sev.charAt(0).toUpperCase() + sev.slice(1) + ' severity',
+        list.length, list.map(issueRow).join(''), isOpen);
+    }).join('');
+    if (resolved.length) {
+      html += group('issues:resolved', 'Resolved', resolved.length, resolved.map(issueRow).join(''),
+        resolved.some(function (x) { return view.active === 'issue:' + x.process.id + ':' + x.issue.id; }));
+    }
+    el.tree.innerHTML = (html || '<p class="empty">No issues recorded.</p>') +
+      foot('<button class="btn tiny" data-route="#/rules">Rule findings →</button>');
+    el.count.textContent = open.length + ' open · ' + resolved.length + ' resolved';
+  }
+
+  // ---- content rules
+
+  function renderRulesTree() {
+    var rules = Rules.list();
+    var results = {};
+    Rules.run().forEach(function (r) { results[r.rule.id] = r; });
+    var html = rules.map(function (rule) {
+      var off = rule.enabled === false;
+      var found = results[rule.id] ? results[rule.id].findings.length : 0;
+      return row('#/rule/' + rule.id, view.active === 'rule:' + rule.id,
+        e(rule.name), '<span class="side-sev sev-' + e(rule.severity || 'medium') + '">' +
+        e((rule.severity || 'medium').charAt(0).toUpperCase()) + '</span>',
+        off ? 'off' : String(found)).replace('class="side-row', 'class="side-row' + (off ? ' off' : ''));
+    }).join('');
+    el.tree.innerHTML = '<div class="side-rows flat">' + (html || '<p class="empty">No rules yet.</p>') + '</div>' +
+      foot('<button class="btn tiny" data-side-act="new-rule">+ New rule</button>' +
+        (rules.length ? '' : '<button class="btn tiny" data-side-act="seed-rules">Add a starting set</button>'));
+    el.count.textContent = rules.length + ' rules · ' + Rules.totals().findings + ' findings';
+  }
+
+  // ---- coverage and departments share the department tree
+
+  function deptTree(renderRow, depthLimit) {
+    var index = Data.state.index;
+    function walk(node, depth) {
+      var html = renderRow(node, depth);
+      if (depth < depthLimit) {
+        (index.children[node.id] || []).forEach(function (child) { html += walk(child, depth + 1); });
+      }
+      return html;
+    }
+    return (index.children.__root__ || []).map(function (n) { return walk(n, 0); }).join('');
+  }
+
+  function miniBar(row) {
+    if (!row || !row.processes) return '<span class="mini-bar empty"></span>';
+    return '<span class="mini-bar">' + Data.STATUSES.map(function (st) {
+      var n = row.byStatus[st] || 0;
+      return n ? '<i style="flex:' + n + ';background:' + Exporter.STATUS_COLOUR[st] + '"></i>' : '';
+    }).join('') + '</span>';
+  }
+
+  function renderCoverageTree() {
+    var cov = Data.coverage(Rules.byProcess());
+    var byId = {};
+    cov.rows.forEach(function (r) { byId[r.node.id] = r; });
+    el.tree.innerHTML = '<div class="side-rows flat">' + deptTree(function (node, depth) {
+      var r = byId[node.id];
+      return row('#/coverage/' + node.id, view.active === 'cov:' + node.id,
+        e(node.name), '', (r ? r.processes : 0) + miniBar(r)).replace('class="side-row', 'class="side-row depth-' + depth);
+    }, 9) + '</div>';
+    var t = cov.total;
+    el.count.textContent = t.processes + ' processes · ' +
+      ((t.byStatus.reviewed || 0) + (t.byStatus.published || 0)) + ' reviewed or published';
+  }
+
+  function renderDepartmentsTree() {
+    el.tree.innerHTML = '<div class="side-rows flat">' + deptTree(function (node, depth) {
+      return row('#/department/' + node.id, view.active === 'dept:' + node.id,
+        e(node.name), '', String(Data.processCount(node.id)))
+        .replace('class="side-row', 'class="side-row depth-' + depth);
+    }, 9) + '</div>' +
+      foot('<button class="btn tiny" data-side-act="new-dept">+ New department</button>');
+    el.count.textContent = Data.state.processes.taxonomy.length + ' departments and sub-departments';
   }
 
   global.Sidebar = {

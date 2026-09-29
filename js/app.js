@@ -23,14 +23,20 @@
     [/^#\/faq\/(.+)$/, 'faq', function (id) { Detail.faq(id); return id; }],
     [/^#\/faqs$/, 'faq', function () { Detail.faqDashboard(); }],
     [/^#\/tab\/(.+)$/, 'faq', function (id) { Detail.tab(id); return 'tab:' + id; }],
-    [/^#\/article\/(.+)$/, null, function (id) { Detail.article(id); }],
-    [/^#\/variable\/(.+)$/, null, function (id) { Detail.variable(id); }],
-    [/^#\/articles$/, null, function () { Detail.articleList(); }],
-    [/^#\/variables$/, null, function () { Detail.variableList(); }],
-    [/^#\/issues$/, null, function () { Detail.issues(); }],
-    [/^#\/rules$/, null, function () { Detail.rules(); }],
-    [/^#\/coverage$/, null, function () { Detail.coverage(); }],
-    [/^#\/departments$/, null, function () { Detail.departments(); }]
+    [/^#\/article\/(.+)$/, 'articles', function (id) { Detail.article(id); return id; }],
+    [/^#\/articles$/, 'articles', function () { Detail.articleList(); }],
+    [/^#\/variable\/(.+)$/, 'variables', function (id) { Detail.variable(id); return id; }],
+    [/^#\/variables$/, 'variables', function () { Detail.variableList(); }],
+    [/^#\/issue\/([^/]+)\/(.+)$/, 'issues', function (pid, iid) {
+      Detail.issue(pid, iid); return 'issue:' + pid + ':' + iid;
+    }],
+    [/^#\/issues$/, 'issues', function () { Detail.issues(); }],
+    [/^#\/rule\/(.+)$/, 'rules', function (id) { Detail.rule(id); return 'rule:' + id; }],
+    [/^#\/rules$/, 'rules', function () { Detail.rules(); }],
+    [/^#\/coverage\/(.+)$/, 'coverage', function (id) { Detail.coverageDept(id); return 'cov:' + id; }],
+    [/^#\/coverage$/, 'coverage', function () { Detail.coverage(); }],
+    [/^#\/department\/(.+)$/, 'departments', function (id) { Detail.department(id); return 'dept:' + id; }],
+    [/^#\/departments$/, 'departments', function () { Detail.departments(); }]
   ];
 
   function route() {
@@ -38,7 +44,8 @@
     for (var i = 0; i < ROUTES.length; i++) {
       var match = hash.match(ROUTES[i][0]);
       if (match) {
-        var active = ROUTES[i][2](decodeURIComponent(match[1] || ''));
+        var active = ROUTES[i][2](decodeURIComponent(match[1] || ''),
+          decodeURIComponent(match[2] || ''));
         Sidebar.render({ section: ROUTES[i][1], active: active || null });
         closeDrawer();
         return;

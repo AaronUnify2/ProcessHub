@@ -218,12 +218,17 @@
     // -- departments
     if (act === 'new-dept') {
       name = ask(d.parent ? 'Name of the new sub-department:' : 'Name of the new department:');
-      if (name) { Edit.createTaxonomy(d.parent || null, name); refresh(); }
+      if (name) {
+        var newDept = Edit.createTaxonomy(d.parent || null, name);
+        if (/^#\/department\//.test(location.hash)) onNavigate('#/department/' + newDept); else refresh();
+      }
     }
     if (act === 'dept-up') { Edit.moveTaxonomy(d.dept, -1); refresh(); }
     if (act === 'dept-down') { Edit.moveTaxonomy(d.dept, 1); refresh(); }
     if (act === 'del-dept') {
-      if (Edit.deleteTaxonomy(d.dept)) refresh();
+      if (Edit.deleteTaxonomy(d.dept)) {
+        if (/^#\/department\//.test(location.hash)) onNavigate('#/departments'); else refresh();
+      }
       else alert('Only an empty department can be deleted — move its processes, ' +
         'steps, content and sub-departments elsewhere first.');
     }
@@ -253,11 +258,7 @@
         name: 'New rule', kind: 'text', match: { mode: 'phrase', value: '' },
         scope: ['process', 'step', 'article', 'faq'], severity: 'medium', message: ''
       });
-      refresh();
-      setTimeout(function () {
-        var row = document.getElementById('rule-' + id);
-        if (row) row.scrollIntoView({ block: 'center' });
-      }, 30);
+      onNavigate('#/rule/' + id);
       return;
     }
     if (act === 'seed-rules') {
@@ -279,7 +280,8 @@
     }
     if (act === 'del-rule') {
       if (confirm('Delete this rule? Its findings disappear with it.')) {
-        Rules.remove(d.rule); refresh();
+        Rules.remove(d.rule);
+        if (/^#\/rule\//.test(location.hash)) onNavigate('#/rules'); else refresh();
       }
       return;
     }
@@ -1060,55 +1062,131 @@
 
   // ---- list views ----------------------------------------------------------
 
-  function renderArticleList() {
-    var items = Data.state.library.articles.slice().sort(function (a, b) {
-      return a.title.localeCompare(b.title);
+  /** Items grouped by owning department, "No owner" last. */
+  function byOwner(items) {
+    var groups = {};
+    items.forEach(function (x) {
+      var key = x.ownerId && Data.state.index.taxonomy[x.ownerId] ? x.ownerId : '';
+      (groups[key] = groups[key] || []).push(x);
     });
-    paint(listPane('Knowledge base articles', plural(items.length, 'article'),
-      '<div class="row-actions">' + btn('new-article', {}, '+ New article') + '</div>' +
-      items.map(function (a) {
-        var usage = Data.state.index.usage[a.id] || { processes: [] };
-        return listRow('#/article/' + a.id, a.title, Data.taxonomyPath(a.ownerId),
-          usage.processes.length ? usage.processes.length + ' uses' : 'unused');
-      }).join('')));
+    return Object.keys(groups).map(function (key) {
+      return { ownerId: key, label: key ? Data.taxonomyPath(key) : 'No owner', items: groups[key] };
+    }).sort(function (a, b) {
+      if (!a.ownerId) return 1;
+      if (!b.ownerId) return -1;
+      return a.label.localeCompare(b.label);
+    });
   }
 
-  function renderVariableList() {
-    var byOwner = {};
-    Data.state.variables.variables.forEach(function (v) {
-      (byOwner[v.ownerId || 'unassigned'] = byOwner[v.ownerId || 'unassigned'] || []).push(v);
+  function usesOf(id) {
+    var usage = Data.state.index.usage[id];
+    return usage ? usage.processes.length : 0;
+  }
+
+  // ---- knowledge base dashboard --------------------------------------------
+
+  function renderArticleDashboard() {
+    var articles = Data.state.library.articles;
+    var count = function (test) { return articles.filter(test).length; };
+    var current = count(function (a) { return a.status === 'current'; });
+    var notCurrent = articles.length - current;
+    var unused = count(function (a) { return !usesOf(a.id); });
+    var noOwner = count(function (a) { return !a.ownerId; });
+    var publicOnes = count(function (a) { return a.audience === 'public' || a.audience === 'both'; });
+
+    var html = '<div class="row-actions">' + btn('new-article', {}, '+ New article') + '</div>' +
+      '<section class="tiles">' +
+      tile(articles.length, 'articles', 'in the knowledge base', '') +
+      tile(current, 'current', notCurrent + ' draft or in review', '') +
+      tile(unused, 'not attached', 'no process step links to them', '') +
+      tile(noOwner, 'without an owner', 'no department accountable', '') +
+      tile(publicOnes, 'public-facing', (articles.length - publicOnes) + ' internal only', '') +
+      '</section>';
+
+    html += '<h2 class="group">By owning department</h2>' +
+      '<div class="cov-table dash-table" role="table">' +
+      '<div class="cov-row cov-headrow" role="row"><span>Department</span><span>Articles</span>' +
+      '<span>Current</span><span>Not attached</span></div>' +
+      byOwner(articles).map(function (g) {
+        return '<div class="cov-row" role="row"><span class="cov-name">' + e(g.label) + '</span>' +
+          '<span class="num">' + g.items.length + '</span>' +
+          '<span class="num">' + g.items.filter(function (a) { return a.status === 'current'; }).length + '</span>' +
+          '<span class="num">' + g.items.filter(function (a) { return !usesOf(a.id); }).length + '</span></div>';
+      }).join('') + '</div>';
+
+    var attention = articles.filter(function (a) {
+      return !usesOf(a.id) || !a.ownerId || a.status !== 'current';
     });
+    html += '<h2 class="group">Needs attention <span>' + attention.length + '</span></h2>' +
+      (attention.length
+        ? attention.slice(0, 12).map(function (a) {
+            var why = [];
+            if (a.status !== 'current') why.push(a.status || 'no status');
+            if (!usesOf(a.id)) why.push('not attached to any step');
+            if (!a.ownerId) why.push('no owner');
+            return listRow('#/article/' + a.id, a.title, why.join(' · '), '');
+          }).join('') +
+          (attention.length > 12 ? '<p class="hint-block">…and ' + (attention.length - 12) +
+            ' more in the list on the left.</p>' : '')
+        : '<p class="empty">Nothing outstanding.</p>');
 
-    var html = '<div class="row-actions">' + btn('new-variable', {}, '+ New variable') + '</div>' +
-      Object.keys(byOwner).sort().map(function (owner) {
-        var list = byOwner[owner];
-        var pending = list.filter(function (v) { return v.status === 'pending'; }).length;
-        return '<div class="owner-group"><h2 class="group">' +
-          e(owner === 'unassigned' ? 'Unassigned' : Data.taxonomyPath(owner)) +
-          ' <span>' + list.length + (pending ? ' · ' + pending + ' pending' : '') + '</span>' +
-          '<span class="group-actions">' +
-          btn('copy-verification', { owner: owner === 'unassigned' ? '' : owner },
-            '⧉ Copy verification email', 'tiny') +
-          btn('sheet-verification', { owner: owner === 'unassigned' ? '' : owner },
-            '⤓ Sheet', 'tiny') +
-          '</span></h2>' +
-          list.map(function (v) {
-            var usage = Data.state.index.usage[v.id] || { processes: [] };
-            return '<button class="list-row" data-route="#/variable/' + e(v.id) + '">' +
-              '<span class="list-title">' + e(v.value) +
-              (v.internal ? ' <span class="lock">🔒</span>' : '') + '</span>' +
-              '<span class="list-sub">' + e(v.question) + '</span>' +
-              '<span class="list-tail">' + (usage.processes.length || 0) + ' uses · ' +
-              e(v.status) + '</span></button>';
-          }).join('') + '</div>';
-      }).join('');
+    paint(listPane('Knowledge base', plural(articles.length, 'article') +
+      ' for officers. Pick one on the left to edit it.', html));
+  }
 
-    var pending = Data.state.variables.variables.filter(function (v) {
-      return v.status === 'pending';
-    }).length;
-    paint(listPane('Variables',
-      plural(Data.state.variables.variables.length, 'variable') + ' · ' + pending +
-      ' awaiting verification', html));
+  // ---- variables dashboard -------------------------------------------------
+
+  function renderVariableDashboard() {
+    var vars = Data.state.variables.variables;
+    var count = function (test) { return vars.filter(test).length; };
+    var byStatus = function (st) { return count(function (v) { return v.status === st; }); };
+    var unused = count(function (v) { return !usesOf(v.id); });
+    var internal = count(function (v) { return v.internal === true; });
+
+    var html = '<div class="row-actions">' + btn('new-variable', {}, '+ New variable') +
+      '<span class="spacer"></span>' +
+      btn('sheet-verification', { owner: '' }, '⤓ Verification sheet (all)') + '</div>' +
+      '<section class="tiles">' +
+      tile(vars.length, 'variables', 'fees, phone numbers, links, system names', '') +
+      tile(byStatus('current'), 'verified', 'confirmed by their department', '') +
+      tile(byStatus('pending'), 'awaiting verification', 'not yet confirmed', '') +
+      tile(byStatus('stale'), 'stale', 'known to need checking', '') +
+      tile(internal, 'internal only', 'never published', '') +
+      tile(unused, 'not used', 'nothing refers to them', '') +
+      '</section>';
+
+    html += '<h2 class="group">By owning department</h2>' +
+      '<div class="cov-table dash-table vars-dash" role="table">' +
+      '<div class="cov-row cov-headrow" role="row"><span>Department</span><span>Total</span>' +
+      '<span>Verified</span><span>Pending</span><span>Stale</span><span>Ask them</span></div>' +
+      byOwner(vars).map(function (g) {
+        var n = function (st) { return g.items.filter(function (v) { return v.status === st; }).length; };
+        return '<div class="cov-row" role="row"><span class="cov-name">' + e(g.label) + '</span>' +
+          '<span class="num">' + g.items.length + '</span>' +
+          '<span class="num">' + n('current') + '</span>' +
+          '<span class="num' + (n('pending') ? ' warn' : '') + '">' + n('pending') + '</span>' +
+          '<span class="num' + (n('stale') ? ' warn' : '') + '">' + n('stale') + '</span>' +
+          // No owner means nobody to ask, so no email for that row.
+          '<span class="dash-actions">' + (g.ownerId
+            ? btn('copy-verification', { owner: g.ownerId }, '⧉ Email', 'tiny', 'Copy a verification email') +
+              btn('sheet-verification', { owner: g.ownerId }, '⤓ Sheet', 'tiny', 'Download a verification sheet')
+            : '<span class="hint">set owners first</span>') +
+          '</span></div>';
+      }).join('') + '</div>';
+
+    var attention = vars.filter(function (v) { return v.status === 'stale' || !usesOf(v.id); });
+    html += '<h2 class="group">Needs attention <span>' + attention.length + '</span></h2>' +
+      (attention.length
+        ? attention.slice(0, 12).map(function (v) {
+            var why = [];
+            if (v.status === 'stale') why.push('stale');
+            if (!usesOf(v.id)) why.push('not used anywhere');
+            return listRow('#/variable/' + v.id, v.value, (v.question ? v.question + ' · ' : '') + why.join(' · '), '');
+          }).join('')
+        : '<p class="empty">Nothing stale or unused.</p>');
+
+    paint(listPane('Variables', plural(vars.length, 'variable') + ' — each fact written once and ' +
+      'used everywhere. Pick one on the left to edit or verify it.', html));
   }
 
   function renderVariable(id) {
@@ -1174,27 +1252,64 @@
   var opened = {};
   var SHOW_FIRST = 8;
 
+  function issueRoute(entry) {
+    return '#/issue/' + entry.process.id + '/' + entry.issue.id;
+  }
+
   function renderIssueRegister() {
     var recorded = Data.allIssues();
     var resolved = Data.allIssues({ resolved: 'only' });
     var counts = { high: 0, medium: 0, low: 0 };
     recorded.forEach(function (x) { counts[x.issue.severity] = (counts[x.issue.severity] || 0) + 1; });
     var ruleTotals = Rules.totals();
+    var affected = {};
+    recorded.forEach(function (x) { affected[x.process.id] = true; });
 
     var html = '<div class="row-actions">' +
       btn('export-issues-html', {}, '⤓ Report (HTML)') +
       btn('export-issues-csv', {}, '⤓ CSV') +
       '<span class="spacer"></span>' +
       '<button class="btn small" data-route="#/rules">⚙ Content rules</button>' +
-      '</div>';
+      '</div>' +
+      '<section class="tiles">' +
+      tile(recorded.length, 'open issues', Object.keys(affected).length + ' processes affected', '') +
+      tile(counts.high || 0, 'high severity', 'fix these first', '') +
+      tile(counts.medium || 0, 'medium', '', '') +
+      tile(counts.low || 0, 'low', '', '') +
+      tile(resolved.length, 'resolved', 'kept as a record', '') +
+      tile(ruleTotals.findings, 'flagged by rules', 'from ' + plural(ruleTotals.rules, 'content rule'), '#/rules') +
+      '</section>';
+
+    // --- by department
+    var byDept = {};
+    recorded.forEach(function (x) {
+      var top = Data.topDepartment(x.process.taxonomyId);
+      var key = top ? top.id : '';
+      var row = byDept[key] = byDept[key] || { open: 0, high: 0, processes: {} };
+      row.open++;
+      if (x.issue.severity === 'high') row.high++;
+      row.processes[x.process.id] = true;
+    });
+    html += '<h2 class="group">By department</h2>' +
+      '<div class="cov-table dash-table" role="table">' +
+      '<div class="cov-row cov-headrow" role="row"><span>Department</span><span>Open</span>' +
+      '<span>High</span><span>Processes</span></div>' +
+      Object.keys(byDept).sort(function (a, b) { return byDept[b].open - byDept[a].open; })
+        .map(function (key) {
+          var r = byDept[key];
+          return '<div class="cov-row" role="row"><span class="cov-name">' +
+            e(key ? Data.taxonomyName(key) : 'Unfiled') + '</span>' +
+            '<span class="num">' + r.open + '</span>' +
+            '<span class="num' + (r.high ? ' warn' : '') + '">' + r.high + '</span>' +
+            '<span class="num">' + Object.keys(r.processes).length + '</span></div>';
+        }).join('') + '</div>';
 
     // --- recorded by people: these are judgements, so they come first
-    html += '<h2 class="group">Recorded issues <span>' + recorded.length + ' open · ' +
-      counts.high + ' high, ' + counts.medium + ' medium, ' + counts.low + ' low</span></h2>' +
+    html += '<h2 class="group">Recorded issues <span>' + recorded.length + ' open</span></h2>' +
       (recorded.length
         ? recorded.map(function (entry) {
             return '<button class="list-row issue-list sev-' + e(entry.issue.severity) + '"' +
-              ' data-route="#/process/' + e(entry.process.id) + '">' +
+              ' data-route="' + e(issueRoute(entry)) + '">' +
               '<span class="sev">' + e(entry.issue.severity) + '</span>' +
               '<span class="list-title">' + e(entry.process.name) + '</span>' +
               '<span class="list-sub">' + e(entry.issue.note) + '</span>' +
@@ -1205,7 +1320,7 @@
     if (resolved.length) {
       html += '<details class="resolved"><summary>' + plural(resolved.length, 'resolved issue') +
         '</summary>' + resolved.map(function (entry) {
-          return '<button class="list-row issue-list" data-route="#/process/' + e(entry.process.id) + '">' +
+          return '<button class="list-row issue-list" data-route="' + e(issueRoute(entry)) + '">' +
             '<span class="sev">✓ ' + e(entry.issue.resolved) + '</span>' +
             '<span class="list-title">' + e(entry.process.name) + '</span>' +
             '<span class="list-sub">' + e(entry.issue.note) +
@@ -1229,6 +1344,49 @@
     paint(listPane('Issues register',
       recorded.length + ' open · ' + resolved.length + ' resolved · ' +
       ruleTotals.findings + ' flagged by rules', html));
+  }
+
+  // ---- a single issue ------------------------------------------------------
+
+  function renderIssue(processId, issueId) {
+    var p = Data.state.index.processes[processId];
+    var issue = p && (p.issues || []).find(function (i) { return i.id === issueId; });
+    if (!issue) return paint(notFound('issue', issueId));
+    var spec = 'issue:' + p.id + ':' + issue.id + ':';
+    var steps = [{ value: '', label: 'The process as a whole' }].concat(p.steps.map(function (st, i) {
+      return { value: st.id, label: (i + 1) + '. ' + Data.freeze(st.title) };
+    }));
+
+    paint('<article class="pane">' +
+      '<header class="pane-head">' +
+      '<div class="crumbs"><a href="#/issues">Issues register</a> · ' +
+      (issue.resolved ? 'resolved ' + e(issue.resolved) : e(issue.severity) + ' severity') + '</div>' +
+      '<h1>' + e(p.name) + '</h1>' +
+      '<div class="badges">' +
+      (issue.resolved
+        ? '<span class="badge status-published">✓ resolved</span>'
+        : '<span class="badge sev-badge sev-' + e(issue.severity) + '">' + f(spec + 'severity',
+            { type: 'select', options: options(['high', 'medium', 'low']) }) + '</span>') +
+      '<span class="badge quiet">Raised ' + e(issue.raised || '—') + '</span>' +
+      '<span class="badge quiet">By ' + f(spec + 'raisedBy', { placeholder: 'who raised it' }) + '</span>' +
+      '</div>' +
+      '<div class="row-actions">' +
+      '<button class="btn small" data-route="#/process/' + e(p.id) + '">Open the process →</button>' +
+      '<span class="spacer"></span>' +
+      (issue.resolved
+        ? btn('reopen-issue', { process: p.id, issue: issue.id }, 'Reopen') +
+          btn('del-issue', { process: p.id, issue: issue.id }, 'Delete', 'small danger')
+        : btn('resolve-issue', { process: p.id, issue: issue.id }, '✓ Resolve')) +
+      '</div></header>' +
+      '<section class="block"><h2>The issue</h2>' +
+      '<div class="issue-note">' + f(spec + 'note', { type: 'multiline', placeholder: 'What is wrong or missing' }) + '</div>' +
+      (issue.resolution ? '<p class="hint-block">Resolved: ' + e(issue.resolution) + '</p>' : '') +
+      '</section>' +
+      '<section class="block meta"><h2>Details</h2><dl>' +
+      '<dt>About</dt><dd>' + f(spec + 'stepId', { type: 'select', options: steps, placeholder: 'The process as a whole' }) + '</dd>' +
+      '<dt>Process sits under</dt><dd>' + e(Data.taxonomyPath(p.taxonomyId)) + '</dd>' +
+      '<dt>Process status</dt><dd>' + e(p.status) + '</dd>' +
+      '</dl></section></article>');
   }
 
   function renderRuleFindings(result) {
@@ -1289,74 +1447,127 @@
     stale: 'lastReviewed · lastVerified'
   };
 
+  function ruleCard(rule, found) {
+    var spec = 'rule:' + rule.id + ':';
+    var off = rule.enabled === false;
+
+    var body = '';
+    if (rule.kind === 'text') {
+      body += field('Look for', f(spec + 'match:value',
+        { placeholder: 'e.g. Merit' })) +
+        field('Matching', f(spec + 'match:mode', { type: 'select', options: [
+          { value: 'phrase', label: 'This exact wording' },
+          { value: 'regex', label: 'A pattern (regular expression)' }] })) +
+        field('Whole words only', f(spec + 'match:wholeWord',
+          { type: 'select', options: YES_NO, placeholder: 'No' })) +
+        field('Match capitals exactly', f(spec + 'match:caseSensitive',
+          { type: 'select', options: YES_NO, placeholder: 'No' }));
+    }
+    if (rule.kind === 'empty' || rule.kind === 'stale') {
+      body += field('Field', f(spec + 'field',
+        { placeholder: FIELD_HINTS[rule.kind] }));
+    }
+    if (rule.kind === 'stale') {
+      body += field('Older than (months)', f(spec + 'months', { placeholder: '12' }));
+    }
+    body += field('Leave drafts alone', f(spec + 'ignoreDraft',
+      { type: 'select', options: YES_NO, placeholder: 'No' }));
+
+    return '<div class="rule-card' + (off ? ' off' : '') + '" id="rule-' + e(rule.id) + '">' +
+      '<div class="rule-card-head">' +
+      '<span class="rule-name">' + f(spec + 'name') + '</span>' +
+      '<span class="rule-count' + (found ? '' : ' clear') + '">' +
+      (off ? 'disabled' : found + ' found') + '</span>' +
+      btn('toggle-rule', { rule: rule.id }, off ? 'Enable' : 'Disable', 'tiny') +
+      btn('del-rule', { rule: rule.id }, '×', 'tiny danger', 'Delete rule') +
+      '</div>' +
+      '<div class="rule-grid">' +
+      field('Check', f(spec + 'kind', { type: 'select', options: RULE_KINDS })) +
+      field('Severity', f(spec + 'severity', { type: 'select',
+        options: options(['high', 'medium', 'low']) })) +
+      body +
+      field('Applies to', scopeEditor(rule)) +
+      '</div>' +
+      field('What to tell the reader', f(spec + 'message',
+        { type: 'multiline', placeholder: 'Why this matters and what to do about it' })) +
+      '</div>';
+  }
+
   function renderRules() {
     var all = Rules.list();
     var results = {};
     Rules.run().forEach(function (r) { results[r.rule.id] = r; });
+    var totals = Rules.totals();
+    var enabled = all.filter(function (r) { return r.enabled !== false; }).length;
 
     var html = '<div class="row-actions">' +
       btn('add-rule', {}, '+ New rule') +
       (all.length ? '' : btn('seed-rules', {}, 'Add a starting set')) +
       '<span class="spacer"></span>' +
-      '<button class="btn small" data-route="#/issues">← Issues register</button>' +
-      '</div>';
+      '<button class="btn small" data-route="#/issues">Issues register →</button>' +
+      '</div>' +
+      '<section class="tiles">' +
+      tile(all.length, 'rules', enabled + ' switched on', '') +
+      tile(totals.findings, 'findings', 'across the whole corpus', '#/issues') +
+      tile(totals.high || 0, 'high severity', '', '') +
+      tile(totals.medium || 0, 'medium', '', '') +
+      tile(totals.low || 0, 'low', '', '') +
+      '</section>';
 
     if (!all.length) {
       html += '<p class="empty">No rules yet. A rule is a standing check across ' +
         'every process, article and FAQ — add one whenever something in the ' +
         'organisation changes.</p>';
+    } else {
+      html += '<h2 class="group">All rules</h2>' +
+        '<div class="cov-table dash-table rules-dash" role="table">' +
+        '<div class="cov-row cov-headrow" role="row"><span>Rule</span><span>Check</span>' +
+        '<span>Severity</span><span>Found</span></div>' +
+        all.map(function (rule) {
+          var r = results[rule.id];
+          var kind = RULE_KINDS.find(function (k) { return k.value === rule.kind; });
+          var off = rule.enabled === false;
+          return '<button class="cov-row cov-link' + (off ? ' off' : '') + '" role="row" data-route="#/rule/' +
+            e(rule.id) + '"><span class="cov-name">' + e(rule.name) + '</span>' +
+            '<span class="when">' + e(kind ? kind.label : rule.kind) + '</span>' +
+            '<span class="when">' + e(rule.severity || 'medium') + '</span>' +
+            '<span class="num">' + (off ? 'off' : (r ? r.findings.length : 0)) + '</span></button>';
+        }).join('') + '</div>';
     }
-
-    html += all.map(function (rule) {
-      var spec = 'rule:' + rule.id + ':';
-      var found = (results[rule.id] && results[rule.id].findings.length) || 0;
-      var off = rule.enabled === false;
-
-      var body = '';
-      if (rule.kind === 'text') {
-        body += field('Look for', f(spec + 'match:value',
-          { placeholder: 'e.g. Merit' })) +
-          field('Matching', f(spec + 'match:mode', { type: 'select', options: [
-            { value: 'phrase', label: 'This exact wording' },
-            { value: 'regex', label: 'A pattern (regular expression)' }] })) +
-          field('Whole words only', f(spec + 'match:wholeWord',
-            { type: 'select', options: YES_NO, placeholder: 'No' })) +
-          field('Match capitals exactly', f(spec + 'match:caseSensitive',
-            { type: 'select', options: YES_NO, placeholder: 'No' }));
-      }
-      if (rule.kind === 'empty' || rule.kind === 'stale') {
-        body += field('Field', f(spec + 'field',
-          { placeholder: FIELD_HINTS[rule.kind] }));
-      }
-      if (rule.kind === 'stale') {
-        body += field('Older than (months)', f(spec + 'months', { placeholder: '12' }));
-      }
-      body += field('Leave drafts alone', f(spec + 'ignoreDraft',
-        { type: 'select', options: YES_NO, placeholder: 'No' }));
-
-      return '<div class="rule-card' + (off ? ' off' : '') + '" id="rule-' + e(rule.id) + '">' +
-        '<div class="rule-card-head">' +
-        '<span class="rule-name">' + f(spec + 'name') + '</span>' +
-        '<span class="rule-count' + (found ? '' : ' clear') + '">' +
-        (off ? 'disabled' : found + ' found') + '</span>' +
-        btn('toggle-rule', { rule: rule.id }, off ? 'Enable' : 'Disable', 'tiny') +
-        btn('del-rule', { rule: rule.id }, '×', 'tiny danger', 'Delete rule') +
-        '</div>' +
-        '<div class="rule-grid">' +
-        field('Check', f(spec + 'kind', { type: 'select', options: RULE_KINDS })) +
-        field('Severity', f(spec + 'severity', { type: 'select',
-          options: options(['high', 'medium', 'low']) })) +
-        body +
-        field('Applies to', scopeEditor(rule)) +
-        '</div>' +
-        field('What to tell the reader', f(spec + 'message',
-          { type: 'multiline', placeholder: 'Why this matters and what to do about it' })) +
-        '</div>';
-    }).join('');
+    html += '<p class="hint-block">A rule is a standing check. When something in the organisation ' +
+      'changes — a system renamed, a form retired — add a rule and everything now wrong shows up ' +
+      'in the issues register. Findings disappear by themselves once the content is fixed.</p>';
 
     paint(listPane('Content rules',
-      plural(all.length, 'rule') + ' · ' + Rules.totals().findings + ' findings across the corpus',
-      html));
+      plural(all.length, 'rule') + ' · ' + totals.findings + ' findings across the corpus', html));
+  }
+
+  function renderRule(id) {
+    var rule = Rules.get(id);
+    if (!rule) return paint(notFound('rule', id));
+    var result = Rules.run().find(function (r) { return r.rule.id === id; }) || { findings: [] };
+    expanded[id] = true;
+    opened[id] = true;
+
+    paint('<article class="pane">' +
+      '<header class="pane-head"><div class="crumbs"><a href="#/rules">Content rules</a></div>' +
+      '<h1>' + e(rule.name) + '</h1>' +
+      '<p class="lede">' + (rule.enabled === false ? 'Switched off.' :
+        plural(result.findings.length, 'finding') + ' at the moment.') + '</p></header>' +
+      ruleCard(rule, result.findings.length) +
+      '<section class="block"><h2>What it finds</h2>' +
+      (result.error ? '<p class="rule-error">' + e(result.error) + '</p>' : '') +
+      (result.findings.length
+        ? result.findings.map(function (fd) {
+            return '<button class="list-row finding" data-route="' + e(fd.route) + '">' +
+              '<span class="list-title">' + e(fd.label) + '</span>' +
+              '<span class="list-sub">' + e(fd.where) + (fd.detail ? ' — ' + e(fd.detail) : '') +
+              '</span></button>';
+          }).join('')
+        : '<p class="empty">Nothing found.</p>') +
+      (result.draftsSkipped ? '<p class="rule-skipped">' + plural(result.draftsSkipped, 'draft') +
+        ' not checked — this rule leaves drafts alone.</p>' : '') +
+      '</section></article>');
   }
 
   function field(label, control) {
@@ -1487,6 +1698,139 @@
       ' and sub-departments', html));
   }
 
+  // ---- one department's coverage -------------------------------------------
+
+  function processesUnder(taxId) {
+    var list = (Data.state.index.byTaxonomy[taxId] || []).slice();
+    (Data.state.index.children[taxId] || []).forEach(function (child) {
+      list = list.concat(processesUnder(child.id));
+    });
+    return list;
+  }
+
+  function renderCoverageDept(id) {
+    var node = Data.state.index.taxonomy[id];
+    if (!node) return paint(notFound('department', id));
+    var cov = Data.coverage(Rules.byProcess());
+    var row = cov.rows.find(function (r) { return r.node.id === id; });
+    var statuses = cov.statuses;
+    var done = (row.byStatus.reviewed || 0) + (row.byStatus.published || 0);
+    var findings = Rules.byProcess();
+
+    var html = '<section class="tiles">' +
+      tile(row.processes, 'processes', done + ' reviewed or published', '') +
+      tile(row.byStatus.draft || 0, 'still draft', '', '') +
+      tile(row.handoffs, 'handoffs', 'between departments', '') +
+      tile(row.issues, 'open issues', row.high + ' high', '') +
+      tile(row.findings, 'rule findings', '', '') +
+      '</section>' +
+      '<p class="cov-legend">' + statuses.map(function (st) {
+        return '<span><i style="background:' + Exporter.STATUS_COLOUR[st] + '"></i>' +
+          e(st.replace('_', ' ')) + ' ' + (row.byStatus[st] || 0) + '</span>';
+      }).join('') + '</p>' + statusBar(row, statuses);
+
+    var groups = [{ node: node, list: Data.state.index.byTaxonomy[id] || [] }];
+    (function walk(parent) {
+      (Data.state.index.children[parent] || []).forEach(function (child) {
+        groups.push({ node: child, list: Data.state.index.byTaxonomy[child.id] || [] });
+        walk(child.id);
+      });
+    }(id));
+
+    html += groups.filter(function (g) { return g.list.length; }).map(function (g) {
+      return '<h2 class="group">' + e(g.node.name) + ' <span>' + g.list.length + '</span></h2>' +
+        g.list.map(function (p) {
+          var fl = Data.flow(p);
+          var open = Data.openIssues(p).length;
+          var bits = [p.status, plural(p.steps.length, 'step')];
+          if (fl.handoffs) bits.push(plural(fl.handoffs, 'handoff'));
+          return listRow('#/process/' + p.id, p.name, bits.join(' · '),
+            (open ? plural(open, 'open issue') : 'no open issues') +
+            (findings[p.id] ? ' · ' + plural(findings[p.id], 'rule finding') : ''));
+        }).join('');
+    }).join('') || '<p class="empty">No processes filed here yet.</p>';
+
+    paint(listPane(Data.taxonomyPath(id), 'Coverage for this department and everything under it', html));
+  }
+
+  // ---- one department ------------------------------------------------------
+
+  function renderDepartment(id) {
+    var node = Data.state.index.taxonomy[id];
+    if (!node) return paint(notFound('department', id));
+    var used = Edit.taxonomyUsage(id);
+    var children = Data.state.index.children[id] || [];
+    var filed = Data.state.index.byTaxonomy[id] || [];
+
+    var performs = [];
+    Data.state.processes.processes.forEach(function (p) {
+      var n = p.steps.filter(function (st) { return st.departmentId === id; }).length;
+      if (n && p.taxonomyId !== id) performs.push({ p: p, n: n });
+    });
+    var lib = Data.state.library;
+    var owns = {
+      articles: lib.articles.filter(function (a) { return a.ownerId === id; }),
+      faqs: lib.faqs.filter(function (q) { return q.ownerId === id; }),
+      variables: Data.state.variables.variables.filter(function (v) { return v.ownerId === id; })
+    };
+
+    var parentOptions = [{ value: '', label: 'Top level' }].concat(
+      Data.state.processes.taxonomy.filter(function (n) {
+        return n.id !== id && !Edit.wouldLoop(id, n.id);
+      }).map(function (n) {
+        return { value: n.id, label: Data.taxonomyPath(n.id) };
+      }).sort(function (a, b) { return a.label.localeCompare(b.label); }));
+
+    var section = function (title, items, render) {
+      if (!items.length) return '';
+      return '<section class="block"><h2>' + e(title) + ' <span class="count">' + items.length +
+        '</span></h2>' + items.map(render).join('') + '</section>';
+    };
+
+    paint('<article class="pane">' +
+      '<header class="pane-head">' +
+      '<div class="crumbs"><a href="#/departments">Departments</a>' +
+      (node.parentId ? ' · ' + e(Data.taxonomyPath(node.parentId)) : '') + '</div>' +
+      '<h1 class="editable-h1">' + f('taxonomy:' + id + ':name') + '</h1>' +
+      '<div class="badges">' +
+      '<span class="badge quiet">Sits under: ' + f('taxonomy:' + id + ':parentId',
+        { type: 'select', options: parentOptions, placeholder: 'Top level' }) + '</span>' +
+      '<span class="badge quiet">' + plural(used.processes, 'process', 'processes') + ' filed here</span>' +
+      '</div>' +
+      '<div class="row-actions">' +
+      btn('new-process', { taxonomy: id }, '+ Process here') +
+      btn('new-dept', { parent: id }, '+ Sub-department') +
+      '<button class="btn small" data-route="#/coverage/' + e(id) + '">Coverage →</button>' +
+      '<span class="spacer"></span>' +
+      btn('dept-up', { dept: id }, '↑', 'small', 'Move up') +
+      btn('dept-down', { dept: id }, '↓', 'small', 'Move down') +
+      (used.total
+        ? '<span class="hint" title="Move everything that points at it elsewhere first">In use, so it cannot be deleted</span>'
+        : btn('del-dept', { dept: id }, 'Delete department', 'small danger')) +
+      '</div></header>' +
+      section('Sub-departments', children, function (c) {
+        return listRow('#/department/' + c.id, c.name, plural(Data.processCount(c.id), 'process', 'processes'), '');
+      }) +
+      section('Processes filed here', filed, function (p) {
+        return listRow('#/process/' + p.id, p.name, p.status + ' · ' + plural(p.steps.length, 'step'), '');
+      }) +
+      section('Also does steps in', performs, function (x) {
+        return listRow('#/process/' + x.p.id, x.p.name, Data.taxonomyPath(x.p.taxonomyId),
+          plural(x.n, 'step'));
+      }) +
+      section('Owns these articles', owns.articles, function (a) {
+        return listRow('#/article/' + a.id, a.title, a.status, '');
+      }) +
+      section('Owns these FAQ questions', owns.faqs, function (q) {
+        return listRow('#/faq/' + q.id, Data.plainText(q.q), '', '');
+      }) +
+      section('Owns these variables', owns.variables, function (v) {
+        return listRow('#/variable/' + v.id, v.value, v.question, v.status);
+      }) +
+      (used.total ? '' : '<p class="empty">Nothing is filed under or owned by this department.</p>') +
+      '</article>');
+  }
+
   // ---- home ----------------------------------------------------------------
 
   function renderHome() {
@@ -1561,10 +1905,14 @@
     process: renderProcess,
     article: renderArticle,
     faq: renderFaq,
-    articleList: renderArticleList,
+    articleList: renderArticleDashboard,
     faqDashboard: renderFaqDashboard,
     tab: renderTab,
-    variableList: renderVariableList,
+    variableList: renderVariableDashboard,
+    issue: renderIssue,
+    rule: renderRule,
+    coverageDept: renderCoverageDept,
+    department: renderDepartment,
     variable: renderVariable,
     issues: renderIssueRegister,
     rules: renderRules,
