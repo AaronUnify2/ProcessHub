@@ -237,8 +237,8 @@
         }
         input.value = '';
         showSaved();
-        report('good', 'Connected as ' + (who.login || 'you') + ' — the token can see ' +
-          who.repo + '. Writing is confirmed the first time you publish.');
+        report('good', 'Connected as ' + (who.login || 'you') + ' — the token can read ' +
+          GitHub.DATA_REPO + '. Writing is confirmed the first time you publish.');
         if (afterConnect) {
           setTimeout(function () { modal.hidden = true; afterConnect(); }, 900);
         }
@@ -254,11 +254,12 @@
       }).catch(function (err) { report('bad', err.message); });
     };
 
+    // Signing out also deletes the local draft: it is a full copy of the
+    // internal content, and should not stay on a computer nobody is signed
+    // in to.
     document.getElementById('ghForget').onclick = function () {
-      GitHub.forgetToken();
-      showSaved();
-      report('good', 'Token removed from this computer. To stop it working everywhere, ' +
-        'delete it on GitHub too.');
+      var changes = changesSinceBase();
+      Gate.signOut(!changes || changes.length > 0);
     };
 
     document.getElementById('ghClose').onclick = function () { modal.hidden = true; };
@@ -325,8 +326,8 @@
     var go = document.getElementById('pubGo');
     var changes = changesSinceBase();
 
-    document.getElementById('pubWhere').textContent =
-      GitHub.OWNER + '/' + GitHub.REPO + ' · ' + GitHub.BRANCH;
+    document.getElementById('pubWhere').textContent = GitHub.DATA_REPO;
+    document.getElementById('pubSite').textContent = GitHub.SITE_REPO;
 
     if (changes && !changes.length) {
       list.innerHTML = '<p class="empty">Nothing has changed since the last publish.</p>';
@@ -354,6 +355,25 @@
       openConnect();
     };
 
+    function showPublished(done) {
+      var links = [];
+      if (done.data && done.data.url) {
+        links.push('<a href="' + e(done.data.url) + '" target="_blank" rel="noopener">content commit</a>');
+      }
+      if (done.site && done.site.url) {
+        links.push('<a href="' + e(done.site.url) + '" target="_blank" rel="noopener">public FAQ commit</a>');
+      }
+      status.className = 'gh-result good';
+      status.innerHTML = 'Published.' +
+        (done.site && done.site.url
+          ? ' The public FAQ page picks up the change within a minute or two.'
+          : ' The public FAQ was already up to date.') +
+        (links.length ? ' See the ' + links.join(' and the ') + '.' : '');
+      go.textContent = 'Done';
+      go.disabled = false;
+      go.onclick = function () { modal.hidden = true; };
+    }
+
     go.onclick = function () {
       var built = Exporter.buildFiles();
       go.disabled = true;
@@ -368,14 +388,32 @@
         return Exporter.adopt(built).then(function () { return done; });
       }).then(function (done) {
         setStatus('live', 'Published · v' + Data.state.processes.version);
-        status.className = 'gh-result good';
-        status.innerHTML = 'Published. It will be live at <a href="' + e(GitHub.SITE) +
-          '" target="_blank" rel="noopener">' + e(GitHub.SITE) + '</a> within a minute or ' +
-          'two. <a href="' + e(done.url) + '" target="_blank" rel="noopener">See the commit</a>.';
-        go.textContent = 'Done';
-        go.disabled = false;
-        go.onclick = function () { modal.hidden = true; };
+        showPublished(done);
       }).catch(function (err) {
+        if (err.partial) {
+          // The content went, the public FAQ did not. The app takes on the
+          // new versions — they are on GitHub now — and offers to send the
+          // FAQ on its own.
+          Exporter.adopt(built);
+          setStatus('live', 'Published · v' + Data.state.processes.version);
+          status.className = 'gh-result bad';
+          status.textContent = err.message;
+          go.disabled = false;
+          go.textContent = 'Send the FAQ';
+          go.onclick = function () {
+            go.disabled = true;
+            status.className = 'gh-result busy';
+            GitHub.publishSite(built.files, message.value.trim() || summarise(changes),
+              function (text) { status.textContent = text; })
+              .then(function (site) { showPublished({ data: { skipped: true }, site: site }); })
+              .catch(function (again) {
+                status.className = 'gh-result bad';
+                status.textContent = again.message;
+                go.disabled = false;
+              });
+          };
+          return;
+        }
         status.className = 'gh-result bad';
         status.textContent = err.message;
         go.disabled = false;
@@ -471,9 +509,8 @@
     document.getElementById('detail').innerHTML =
       '<article class="pane"><header class="pane-head"><h1>Could not load the content</h1>' +
       '<p class="lede">' + Data.escapeHtml(err.message) + '</p>' +
-      '<p>This page reads three JSON files from <code>data/</code>, which a browser ' +
-      'will only fetch over http or https. Opening the file directly from disk ' +
-      '(<code>file://</code>) will not work — use the published address instead.</p>' +
+      '<p>The content is read from GitHub each time Process Hub opens. Check the ' +
+      'connection and reload.</p>' +
       '</header></article>';
     console.error(err);
   }
@@ -487,10 +524,34 @@
 
   setStatus('loading', 'Loading…');
 
-  Promise.all([Storage.fetchLive(), Storage.loadDraft()])
-    .then(function (results) {
-      var live = results[0];
-      var result = Storage.reconcile(live, results[1]);
+  // Nothing is shown until the private content has been read with a token.
+  // No token, or one GitHub refuses, means the sign-in screen. If GitHub
+  // cannot be reached at all, a draft already on this computer (whose owner
+  // was signed in to make it) is shown so work can carry on offline.
+  var savedDraft = null;
+
+  if (!GitHub.hasToken()) {
+    Gate.show();
+    return;
+  }
+
+  Storage.loadDraft()
+    .then(function (draft) {
+      savedDraft = draft;
+      return Storage.fetchLive();
+    })
+    .catch(function (err) {
+      if (err.signin) { Gate.show(err.message); throw null; }
+      if (savedDraft && savedDraft.data) {
+        Storage.setBase(savedDraft.base || null);
+        start(savedDraft.data, 'draft');
+        setStatus('error', 'Offline · local draft');
+        throw null;
+      }
+      throw err;
+    })
+    .then(function (live) {
+      var result = Storage.reconcile(live, savedDraft);
       if (result.state === 'conflict') {
         // Show the draft, not the published files: editing while the bar is
         // up must add to your work, never quietly replace it.
@@ -508,7 +569,7 @@
         start(Storage.clone(live), 'live');
       }
     })
-    .catch(fail);
+    .catch(function (err) { if (err) fail(err); });
 
   global.App = { route: route, navigate: navigate, publish: openPublish };
 }(window));
