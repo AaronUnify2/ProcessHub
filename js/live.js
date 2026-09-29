@@ -533,8 +533,8 @@
     setStatus('error', 'Could not load');
     el.run.innerHTML = '<div class="run-empty"><h1>Could not load the content</h1>' +
       '<p>' + e(err.message) + '</p>' +
-      '<p class="run-empty-note">This page reads the JSON files in <code>data/</code>, ' +
-      'which a browser only fetches over http or https.</p></div>';
+      '<p class="run-empty-note">The content is read from GitHub each time this page ' +
+      'opens. Check the connection and reload.</p></div>';
     console.error(err);
   }
 
@@ -553,9 +553,31 @@
     prefs = Storage.loadPrefs();
     setStatus('loading', 'Loading…');
 
-    Promise.all([Storage.fetchLive(), Storage.loadDraft()])
-      .then(function (results) {
-        var result = Storage.reconcile(results[0], results[1]);
+    // As in Process Hub: nothing without a token; offline falls back to a
+    // draft already on this computer.
+    if (!GitHub.hasToken()) {
+      Gate.show();
+      return;
+    }
+    var savedDraft = null;
+
+    Storage.loadDraft()
+      .then(function (draft) {
+        savedDraft = draft;
+        return Storage.fetchLive();
+      })
+      .catch(function (err) {
+        if (err.signin) { Gate.show(err.message); throw null; }
+        if (savedDraft && savedDraft.data) {
+          Storage.setBase(savedDraft.base || null);
+          start(savedDraft.data, 'draft');
+          setStatus('error', 'Offline · local draft');
+          throw null;
+        }
+        throw err;
+      })
+      .then(function (live) {
+        var result = Storage.reconcile(live, savedDraft);
         // The live view never arbitrates a conflict mid-call; it takes the
         // draft when there is one, and Process Hub handles reconciliation.
         if (result.state === 'conflict') {
@@ -569,7 +591,7 @@
           start(Storage.clone(result.live), 'live');
         }
       })
-      .catch(fail);
+      .catch(function (err) { if (err) fail(err); });
   }
 
   global.Live = { init: init };

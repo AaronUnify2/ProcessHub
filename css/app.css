@@ -1487,3 +1487,34 @@ button.rule-head[disabled] { cursor: default; }
 .btn.quiet-link { border: none; background: none; color: var(--accent); padding-left: 0; }
 .fm-field input#pubMessage { width: 100%; font: inherit; font-size: 0.88rem; padding: 0.45rem 0.6rem;
   border: 1px solid var(--border-strong); border-radius: 8px; }
+
+/* ---- sign-in screen ------------------------------------------------------ */
+
+body.gated > :not(.gate) { visibility: hidden; }
+.gate {
+  position: fixed; inset: 0; z-index: 100; overflow-y: auto;
+  background: var(--bg); display: flex; align-items: flex-start; justify-content: center;
+  padding: 12vh 16px 2rem;
+}
+.gate-box {
+  width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.5rem 1.4rem 1.2rem; box-shadow: 0 10px 34px rgba(0, 0, 0, 0.08);
+}
+.gate-brand { font-weight: 800; letter-spacing: -0.3px; color: var(--accent); margin-bottom: 0.6rem; }
+.gate-box h1 { font-size: 1.5rem; letter-spacing: -0.4px; margin-bottom: 0.3rem; }
+.gate-lede { font-size: 0.88rem; color: var(--text-soft); margin-bottom: 0.9rem; }
+.gate-why { font-size: 0.84rem; color: var(--danger); background: #FBEAE8; border-radius: 8px;
+  padding: 0.45rem 0.6rem; margin-bottom: 0.8rem; }
+.gate-box label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; }
+.gate-box input {
+  width: 100%; font: inherit; font-size: 0.92rem; padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border-strong); border-radius: 8px;
+}
+.gate-box input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+.gate-result { font-size: 0.82rem; min-height: 1.2em; margin: 0.45rem 0; line-height: 1.45; }
+.gate-result:empty { display: none; }
+.gate-result.busy { color: var(--text-soft); }
+.gate-result.good { color: var(--good); }
+.gate-result.bad { color: var(--danger); }
+.btn.gate-go { width: 100%; justify-content: center; padding: 0.55rem; font-size: 0.92rem; margin: 0.4rem 0 0.8rem; }
+.gate .gh-help p { margin-top: 0.4rem; }

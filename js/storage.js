@@ -119,18 +119,16 @@
   var FILES = ['processes', 'library', 'variables'];
 
   /**
-   * Fetch the three source files. Cache-busted, because GitHub Pages responses
-   * are cached and a just-committed update would otherwise look like it had
-   * not landed.
+   * The three source files, read from the private ProcessHub-data repository
+   * through the GitHub API. They are internal content, so they are not on
+   * the public site at all; without a token that can read them this rejects
+   * with err.signin set, and the page shows the sign-in screen instead.
+   * Reading through the API also means a publish is visible at once, with
+   * none of the minute or two the public site takes to catch up.
    */
   function fetchLive() {
-    var stamp = Date.now();
     return Promise.all(FILES.map(function (name) {
-      return fetch('data/' + name + '.json?t=' + stamp, { cache: 'no-cache' })
-        .then(function (res) {
-          if (!res.ok) throw new Error(name + '.json — HTTP ' + res.status);
-          return res.json();
-        });
+      return GitHub.readData(name);
     })).then(function (results) {
       var out = {};
       FILES.forEach(function (name, i) { out[name] = results[i]; });
