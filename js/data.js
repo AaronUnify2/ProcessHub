@@ -356,6 +356,18 @@
   }
 
   /**
+   * What a reader sees of a scrap of HTML, as plain text: tags gone and
+   * entities decoded. Tab labels and FAQ questions are stored as HTML (the
+   * public page renders them that way), so "Waste &amp; Recycling" must show
+   * as "Waste & Recycling" wherever it appears as text.
+   */
+  var decoder = document.createElement('textarea');
+  function plainText(html) {
+    decoder.innerHTML = String(html || '').replace(/<[^>]+>/g, ' ');
+    return decoder.value.replace(/\s+/g, ' ').trim();
+  }
+
+  /**
    * Matches are ranked so a title hit always beats a body hit — typing "leak"
    * should surface the leak process, not every answer that mentions one.
    */
@@ -724,6 +736,7 @@
     coverage: coverage,
     STATUSES: STATUSES,
     makeId: makeId,
-    stripTags: stripTags
+    stripTags: stripTags,
+    plainText: plainText
   };
 }(window));

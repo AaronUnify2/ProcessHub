@@ -33,8 +33,8 @@ content in those older public copies was judged acceptable to leave.
   live.html          the live call view
   css/app.css · css/live.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
-                     rules.js · export.js · richtext.js · canvas.js · ui-sidebar.js
-                     ui-detail.js · app.js · live.js
+                     rules.js · export.js · faq.js · richtext.js · canvas.js
+                     ui-sidebar.js · ui-detail.js · app.js · live.js
   exports/
     FAQ.json         the live published FAQ content — the public FAQ page reads this
 ```
@@ -56,6 +56,40 @@ first if there are unpublished changes.
 
 If GitHub cannot be reached, a draft already on the computer still opens, so
 work can carry on offline and be published later.
+
+## The FAQ section
+
+The switch at the top of the sidebar moves between **Processes** and **FAQ**.
+
+In the FAQ section the sidebar is the public FAQ page as a list: each publish
+tab with its section headings and questions, in published order.
+
+- **Drag** any row to move it — within a tab, into another tab, or onto a
+  tab's name to put it at the end. A heading row drags on its own, and the
+  questions below it follow whichever heading they end up under, exactly as
+  in the old FAQ Editor.
+- **↑ ↓** appear on the open question (and on headings), for phones and for
+  anyone who would rather not drag.
+- **+ Question** and **+ Heading** sit at the foot of each tab. A new heading
+  holds no question yet, so it stays greyed until a question is moved under
+  it — until then it is not saved.
+- **Not published** at the bottom holds questions in no tab.
+- Search looks through FAQ questions only while this section is showing.
+
+The content area opens on an **FAQ dashboard**: totals, questions not
+published, not yet approved or without an owner, how many are linked to a
+process step, and how many rely on a value nobody has verified yet; then each
+tab's figures, and a short list of questions that need attention.
+
+Clicking a tab's name opens its **settings**: the label, the NEW badge, the
+last-reviewed date, the intro box, the step strip (written by hand, or
+generated from a process map so it never drifts from it), the footer links,
+and moving or deleting the tab. Deleting a tab moves its questions to *Not
+published* — nothing is lost.
+
+Behind the scenes each question stores its tab, its position and the heading
+it sits under; the list and the published `FAQ.json` are two views of the
+same thing, and reordering nothing leaves `FAQ.json` byte-for-byte unchanged.
 
 ## Running the app
 
