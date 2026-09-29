@@ -2,16 +2,28 @@
 
 Process maps, knowledge base articles and public FAQ content in one editor.
 
-See [`SPEC.md`](SPEC.md) for the data model and
-[`TERMINOLOGY-AUDIT.md`](TERMINOLOGY-AUDIT.md) for the terminology checklist.
-
 Live at **https://aaronunify2.github.io/ProcessHub/** — Pages serves the `main`
 branch as it stands, so every push to `main` is live within a minute or two.
 
+## Two repositories
+
+| | | |
+|---|---|---|
+| **ProcessHub** (this one) | public | The app, and `exports/FAQ.json` — the published FAQ content the public FAQ page reads |
+| **ProcessHub-data** | private | The content: `data/processes.json`, `library.json`, `variables.json`, plus the spec and migration tools |
+
+The content is internal to the council — internal articles, system names,
+extension numbers, the issues register — so it lives in the private
+repository and is never served by the public site. The app reads it through
+the GitHub API with each person's own token. Without a token that can read
+ProcessHub-data there is nothing to load, and the app shows a sign-in screen
+instead.
+
 Process Hub started as a folder in
-[UnifyVersion1](https://github.com/AaronUnify2/UnifyVersion1) and moved here
-with its history, so that a GitHub token used to publish from the browser can
-be limited to this repository alone.
+[UnifyVersion1](https://github.com/AaronUnify2/UnifyVersion1) and moved here.
+The content, with its history, is in the private repository. Older commits in
+this repository's history still contain the content files from before the
+split; rewriting that history is a separate, pending step.
 
 ## Layout
 
@@ -19,27 +31,35 @@ be limited to this repository alone.
   index.html         the app
   live.html          the live call view
   css/app.css · css/live.css
-  js/                storage.js · data.js · merge.js · edit.js · rules.js · export.js
-                     github.js · richtext.js · canvas.js · ui-sidebar.js · ui-detail.js
-                     app.js · live.js
-  data/              source content, fetched by the app at load
-    processes.json     taxonomy + process maps
-    library.json       KB articles + FAQ questions + publish tabs
-    variables.json     variables + owners
-  exports/           generated, never hand-edited
-    FAQ.json           the live published FAQ content — the public FAQ page reads this
-  tools/             one-off migration scripts
-    import-faq.py
-    import-flowcharts.py
-    export-faq.py
-    sources/           what the imports read, frozen: FAQ.json, CustomerService.html
-  SPEC.md · TERMINOLOGY-AUDIT.md
+  js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
+                     rules.js · export.js · richtext.js · canvas.js · ui-sidebar.js
+                     ui-detail.js · app.js · live.js
+  exports/
+    FAQ.json         the live published FAQ content — the public FAQ page reads this
 ```
+
+## Signing in
+
+The first time on a computer, Process Hub asks for a fine-grained personal
+access token:
+
+- Repository access: **Only select repositories → ProcessHub-data and ProcessHub**
+- Permissions: **Contents → Read and write**, nothing else
+- An expiry of 90 days is sensible
+
+The token is checked with GitHub, then kept in this browser's `localStorage`
+on this computer only — never in the draft, an export or a repository — and is
+only ever sent to `api.github.com`. **Sign out** (under Export → GitHub
+connection) removes the token *and* the local copy of the content, warning
+first if there are unpublished changes.
+
+If GitHub cannot be reached, a draft already on the computer still opens, so
+work can carry on offline and be published later.
 
 ## Running the app
 
-It reads its three JSON files over http, so it cannot be opened straight from
-disk — use the published address.
+It reads its content from GitHub, so it needs a connection and a token the
+first time; see *Signing in* above.
 
 Keyboard: <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd> jumps to search,
 <kbd>Esc</kbd> clears it. The tree is the default view; search filters across
@@ -188,10 +208,13 @@ resolve anything when it is opened.
 
 ## Publishing
 
-**Publish to GitHub** writes `data/processes.json`, `data/library.json`,
-`data/variables.json` and `exports/FAQ.json` to this repository as **one
-commit on `main`**. Pages serves `main`, so it is live within a minute or two,
-and the public FAQ page picks up the new `FAQ.json` with it.
+**Publish to GitHub** writes `data/processes.json`, `data/library.json` and
+`data/variables.json` to **ProcessHub-data** as one commit, then
+`exports/FAQ.json` to **this repository** as another. Files whose content has
+not changed are left alone, and a repository with nothing new gets no commit.
+Pages serves `main` here, so the public FAQ page picks up a new `FAQ.json`
+within a minute or two. If the second commit fails, the content is already
+safe and the dialog offers to send the FAQ on its own.
 
 The dialog lists what changed since the last publish — worked out the same way
 as the merge, by comparing the draft with what it started from — and offers a
@@ -205,13 +228,8 @@ GitHub to move `main` only if nobody moved it in the meantime, so two people
 publishing at once cannot clobber each other either. Nothing in the app
 changes until GitHub has accepted the commit.
 
-**The token.** Publishing uses a fine-grained personal access token with
-access to this repository only and *Contents: Read and write*. Paste it once
-under **GitHub connection…**; it is checked with GitHub before being kept. It
-is stored in this browser's `localStorage` on this computer — never in the
-draft, an export or the repository — and is only ever sent to
-`api.github.com`. *Forget it* removes it from the computer; to stop it working
-everywhere, delete it on GitHub as well. Each computer needs its own token.
+The same token signs you in and publishes. To stop it working everywhere,
+not just on one computer, delete it on GitHub.
 
 ## The live call view
 
@@ -260,85 +278,3 @@ opened what — the only things that persist are the edits you deliberately make
 an attachment, a note, an added step. They live in the same browser draft as
 everything else and leave the machine only when you export and commit, so the
 work survives the browser rather than living in it.
-
-## Tools
-
-The scripts run from the repository root and need nothing installed.
-
-**Import the published FAQ content into the data model.** Overwrites everything
-in `data/`, so it is only for seeding.
-
-```
-python3 tools/import-faq.py
-```
-
-**Import the call flowcharts.** Merges into the files above, so run it second.
-Each leaf node of the diagram becomes one process: numbered items become steps,
-`[ ]` lines become checks on the step above them, italic passages become the
-call script, and context chips become article references.
-
-```
-python3 tools/import-flowcharts.py
-```
-
-This is a structural extraction, not a rewrite. Everything it produces is
-`status: "draft"` and anything needing judgement is recorded as an issue.
-
-**Project the data back into the `FAQ.json`** that the public page reads. This
-writes `exports/FAQ.json`, which is the single source of truth for published
-FAQ content. The public page, `FAQ.html` in UnifyVersion1, fetches it from
-`https://aaronunify2.github.io/ProcessHub/exports/FAQ.json`:
-
-```
-python3 tools/export-faq.py
-```
-
-**Verify the round trip.** Compares a fresh export against the frozen
-pre-Process-Hub copy in `tools/sources/FAQ.json`. That file is no longer live —
-it is kept purely as this baseline. If a schema change ever loses content,
-this catches it:
-
-```
-python3 tools/export-faq.py --check
-```
-
-At the last run: 129 variables, 14 tabs, 197 items, no published content lost.
-The only difference from the original is the `departments` list, which gained
-Works — an addition rather than a loss, so it is reported as a note.
-
-## Current state
-
-| | |
-|---|---|
-| Taxonomy | 11 departments, 22 sub-departments |
-| Processes | 112, all `status: draft` |
-| Steps | 515 (4.6 per process) |
-| Articles | 37, all internal |
-| FAQ questions | 166 across 14 publish tabs, each with an owner |
-| Variables | 140 — 129 from the FAQ, 11 internal system names |
-| Variable references | 332 across processes and articles, no orphans |
-| Issues raised | 86 (32 high, 48 medium, 6 low) |
-| Cross-department | 29 processes, 53 handoffs |
-| Rule findings | 132 — 19 Merit (high), 112 processes without an owner (low), 1 unused article; 252 draft items left alone by the review-date rules |
-
-## Known limits of the flowchart import
-
-The importer extracts structure. It does not read for meaning, so:
-
-- **Handoffs are undercounted.** Only transfers written as a numbered step are
-  detected. Short-Term Accommodation reads as two departments because its
-  four-department approval stack is described in prose, not as steps. A human
-  reading it sees four.
-- **Resolutions are inferred** from wording in the node body, so some are
-  approximate.
-- **32 processes referenced Merit.** The system name now resolves to the CRM
-  variable, but the surrounding wording still describes the Merit workflow and
-  needs rewriting.
-
-All of this is why every imported process is `draft`.
-
-## Next
-
-1. Work the issue register down, starting with the 21 remaining Merit mentions.
-2. Review the 13 variables that nothing references.
-3. Proofread the imported content and move processes off `draft`.
