@@ -1731,3 +1731,18 @@ button.cov-row.cov-link:hover { background: var(--bg); }
 .badge.sev-badge.sev-high { background: #FBEAE8; color: var(--danger); }
 .badge.sev-badge.sev-medium { background: var(--warn-soft); color: var(--warn); }
 .issue-note { font-size: 0.95rem; }
+
+/* Adding steps on the map, and verifying from the variables dashboard */
+.node-add {
+  flex: 0 0 auto; background: none; border: none; cursor: pointer; color: var(--text-soft);
+  font-size: 0.95rem; line-height: 1; padding: 0 2px; opacity: 0;
+}
+.node:hover .node-add { opacity: 1; }
+.node-add:hover { color: var(--accent); }
+@media (hover: none) { .node-add { opacity: 1; } }
+.node.just-added { box-shadow: 0 0 0 3px var(--accent-soft), 0 6px 18px rgba(10, 102, 194, 0.18); }
+.btn.primary-soft { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+
+.verify-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
+.verify-row .list-row { flex: 1; min-width: 0; margin-bottom: 0; }
+.verify-row .btn { flex: 0 0 auto; }

@@ -55,6 +55,7 @@
       }).join('') +
       '</div>' +
       '<span class="spacer"></span>' +
+      '<button class="btn small primary-soft" data-canvas="add-step">+ Step</button>' +
       '<button class="btn small" data-canvas="tidy">Tidy layout</button>' +
       '<button class="btn small" data-canvas="zoom-out" aria-label="Zoom out">−</button>' +
       '<span class="zoom-level" id="zoomLevel">100%</span>' +
@@ -116,8 +117,26 @@
     if (action === 'zoom-in') setZoom(view.zoom * 1.2);
     if (action === 'zoom-out') setZoom(view.zoom / 1.2);
     if (action === 'fit') fit();
+    if (action === 'add-step') addStepAfter(null);
     if (action === 'tidy') { tidy(); draw(); fit(); }
     if (action === 'svg') Exporter.processSvg(view.processId, view.detail);
+  }
+
+  // ---- adding a step --------------------------------------------------------
+
+  /**
+   * Add a step after a card (or, with no card, after the last step). It takes
+   * over where that step led and is placed beside it — the same rules as
+   * adding a step in the Steps view.
+   */
+  function addStepAfter(stepId) {
+    var name = prompt('What happens at the new step?', '');
+    if (name === null) return;
+    var id = Edit.addStep(view.processId, stepId || null);
+    if (!id) return;
+    if (name.trim()) Edit.set('step:' + view.processId + ':' + id + ':title', name.trim());
+    view.justAdded = id;
+    remount();
   }
 
   // ---- the selected route --------------------------------------------------
@@ -195,6 +214,12 @@
     Array.prototype.forEach.call(el.cards.querySelectorAll('.node'), function (node) {
       node.addEventListener('pointerdown', onCardDown);
     });
+    Array.prototype.forEach.call(el.cards.querySelectorAll('[data-add-after]'), function (node) {
+      node.addEventListener('click', function (event) {
+        event.stopPropagation();
+        addStepAfter(node.dataset.addAfter);
+      });
+    });
     Array.prototype.forEach.call(el.cards.querySelectorAll('[data-open]'), function (node) {
       node.addEventListener('click', function (event) {
         event.stopPropagation();
@@ -205,6 +230,14 @@
     drawSelbar();
     drawWires();
     applyTransform();
+
+    if (view.justAdded) {
+      view.justAdded = null;
+      setTimeout(function () {
+        var fresh = el.cards.querySelector('.just-added');
+        if (fresh) fresh.classList.remove('just-added');
+      }, 1600);
+    }
   }
 
   function card(step, i, p) {
@@ -228,12 +261,15 @@
       }
     }
 
-    return '<div class="node node-' + e(step.type) + '" data-step="' + e(step.id) + '"' +
+    var fresh = view.justAdded === step.id;
+    return '<div class="node node-' + e(step.type) + (fresh ? ' just-added' : '') + '" data-step="' + e(step.id) + '"' +
       ' style="left:' + (step.x || 0) + 'px; top:' + (step.y || 0) + 'px;' +
       ' width:' + CARD_W + 'px; min-height:' + height + 'px">' +
       '<div class="node-head">' +
       '<span class="node-n">' + (i + 1) + '</span>' +
       '<span class="node-title">' + e(Data.freeze(step.title) || 'Untitled step') + '</span>' +
+      '<button class="node-add" data-add-after="' + e(step.id) + '" title="Add a step after this one" ' +
+      'aria-label="Add a step after this one">+</button>' +
       '<button class="node-open" data-open="' + e(step.id) + '" title="Edit this step">✎</button>' +
       '</div>' +
       (step.responsibleRole && view.detail !== 'simple'
@@ -383,7 +419,7 @@
   // ---- dragging ------------------------------------------------------------
 
   function onCardDown(event) {
-    if (event.target.closest('.node-open')) return;
+    if (event.target.closest('.node-open') || event.target.closest('.node-add')) return;
     event.stopPropagation();
     var node = event.currentTarget;
     var p = process();
