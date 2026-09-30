@@ -1174,16 +1174,40 @@
           '</span></div>';
       }).join('') + '</div>';
 
-    var attention = vars.filter(function (v) { return v.status === 'stale' || !usesOf(v.id); });
-    html += '<h2 class="group">Needs attention <span>' + attention.length + '</span></h2>' +
-      (attention.length
-        ? attention.slice(0, 12).map(function (v) {
-            var why = [];
-            if (v.status === 'stale') why.push('stale');
-            if (!usesOf(v.id)) why.push('not used anywhere');
-            return listRow('#/variable/' + v.id, v.value, (v.question ? v.question + ' · ' : '') + why.join(' · '), '');
+    // Two different jobs, kept apart: verifying clears the first list, but
+    // only using (or deleting) a variable clears the second.
+    var toVerify = vars.filter(function (v) { return v.status !== 'current'; })
+      .sort(function (a, b) {
+        // Stale first — those are known to be wrong — then the rest.
+        return (a.status === 'stale' ? 0 : 1) - (b.status === 'stale' ? 0 : 1);
+      });
+    var SHOW = 15;
+    html += '<h2 class="group">Waiting to be verified <span>' + toVerify.length + '</span></h2>' +
+      (toVerify.length
+        ? toVerify.slice(0, SHOW).map(function (v) {
+            return '<div class="verify-row">' +
+              '<button class="list-row" data-route="#/variable/' + e(v.id) + '">' +
+              '<span class="list-title">' + e(v.value) + (v.internal === true ? ' <span class="lock">🔒</span>' : '') + '</span>' +
+              '<span class="list-sub">' + e((v.status === 'stale' ? 'STALE · ' : '') +
+                (v.question || '') + (v.ownerId ? ' · ' + Data.taxonomyName(v.ownerId) : '')) + '</span>' +
+              '</button>' +
+              btn('verify', { variable: v.id }, '✓ Verified', 'small', 'Mark this value as confirmed') +
+              '</div>';
+          }).join('') +
+          (toVerify.length > SHOW ? '<p class="hint-block">…and ' + (toVerify.length - SHOW) +
+            ' more. Verified ones drop off this list, and the next come up.</p>' : '')
+        : '<p class="empty">Every variable is verified.</p>');
+
+    var unusedList = vars.filter(function (v) { return !usesOf(v.id); });
+    html += '<h2 class="group">Not used anywhere <span>' + unusedList.length + '</span></h2>' +
+      (unusedList.length
+        ? '<p class="hint-block">Nothing refers to these. Verifying them does not change that — ' +
+          'either insert them where they belong (the + Variable button when editing), or ' +
+          'delete them from their own page.</p>' +
+          unusedList.map(function (v) {
+            return listRow('#/variable/' + v.id, v.value, v.question || '', v.status);
           }).join('')
-        : '<p class="empty">Nothing stale or unused.</p>');
+        : '<p class="empty">Every variable is in use.</p>');
 
     paint(listPane('Variables', plural(vars.length, 'variable') + ' — each fact written once and ' +
       'used everywhere. Pick one on the left to edit or verify it.', html));
