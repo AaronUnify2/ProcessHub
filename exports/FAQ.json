@@ -605,7 +605,7 @@
     {
       "id": "removal_refund_fee_inspection",
       "question": "What is the current fee for a partial refund of a removal building bond where an inspection is required?",
-      "value": "$473.00",
+      "value": "$509.00 ",
       "owner": "Building",
       "type": "money",
       "note": "Bond agreement listed fees as current to 30 June 2025 — please confirm the current financial year figure."
@@ -613,7 +613,7 @@
     {
       "id": "removal_refund_fee_no_inspection",
       "question": "What is the current fee for a partial refund of a removal building bond where no inspection is required?",
-      "value": "$237.00",
+      "value": "$255.00",
       "owner": "Building",
       "type": "money",
       "note": "Bond agreement listed fees as current to 30 June 2025 — please confirm the current financial year figure."
@@ -621,7 +621,7 @@
     {
       "id": "removal_final_release_fee",
       "question": "What is the current fee for final release of a removal building bond where building work is not completed within 12 months of approval?",
-      "value": "$473.00",
+      "value": "$509.00",
       "owner": "Building",
       "type": "money",
       "note": "Bond agreement listed fees as current to 30 June 2025 — please confirm the current financial year figure."
@@ -1211,7 +1211,7 @@
         {
           "type": "faq",
           "q": "What is a removal home, and how is the approval different from building new?",
-          "a": "<p>A removal home (or removal dwelling) is an existing house relocated to your land — or moved to a different position on the same land. Both need a <strong>building approval</strong>, and the building permit for a removal dwelling is valid for <strong>12 months</strong>. Depending on the zoning of the land, a planning approval may also be necessary before a building permit can be issued.</p><p>The big difference from a new build is Council's extra role as a <strong>Concurrence Agency</strong> under the <em>Planning Regulation 2017</em>. Because a relocated house can affect the look and amenity of an area, Council assesses its condition and appearance, attaches conditions to the approval, and sets a <strong>security bond</strong> that must be paid before the house is approved for relocation. The bond is your guarantee that the house will be restored to an acceptable standard once it lands.</p>"
+          "a": "<p>A removal home (or removal dwelling) is an existing house relocated to your land — or moved to a different position on the same land. Both need a <strong>building approval</strong>, and the building permit for a removal dwelling is valid for <strong>12 months</strong>. Depending on the zoning of the land, a planning approval may also be necessary before a building permit can be issued.</p><p>The big difference from a new build is Council's extra role as a <strong>Concurrence Agency</strong> under the <em>Planning Regulation 2017</em>. Because a relocated house can affect the look and amenity of an area, Council assesses its condition and appearance, attaches conditions to the approval, and sets a <strong>security bond</strong> that must be paid before the house is approved for relocation. The bond represents your guarantee that the house will be restored to an acceptable standard once it lands.</p>"
         },
         {
           "type": "faq",
@@ -1244,12 +1244,12 @@
         {
           "type": "faq",
           "q": "How do I pay the bond?",
-          "a": "<p>The bond must be paid — and the Bond Agreement signed and returned — <strong>before the house is relocated</strong>. Payment can be made by:</p><ul><li><strong>EFT</strong> — include the reference number from your bond agreement</li><li><strong>Bank cheque</strong> — made payable to Southern Downs Regional Council</li><li><strong>Bank guarantee</strong> — must be a signed and dated original, have <strong>no termination/expiry date</strong>, and be unconditional and payable on demand, with a description (i.e. removal bond)</li><li>Cash (not preferred)</li></ul><div class=\"warn\">Council does <strong>not</strong> accept credit card payments or personal cheques for removal building bonds.</div><p>The bond form must be completed in full and accompany your payment. Note that the bond will only be released to the original payee shown on the receipt, so think about whose name it goes in.</p>"
+          "a": "<p>The bond must be paid — and the Bond Agreement signed and returned — <strong>before the house is relocated</strong>. Payment can be made by:</p><ul><li><strong>Bank Transfer&nbsp;</strong>— Account details and reference number are printed on your removal building bond agreement</li><li><strong>Bank cheque</strong> — made payable to Southern Downs Regional Council</li><li><strong>Bank guarantee</strong> — must be a signed and dated original, have <strong>no termination/expiry date</strong>, and be unconditional and payable on demand, with a description (i.e. removal bond)</li><li>Cash (not preferred)</li></ul><div class=\"warn\">Council does <strong>not</strong> accept credit card payments or personal cheques for removal building bonds.</div><p>The bond form must be completed in full and accompany your payment. Note that the bond will only be released to the original payee shown on the receipt, so think about whose name it goes in.</p>"
         },
         {
           "type": "faq",
           "q": "How and when do I get the bond back?",
-          "a": "<p>The bond exists to make sure the house is restored to an acceptable standard, so it comes back as the work gets done:</p><ul><li><strong>Partial refunds</strong> may be released progressively at Council's discretion, depending on how much work is complete. They're considered case by case, and <strong>up to 50% of the bond is always retained until final release</strong>. Bank guarantees can't be released in part — only on completion of all works.</li><li><strong>Final release</strong> happens only once the Final Certificate (Form 21) has been issued after inspection.</li></ul><p>Fees apply to refund requests:</p><table class=\"setback-table\"><thead><tr><th>Request</th><th>Fee</th></tr></thead><tbody><tr><td>Partial refund — inspection required</td><td><span class=\"faq-var\" data-var=\"removal_refund_fee_inspection\">$473.00</span></td></tr><tr><td>Partial refund — no inspection required</td><td><span class=\"faq-var\" data-var=\"removal_refund_fee_no_inspection\">$237.00</span></td></tr><tr><td>Final release where work isn't completed within 12 months of approval</td><td><span class=\"faq-var\" data-var=\"removal_final_release_fee\">$473.00</span></td></tr></tbody></table><p><strong>To request a refund</strong>, send Council a formal request with supporting documents — for a partial release: copies of relevant certificates (including Form 12/Form 16) for the completed work, photos of the completed stages, a schedule of remaining works, and the amount requested. For final release: a copy of the Form 21 from your Building Certifier. Once Council confirms the request is approved, complete a 'Refund or Transfer Payment Request Form – General' (available from Council's financial forms page) and email it to <strong><span class=\"faq-var\" data-var=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</span></strong>. The requestor must be the party that originally paid the bond, and include your application number and 'full/partial refund of removal bond' as the reason.</p>"
+          "a": "<p>The bond exists to make sure the house is restored to an acceptable standard, so it comes back as the work listed on your Referral Agency Response is completed:</p><ul><li><strong>Partial refunds</strong> may be released progressively at Council's discretion, depending on how much work is complete. They're considered case by case, and <strong>up to 50% of the bond is always retained until final release</strong>. Bank guarantees can't be released in part — only on completion of all works.</li><li><strong>Final release</strong> happens only once the Final Certificate (Form 21) has been issued after inspection.</li></ul><p>Fees apply to refund requests:</p><table class=\"setback-table\"><thead><tr><th>Request</th><th>Fee</th></tr></thead><tbody><tr><td>Partial refund — inspection required</td><td><span class=\"faq-var\" data-var=\"removal_refund_fee_inspection\">$473.00</span></td></tr><tr><td>Partial refund — no inspection required</td><td><span class=\"faq-var\" data-var=\"removal_refund_fee_no_inspection\">$237.00</span></td></tr><tr><td>Final release where work isn't completed within 12 months of approval</td><td><span class=\"faq-var\" data-var=\"removal_final_release_fee\">$473.00</span></td></tr></tbody></table><p><strong>To request a refund</strong>, send Council a formal request with supporting documents — for a partial release: copies of relevant certificates (including Form 12/Form 16) for the completed work, photos of the completed stages, a schedule of remaining works, and the amount requested. For final release: a copy of the Form 21 from your Building Certifier. Once Council confirms the request is approved, complete a 'Refund or Transfer Payment Request Form – General' (available from Council's financial forms page) and email it to <strong><span class=\"faq-var\" data-var=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</span></strong>. The requestor must be the party that originally paid the bond, and include your application number and 'full/partial refund of removal bond' as the reason.</p>"
         },
         {
           "type": "group",
