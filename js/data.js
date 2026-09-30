@@ -602,6 +602,43 @@
 
   var STATUSES = ['draft', 'mapped', 'reviewed', 'published', 'needs_rework'];
 
+  var ANSWER_VARS = /data-var(?:-href)?="(var_[a-z0-9_]+)"|\{\{(var_[a-z0-9_]+)\}\}/gi;
+
+  /**
+   * The facts about one FAQ question that the dashboards count: is it on the
+   * public page, is it approved, does a process step link to it, and does its
+   * answer rely on a value nobody has verified yet.
+   */
+  function faqFacts(f) {
+    var usage = state.index.usage[f.id];
+    var unconfirmed = false;
+    var m;
+    ANSWER_VARS.lastIndex = 0;
+    while (!unconfirmed && (m = ANSWER_VARS.exec(f.a || ''))) {
+      var v = variable(m[1] || m[2]);
+      if (v && v.status !== 'current') unconfirmed = true;
+    }
+    return {
+      published: !!(f.publish && f.publish.tabId),
+      ready: f.status === 'published' || f.status === 'approved',
+      linked: !!(usage && usage.processes.length),
+      unconfirmed: unconfirmed
+    };
+  }
+
+  /** FAQ figures for a set of questions. */
+  function tallyFaqs(list) {
+    var out = { total: list.length, published: 0, notReady: 0, linked: 0, unconfirmed: 0 };
+    list.forEach(function (f) {
+      var facts = faqFacts(f);
+      if (facts.published) out.published++;
+      if (!facts.ready) out.notReady++;
+      if (facts.linked) out.linked++;
+      if (facts.unconfirmed) out.unconfirmed++;
+    });
+    return out;
+  }
+
   /**
    * How far the mapping has got, department by department. Each row counts
    * the processes filed under that department and everything beneath it.
@@ -635,17 +672,32 @@
       return list;
     }
 
+    // A department and everything under it, for the FAQ questions it owns.
+    function subtree(id) {
+      var ids = [id];
+      (index.children[id] || []).forEach(function (child) { ids = ids.concat(subtree(child.id)); });
+      return ids;
+    }
+
     function walk(node, depth) {
       var list = beneath(node.id);
       var row = tally(list);
       row.node = node;
       row.depth = depth;
+      var mine = subtree(node.id);
+      row.faq = tallyFaqs(state.library.faqs.filter(function (f) {
+        return mine.indexOf(f.ownerId) !== -1;
+      }));
       rows.push(row);
       (index.children[node.id] || []).forEach(function (child) { walk(child, depth + 1); });
     }
     (index.children.__root__ || []).forEach(function (node) { walk(node, 0); });
 
     var total = tally(state.processes.processes);
+    total.faq = tallyFaqs(state.library.faqs);
+    total.faqUnowned = state.library.faqs.filter(function (f) {
+      return !f.ownerId || !index.taxonomy[f.ownerId];
+    }).length;
 
     var owners = {};
     state.variables.variables.forEach(function (v) {
@@ -734,6 +786,8 @@
     allIssues: allIssues,
     openIssues: openIssues,
     coverage: coverage,
+    faqFacts: faqFacts,
+    tallyFaqs: tallyFaqs,
     STATUSES: STATUSES,
     makeId: makeId,
     stripTags: stripTags,

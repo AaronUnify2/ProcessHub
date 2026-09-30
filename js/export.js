@@ -625,6 +625,13 @@
         '<td class="num">' + (v.pending || 0) + '</td><td class="num">' + (v.stale || 0) + '</td></tr>';
     }).join('');
 
+    var faqRows = cov.rows.filter(function (r) { return r.faq.total; }).map(function (r) {
+      return '<tr class="depth-' + r.depth + '"><td>' + e(r.node.name) + '</td>' +
+        '<td class="num">' + r.faq.total + '</td><td class="num">' + r.faq.published + '</td>' +
+        '<td class="num">' + r.faq.notReady + '</td><td class="num">' + r.faq.linked + '</td>' +
+        '<td class="num">' + r.faq.unconfirmed + '</td></tr>';
+    }).join('');
+
     download('process-coverage.html', page('Process coverage',
       '<h1>Process coverage</h1>' +
       '<p class="lede">' + t.processes + ' processes identified, ' + done +
@@ -634,6 +641,12 @@
       '<table><thead><tr><th>Department</th><th>Processes</th><th>Status</th>' +
       '<th>Reviewed</th><th>Handoffs</th><th>Open issues</th><th>Rule findings</th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<h2>FAQ questions by owning department</h2>' +
+      '<p class="lede">' + t.faq.total + ' questions, ' + t.faq.published + ' on the public page, ' +
+      t.faq.notReady + ' not yet approved, ' + t.faq.linked + ' linked to a process step.</p>' +
+      '<table><thead><tr><th>Department</th><th>Questions</th><th>On the page</th>' +
+      '<th>Not approved</th><th>Linked to a step</th><th>Unconfirmed values</th></tr></thead><tbody>' +
+      faqRows + '</tbody></table>' +
       '<h2>Variables by owning department</h2>' +
       '<table><thead><tr><th>Department</th><th>Total</th><th>Current</th>' +
       '<th>Pending</th><th>Stale</th></tr></thead><tbody>' + vars + '</tbody></table>'),
