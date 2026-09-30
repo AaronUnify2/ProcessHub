@@ -1196,7 +1196,7 @@
         },
         {
           "label": "STEP 5",
-          "text": "Move the house (removalist arranges permits)"
+          "text": "Move the house "
         },
         {
           "label": "STEP 6",
@@ -1258,7 +1258,7 @@
         {
           "type": "faq",
           "q": "Who arranges the transport permits for moving the house?",
-          "a": "<p>Your <strong>removalist</strong> does — it's their responsibility. Before the building can be moved, the removalist must obtain a permit from the Police, and that permit requires approval from both the Department of Transport and Main Roads and Council's Engineering Services. You don't need to arrange these yourself, but it's sensible to confirm your removalist has them in hand before moving day.</p>"
+          "a": "<p>Typically, your&nbsp;<strong>removalist</strong>&nbsp;will. Before the building can be moved, a permit from the Police for the transport must be issued, and that permit requires approval from both the Department of Transport and Main Roads and Council's Engineering Services. Normally you don't need to arrange these yourself, but it's sensible to confirm your removalist has them in hand before moving day.</p>"
         },
         {
           "type": "faq",
@@ -2010,7 +2010,7 @@
         {
           "type": "faq",
           "q": "What does camping cost?",
-          "a": "<p>The same camping site fee applies at both Connolly Dam and Washpool Reserve, charged per camper per night.</p><table class=\"facility-table\"><thead><tr><th>Who</th><th>Fee</th></tr></thead><tbody><tr><td>Adult (18 and over), per night</td><td><span class=\"faq-var\" data-var=\"camp_fee_adult\">$15.80</span></td></tr><tr><td>Child (4 to 17 years), per night</td><td><span class=\"faq-var\" data-var=\"camp_fee_child\">$8.50</span></td></tr><tr><td>Family (2 adults and up to 2 children under 18), per night</td><td><span class=\"faq-var\" data-var=\"camp_fee_family\">$39.20</span></td></tr><tr><td>Children under 4</td><td>Free</td></tr><tr><td>Powered site, in addition to the camping site fee</td><td><span class=\"faq-var\" data-var=\"camp_fee_powered\">$7.30</span></td></tr></tbody></table><p>The overflow area at Washpool, for self-contained caravans and recreational vehicles, is charged at a lower rate.</p><div class=\"note\">Fees are set by Council each year and change on 1 July. The <a href=\"https://www.sdrc.qld.gov.au/payments---services/fees-charges\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au\">Fees &amp; Charges schedule</a> is always the current source.</div>"
+          "a": "<p>The same camping site fee applies at both Connolly Dam and Washpool Reserve, charged per camper per night.</p><table class=\"facility-table\"><thead><tr><th>Camping Fees</th><th>Fee</th></tr></thead><tbody><tr><td>Adult (18 and over), per night</td><td><span class=\"faq-var\" data-var=\"camp_fee_adult\">$15.80</span></td></tr><tr><td>Child (4 to 17 years), per night</td><td><span class=\"faq-var\" data-var=\"camp_fee_child\">$8.50</span></td></tr><tr><td>Family (2 adults and up to 2 children under 18), per night</td><td><span class=\"faq-var\" data-var=\"camp_fee_family\">$39.20</span></td></tr><tr><td>Children under 4</td><td>Free</td></tr><tr><td>Powered site, in addition to the camping site fee (only at Washpool Reserve)</td><td><span class=\"faq-var\" data-var=\"camp_fee_powered\">$7.30</span></td></tr></tbody></table><p>The overflow area at Washpool, for self-contained caravans and recreational vehicles, is charged at a lower rate.</p><div class=\"note\">Fees are set by Council each year and change on 1 July. The <a href=\"https://www.sdrc.qld.gov.au/payments---services/fees-charges\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au\">Fees &amp; Charges schedule</a> is always the current source.</div>"
         },
         {
           "type": "faq",
