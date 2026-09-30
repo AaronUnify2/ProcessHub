@@ -1746,3 +1746,13 @@ button.cov-row.cov-link:hover { background: var(--bg); }
 .verify-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
 .verify-row .list-row { flex: 1; min-width: 0; margin-bottom: 0; }
 .verify-row .btn { flex: 0 0 auto; }
+
+/* FAQ figures on Coverage and Departments */
+.cov-table.faq-cov .cov-row { grid-template-columns: minmax(8rem, 2fr) repeat(5, 5.6rem); }
+.faq-tiles { margin-bottom: 1rem; }
+.faq-none { margin-top: 0.4rem; }
+@media (max-width: 700px) {
+  .cov-table.faq-cov .cov-row { grid-template-columns: minmax(0, 1fr) repeat(3, 3.8rem); }
+  .cov-table.faq-cov .cov-row > * { display: block; }
+  .cov-table.faq-cov .cov-row > :nth-child(n+5) { display: none; }
+}

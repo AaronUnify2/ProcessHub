@@ -852,26 +852,15 @@
       });
     });
 
-    var VAR_REF = /data-var(?:-href)?="(var_[a-z0-9_]+)"|\{\{(var_[a-z0-9_]+)\}\}/gi;
-    function unconfirmed(f) {
-      var m;
-      VAR_REF.lastIndex = 0;
-      while ((m = VAR_REF.exec(f.a || ''))) {
-        var v = Data.variable(m[1] || m[2]);
-        if (v && v.status !== 'current') return true;
-      }
-      return false;
-    }
-
     return faqs.map(function (f) {
-      var usage = Data.state.index.usage[f.id];
+      var facts = Data.faqFacts(f);
       return {
         faq: f,
         tabId: (f.publish && f.publish.tabId) || '',
-        ready: f.status === 'published' || f.status === 'approved',
+        ready: facts.ready,
         owned: !!f.ownerId,
-        linked: !!(usage && usage.processes.length),
-        unconfirmed: unconfirmed(f),
+        linked: facts.linked,
+        unconfirmed: facts.unconfirmed,
         findings: findings[f.id] || []
       };
     });
@@ -1635,6 +1624,7 @@
       tile(t.byStatus.draft || 0, 'still draft', Math.round((t.byStatus.draft || 0) / Math.max(1, t.processes) * 100) + '% of the total', '') +
       tile(t.handoffs, 'handoffs', 'between departments', '') +
       tile(t.issues, 'open issues', t.high + ' high', '#/issues') +
+      tile(t.faq.total, 'FAQ questions', t.faq.published + ' on the public page', '#/faqs') +
       '</section>' +
       '<p class="cov-legend">' + statuses.map(function (s) {
         return '<span><i style="background:' + Exporter.STATUS_COLOUR[s] + '"></i>' +
@@ -1654,7 +1644,9 @@
           '<span class="num">' + r.findings + '</span></div>';
       }).join('') + '</div>';
 
-    html += '<h2 class="group">Variables by owning department</h2>' +
+    html += '<h2 class="group">FAQ questions by owning department</h2>' +
+      faqTable(cov.rows, t) +
+      '<h2 class="group">Variables by owning department</h2>' +
       '<div class="cov-table vars" role="table">' +
       '<div class="cov-row cov-headrow" role="row"><span>Department</span><span>Total</span>' +
       '<span>Current</span><span>Pending</span><span>Stale</span></div>' +
@@ -1689,7 +1681,11 @@
       var bits = [];
       if (used.processes) bits.push(plural(used.processes, 'process', 'processes'));
       if (used.steps) bits.push(plural(used.steps, 'step'));
-      if (used.owned) bits.push(used.owned + ' owned');
+      var lib = Data.state.library;
+      var ownedFaqs = lib.faqs.filter(function (q) { return q.ownerId === node.id; }).length;
+      var ownedOther = used.owned - ownedFaqs;
+      if (ownedFaqs) bits.push(plural(ownedFaqs, 'FAQ'));
+      if (ownedOther) bits.push(ownedOther + ' other owned');
       var html = '<div class="dept-row depth-' + depth + '">' +
         '<span class="dept-name">' + f('taxonomy:' + node.id + ':name') + '</span>' +
         '<span class="dept-used">' + e(bits.join(' · ') || 'empty') + '</span>' +
@@ -1722,6 +1718,71 @@
       ' and sub-departments', html));
   }
 
+  // ---- FAQ figures for Coverage and Departments ------------------------------
+
+  /** The coverage row for a department, which carries its FAQ figures. */
+  function faqRowFor(id) {
+    var row = Data.coverage().rows.find(function (r) { return r.node.id === id; });
+    return row ? row.faq : null;
+  }
+
+  /** A strip of FAQ tiles for a department (and everything under it). */
+  function faqTiles(faq) {
+    if (!faq) return '';
+    if (!faq.total) {
+      return '<p class="hint-block faq-none">This department owns no FAQ questions.</p>';
+    }
+    return '<h2 class="group">FAQ questions it owns</h2>' +
+      '<section class="tiles faq-tiles">' +
+      tile(faq.total, 'FAQ questions', 'owned here or below', '') +
+      tile(faq.published, 'on the public page', (faq.total - faq.published) + ' not published', '') +
+      tile(faq.notReady, 'not yet approved', 'draft or in review', '') +
+      tile(faq.linked, 'linked to a step', (faq.total - faq.linked) + ' not attached', '') +
+      tile(faq.unconfirmed, 'use unconfirmed values', 'a value not yet verified', '') +
+      '</section>';
+  }
+
+  /** The FAQ questions a department and its sub-departments own, as links. */
+  function faqList(id) {
+    var ids = [id];
+    (function walk(parent) {
+      (Data.state.index.children[parent] || []).forEach(function (c) { ids.push(c.id); walk(c.id); });
+    }(id));
+    var mine = Data.state.library.faqs.filter(function (q) { return ids.indexOf(q.ownerId) !== -1; });
+    if (!mine.length) return '';
+    return '<h2 class="group">FAQ questions <span>' + mine.length + '</span></h2>' +
+      mine.map(function (q) {
+        var facts = Data.faqFacts(q);
+        var tab = facts.published ? FaqOrder.tab(q.publish.tabId) : null;
+        var bits = [tab ? Data.plainText(tab.label) : 'not published', q.status || 'no status'];
+        if (!facts.linked) bits.push('not attached to a step');
+        if (facts.unconfirmed) bits.push('uses an unconfirmed value');
+        return listRow('#/faq/' + q.id, Data.plainText(q.q), bits.join(' · '), '');
+      }).join('');
+  }
+
+  /** FAQ figures per department, as a table matching the coverage table. */
+  function faqTable(rows, total) {
+    var shown = rows.filter(function (r) { return r.faq.total; });
+    return '<div class="cov-table faq-cov" role="table">' +
+      '<div class="cov-row cov-headrow" role="row"><span>Department</span><span>Questions</span>' +
+      '<span>On the page</span><span>Not approved</span><span>Linked</span><span>Unconfirmed</span></div>' +
+      shown.map(function (r) {
+        return '<button class="cov-row cov-link depth-' + r.depth + '" role="row" data-route="#/coverage/' +
+          e(r.node.id) + '"><span class="cov-name">' + e(r.node.name) + '</span>' +
+          '<span class="num">' + r.faq.total + '</span>' +
+          '<span class="num">' + r.faq.published + '</span>' +
+          '<span class="num' + (r.faq.notReady ? ' warn' : '') + '">' + r.faq.notReady + '</span>' +
+          '<span class="num">' + r.faq.linked + '</span>' +
+          '<span class="num' + (r.faq.unconfirmed ? ' warn' : '') + '">' + r.faq.unconfirmed + '</span></button>';
+      }).join('') +
+      '</div>' +
+      '<p class="hint-block">"Linked" counts questions a process step points to. "Unconfirmed" counts ' +
+      'answers that use a fee, time or link nobody has verified yet.' +
+      (total.faqUnowned ? ' ' + plural(total.faqUnowned, 'question has', 'questions have') +
+        ' no owning department and are not counted above.' : '') + '</p>';
+  }
+
   // ---- one department's coverage -------------------------------------------
 
   function processesUnder(taxId) {
@@ -1748,6 +1809,7 @@
       tile(row.issues, 'open issues', row.high + ' high', '') +
       tile(row.findings, 'rule findings', '', '') +
       '</section>' +
+      faqTiles(row.faq) +
       '<p class="cov-legend">' + statuses.map(function (st) {
         return '<span><i style="background:' + Exporter.STATUS_COLOUR[st] + '"></i>' +
           e(st.replace('_', ' ')) + ' ' + (row.byStatus[st] || 0) + '</span>';
@@ -1773,6 +1835,8 @@
             (findings[p.id] ? ' · ' + plural(findings[p.id], 'rule finding') : ''));
         }).join('');
     }).join('') || '<p class="empty">No processes filed here yet.</p>';
+
+    html += faqList(id);
 
     paint(listPane(Data.taxonomyPath(id), 'Coverage for this department and everything under it', html));
   }
@@ -1832,6 +1896,7 @@
         ? '<span class="hint" title="Move everything that points at it elsewhere first">In use, so it cannot be deleted</span>'
         : btn('del-dept', { dept: id }, 'Delete department', 'small danger')) +
       '</div></header>' +
+      faqTiles(faqRowFor(id)) +
       section('Sub-departments', children, function (c) {
         return listRow('#/department/' + c.id, c.name, plural(Data.processCount(c.id), 'process', 'processes'), '');
       }) +
