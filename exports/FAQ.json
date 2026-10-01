@@ -1752,13 +1752,18 @@
       "items": [
         {
           "type": "faq",
-          "q": "How do I report a pothole or road damage?",
-          "a": "<p>Report online using Council's <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> — the request form has a map for marking the exact location of the pothole. Alternatively call <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>. Include the street name, nearest landmark, and an estimate of the size.</p>"
+          "q": "How to check whether a road is managed by Council or Transport and Main Roads?",
+          "a": "<div>Searching the closest street address to the road in TMR's&nbsp;<a href=\"https://qldtraffic.qld.gov.au/lookup.html\" style=\"font-size: 0.92rem;\">Road Lookup - QLDTraffic</a>&nbsp;tool is the simplest way to determine who has jurisdiction over a particular road.&nbsp;</div><div><br></div><div>As a general rule, highway's and major roads are under TMR's Jurisdiction and all urban streets and rural roads are under council.&nbsp;</div><div><br></div><p></p>"
         },
         {
           "type": "faq",
           "q": "Are damaged roads Council's or the State Government's responsibility?",
           "a": "<p>Not all roads in the region are Council's responsibility. Major highways are managed by the Department of Transport and Main Roads (TMR).</p>\n<ul>\n<li><strong>State roads</strong> (New England Hwy, Cunningham Hwy, other TMR roads): contact TMR — <span class=\"faq-var\" data-var=\"phone_13_20_80\">13 20 80</span></li>\n<li><strong>Rail crossings / railway tracks:</strong> contact Queensland Rail — <span class=\"faq-var\" data-var=\"phone_13_16_17\">13 16 17</span></li>\n<li><strong>Council roads:</strong> lodge a request with Council as above</li>\n</ul>\n<p>Not sure? Call Council on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> and we can help.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How do I report a pothole or road damage on a council managed road?",
+          "a": "<p>Report online using Council's <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> — the request form has a map for marking the exact location of the pothole. Alternatively call <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>. Include the street name, nearest landmark, and an estimate of the size.</p>"
         },
         {
           "type": "faq",
