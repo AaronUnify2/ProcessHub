@@ -1753,7 +1753,7 @@
         {
           "type": "faq",
           "q": "How to check whether a road is managed by Council or Transport and Main Roads?",
-          "a": "<div>Searching the closest street address to the road in TMR's&nbsp;<a href=\"https://qldtraffic.qld.gov.au/lookup.html\" style=\"font-size: 0.92rem;\">Road Lookup - QLDTraffic</a>&nbsp;tool is the simplest way to determine who has jurisdiction over a particular road.&nbsp;</div><div><br></div><div>As a general rule, highway's and major roads are under TMR's Jurisdiction and all urban streets and rural roads are under council.&nbsp;</div><div><br></div><p></p>"
+          "a": "<div>Searching the closest street address to the road in TMR's&nbsp;<a href=\"https://qldtraffic.qld.gov.au/lookup.html\" style=\"font-size: 0.92rem;\">Road Lookup - QLDTraffic</a>&nbsp;tool is the simplest way to determine who has jurisdiction over a particular road.&nbsp;</div><div><br></div><div>As a general rule, highways and major roads are under TMR's Jurisdiction, most urban streets and rural roads are under council.&nbsp;</div><div><br></div><p></p>"
         },
         {
           "type": "faq",
