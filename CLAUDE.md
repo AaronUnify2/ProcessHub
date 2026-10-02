@@ -71,6 +71,14 @@ The public FAQ page, `FAQ.html` in the UnifyVersion1 repository, reads
 `https://aaronunify2.github.io/ProcessHub/exports/FAQ.json`. Changing the shape
 of that file breaks the public page.
 
+## Writing FAQ content
+
+Workshopping FAQ questions and answers with Aaron is done in a separate
+session, in the private ProcessHub-data repository — its `CLAUDE.md` has the
+whole procedure. Content is written into the data there and reaches the public
+page only when Aaron presses Publish. Nothing about it happens in this
+repository; this one is for changes to the app.
+
 ## Workflow
 
 - Develop on the assigned working branch and commit with a clear message.
