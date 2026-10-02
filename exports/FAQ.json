@@ -875,6 +875,259 @@
       "value": "$7.30",
       "owner": "Revenue",
       "note": "Set annually by Council and effective 1 July."
+    },
+    {
+      "id": "url_water_sewerage_forms",
+      "question": "Is this still the correct web address for the Water & Sewerage Forms page?",
+      "value": "https://www.sdrc.qld.gov.au/payments-services/forms-permits-licences/water-sewerage-forms",
+      "owner": "Water",
+      "type": "url",
+      "note": "Supplied by Aaron, October 2026. Application for Water or Sewer Services."
+    },
+    {
+      "id": "url_rate_property_forms",
+      "question": "Is this still the correct web address for the Rate & Property Forms page?",
+      "value": "https://www.sdrc.qld.gov.au/payments---services/forms--permits---licences/rate-property-forms",
+      "owner": "Revenue",
+      "type": "url",
+      "note": "Supplied by Aaron, October 2026. Home Haemodialysis Water Allowance and rates deferral forms."
+    },
+    {
+      "id": "url_roads_works_forms",
+      "question": "Is this still the correct web address for the Roads & Works Forms page?",
+      "value": "https://www.sdrc.qld.gov.au/payments---services/forms--permits---licences/roads-works-forms",
+      "owner": "Water",
+      "type": "url",
+      "note": "Supplied by Aaron, October 2026. Application for Private Works."
+    },
+    {
+      "id": "text_rates_notice_charges_page",
+      "question": "Is the breakdown of charges (including water and sewerage) still on page 2 of the rates notice?",
+      "value": "page 2",
+      "owner": "Revenue",
+      "note": "Aaron, October 2026: page 2 breaks down the charges, page 3 is the water usage bill."
+    },
+    {
+      "id": "money_water_connection_developer_meter",
+      "question": "Is this still the water connection fee where the developer has installed the service and meter: $0?",
+      "value": "$0",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Water Fees (a)."
+    },
+    {
+      "id": "money_water_connection_20mm_developer",
+      "question": "Is this still the fee for a single 20mm water connection where the developer has installed everything except the meter: $642?",
+      "value": "$642",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Water Fees (b)."
+    },
+    {
+      "id": "money_water_connection_20mm",
+      "question": "Is this still the fee for all other 20mm water connections: $2,900?",
+      "value": "$2,900",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Water Fees (c)."
+    },
+    {
+      "id": "money_water_connection_25mm_developer",
+      "question": "Is this still the fee for a single 25mm water connection where the developer has installed everything except the meter: $659?",
+      "value": "$659",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Water Fees (d)."
+    },
+    {
+      "id": "money_water_connection_25mm",
+      "question": "Is this still the fee for all other 25mm water connections: $3,130?",
+      "value": "$3,130",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Water Fees (e)."
+    },
+    {
+      "id": "money_water_headworks",
+      "question": "Is this still the water supply headworks contribution: $5,090?",
+      "value": "$5,090",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Development Contributions, Water Supply Headworks; applied by Water Fees (g)."
+    },
+    {
+      "id": "money_sewer_connection_developer",
+      "question": "Is this still the sewer connection fee where the developer has installed the jump-up and marked it on site: $0?",
+      "value": "$0",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Connection Fee, Sewerage and CED (a)."
+    },
+    {
+      "id": "money_sewer_connection",
+      "question": "Is this still the fee for all other sewer connections in the sewer service areas: $2,520?",
+      "value": "$2,520",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Connection Fee, Sewerage and CED (b)."
+    },
+    {
+      "id": "money_sewer_reconnection_vacant",
+      "question": "Is this still the sewer reconnection fee where vacant charges apply: $2,520?",
+      "value": "$2,520",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Connection Fee, Sewerage and CED (d). Meaning to be confirmed by Aaron."
+    },
+    {
+      "id": "money_sewer_headworks",
+      "question": "Is this still the additional sewer connection fee (sewerage headworks) for properties not rated for sewerage: $3,085?",
+      "value": "$3,085",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Connection Fee, Sewerage and CED (c); Sewerage Headworks."
+    },
+    {
+      "id": "money_water_disconnection",
+      "question": "Is this still the water disconnection fee for 20mm and 25mm domestic residential services: $967?",
+      "value": "$967",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Water Fees, Disconnection Fee."
+    },
+    {
+      "id": "money_sewer_disconnection",
+      "question": "Is this still the sewerage disconnection fee where the property is left vacant and Council does the work: $1,395?",
+      "value": "$1,395",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Disconnection Fee, Sewerage & CED."
+    },
+    {
+      "id": "money_water_meter_test",
+      "question": "Is this still the water meter calibration test fee for 20mm and 25mm meters: $722?",
+      "value": "$722",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Water meter calibration test (refundable if faulty)."
+    },
+    {
+      "id": "money_works_near_infrastructure",
+      "question": "Is this still the fee for a Works Near Water Supply or Sewerage Infrastructure application: $397?",
+      "value": "$397",
+      "owner": "Water",
+      "type": "money",
+      "note": "2026–27 Schedule of General Fees and Charges (adopted 24 June 2026) — Location of Services (a)."
+    },
+    {
+      "id": "money_water_access_sa1",
+      "question": "Is this still the annual water access charge for a 20mm connection in Supply Area 1: $862?",
+      "value": "$862",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.4."
+    },
+    {
+      "id": "money_water_base_access_sa1",
+      "question": "Is this still the annual base (unconnected) water access charge in Supply Area 1: $776?",
+      "value": "$776",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.4."
+    },
+    {
+      "id": "money_water_access_sa2",
+      "question": "Is this still the annual water access charge for a 20mm connection in Supply Area 2: $690?",
+      "value": "$690",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.5."
+    },
+    {
+      "id": "money_water_base_access_sa2",
+      "question": "Is this still the annual base (unconnected) water access charge in Supply Area 2: $620?",
+      "value": "$620",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.5."
+    },
+    {
+      "id": "money_sewer_residential_cat1",
+      "question": "Is this still the annual residential sewerage charge, Category 1 (e.g. Warwick, Stanthorpe): $888?",
+      "value": "$888",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.2.3."
+    },
+    {
+      "id": "money_sewer_base_cat1",
+      "question": "Is this still the annual base (unconnected) sewerage charge, Category 1: $800?",
+      "value": "$800",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.2.3."
+    },
+    {
+      "id": "money_sewer_residential_cat2",
+      "question": "Is this still the annual residential sewerage charge, Category 2 (CED schemes): $710?",
+      "value": "$710",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.2.4."
+    },
+    {
+      "id": "money_sewer_base_cat2",
+      "question": "Is this still the annual base (unconnected) sewerage charge, Category 2: $640?",
+      "value": "$640",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.2.4."
+    },
+    {
+      "id": "money_water_usage_sa1_first",
+      "question": "Is this still the Supply Area 1 residential first level water consumption charge per kilolitre: $3.90?",
+      "value": "$3.90",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.4, reading periods 2 and 3."
+    },
+    {
+      "id": "money_water_usage_sa1_second",
+      "question": "Is this still the Supply Area 1 residential second level water consumption charge per kilolitre: $5.85?",
+      "value": "$5.85",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.4, reading periods 2 and 3."
+    },
+    {
+      "id": "money_water_usage_sa2_first",
+      "question": "Is this still the Supply Area 2 residential first level water consumption charge per kilolitre: $3.12?",
+      "value": "$3.12",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.5, reading periods 2 and 3."
+    },
+    {
+      "id": "money_water_usage_sa2_second",
+      "question": "Is this still the Supply Area 2 residential second level water consumption charge per kilolitre: $4.68?",
+      "value": "$4.68",
+      "owner": "Revenue",
+      "type": "money",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.5, reading periods 2 and 3."
+    },
+    {
+      "id": "text_water_first_level_limit",
+      "question": "Is this still the residential first level water consumption limit per reading period: 125 kL?",
+      "value": "125 kL",
+      "owner": "Revenue",
+      "note": "2026–27 Revenue Statement (adopted 24 June 2026) — 5.5.1.2, per tenement per meter."
+    },
+    {
+      "id": "text_haemodialysis_allowance",
+      "question": "Is this still the Home Haemodialysis Water Allowance per reading period: 65 kL?",
+      "value": "65 kL",
+      "owner": "Revenue",
+      "note": "Rate Concessions Policy PL-076 (reviewed 24 June 2026) — 5.6.2."
     }
   ],
   "tabs": [
@@ -965,7 +1218,7 @@
         {
           "type": "faq",
           "q": "What about sewerage? Do I need a septic tank or a treatment plant?",
-          "a": "<p>Most rural properties are not connected to Council's sewerage network, so you'll need an <strong>On-Site Sewerage Facility (OSSF)</strong> to treat wastewater on your own land. There are two main options:</p>\n<ul>\n<li><strong>Septic tank with an absorption trench</strong> — the traditional approach. Wastewater flows into the tank, solids settle, and liquid effluent disperses through trenches into the soil. Works well on well-draining land with adequate room for the trenches.</li>\n<li><strong>Aerated Wastewater Treatment System (AWTS)</strong> — treats wastewater to a higher standard using aeration, which allows treated water to be dispersed over a smaller area, often via surface irrigation. Costs more to install and requires ongoing servicing, but is often the only option on smaller or difficult sites.</li>\n</ul>\n<p>Which is right for your block depends on <strong>soil type, lot size, slope, separation from watercourses, bores and neighbours, and the number of bedrooms</strong>. A <strong>soil test</strong> and a consultation with a licensed plumber are the two things that will give you a clear answer. Don't commit to a house design before this — the sewerage solution can influence building footprint and siting.</p>\n<p>OSSF installations require Council plumbing approval before work begins, and inspections during construction. Full detail and application forms: <a href=\"https://www.sdrc.qld.gov.au/doing-business/planning-development/plumbing/on-site-sewerage-facilities-ossf\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_21\">On-Site Sewerage Facilities (OSSF) — SDRC</a>.</p>"
+          "a": "<p>Most rural properties are not connected to Council's sewerage network, so you'll need an <strong>On-Site Sewerage Facility (OSSF)</strong> to treat wastewater on your own land. There are two main options:</p>\n<ul>\n<li><strong>Septic tank with an absorption trench</strong> — the traditional approach. Wastewater flows into the tank, solids settle, and liquid effluent disperses through trenches into the soil. Works well on well-draining land with adequate room for the trenches.</li>\n<li><strong>Aerated Wastewater Treatment System (AWTS)</strong> — treats wastewater to a higher standard using aeration, which allows treated water to be dispersed over a smaller area, often via surface irrigation. Costs more to install and requires ongoing servicing, but is often the only option on smaller or difficult sites.</li>\n</ul>\n<p>Which is right for your block depends on <strong>soil type, lot size, slope, separation from watercourses, bores and neighbours, and the number of bedrooms</strong>. A <strong>soil test</strong> and a consultation with a licensed plumber are the two things that will give you a clear answer. Don't commit to a house design before this — the sewerage solution can influence building footprint and siting.</p>\n<p>OSSF installations require Council plumbing approval before work begins, and inspections during construction. Full detail and application forms: <a href=\"https://www.sdrc.qld.gov.au/doing-business/planning-development/plumbing/on-site-sewerage-facilities-ossf\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_21\">On-Site Sewerage Facilities (OSSF) — SDRC</a>.</p>\n<p>If your block is inside one of Council's sewered areas, see <em>Can I connect my property to Council's water and sewer?</em> on the Water tab.</p>"
         },
         {
           "type": "group",
@@ -1100,7 +1353,7 @@
         {
           "type": "faq",
           "q": "Where do I start?",
-          "a": "<p><span style=\"font-size: 14.4px;\">Here's a short protocol for your first week</span>:</p>\n<ol>\n<li>Check your zone and overlays on the <a href=\"https://sdrc.spatial.t1cloud.com/spatial/intramaps/?configId=15145eaf-c419-4c91-aa46-f0b9d5637836&amp;project=Online%20Mapping\" target=\"_blank\" data-var-href=\"url_sdrc_spatial_t1cloud_com\">Online Mapping tool</a>. Most standard urban blocks fall within the Planning Scheme's acceptable outcomes, but overlays (flood, bushfire, heritage, character) will add requirements.</li>\n<li>If anything comes up that isn't straightforward — setback concessions, secondary dwelling, overlay-affected block — call Council on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to speak to the duty planner (general enquiries are free). Have your address and a rough description of what you want to build ready.</li>\n<li>Based on that call, you will know whether your build fits within the acceptable outcomes or whether planning approval is required. If planning approval is needed and you're not using a private planning consultant, consider booking a <strong>Pre-Lodgement Meeting</strong> with Council's Town Planners.</li>\n<li>Get 2–3 quotes from licensed builders to establish a rough idea of what kind of build is possible within your budget and to get an idea of the possible timeline. If going that route, this is a good time to engage a private certifier.</li>\n<li>If you're not using a private certifier, consider booking a Pre-Lodgement Meeting with Council's building certifier to assist with preparing your building application and to discuss the necessary standards for your build to pass inspection when construction begins.</li>\n</ol>\n<p>At every step, Council staff are happy to help you understand the process — it's not a test, and you don't have to know all the terminology before you ring. That's what the duty planner is there for.</p>"
+          "a": "<p><span style=\"font-size: 14.4px;\">Here's a short protocol for your first week</span>:</p>\n<ol>\n<li>Check your zone and overlays on the <a href=\"https://sdrc.spatial.t1cloud.com/spatial/intramaps/?configId=15145eaf-c419-4c91-aa46-f0b9d5637836&amp;project=Online%20Mapping\" target=\"_blank\" data-var-href=\"url_sdrc_spatial_t1cloud_com\">Online Mapping tool</a>. Most standard urban blocks fall within the Planning Scheme's acceptable outcomes, but overlays (flood, bushfire, heritage, character) will add requirements.</li>\n<li>If anything comes up that isn't straightforward — setback concessions, secondary dwelling, overlay-affected block — call Council on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to speak to the duty planner (general enquiries are free). Have your address and a rough description of what you want to build ready.</li>\n<li>Based on that call, you will know whether your build fits within the acceptable outcomes or whether planning approval is required. If planning approval is needed and you're not using a private planning consultant, consider booking a <strong>Pre-Lodgement Meeting</strong> with Council's Town Planners.</li>\n<li>Get 2–3 quotes from licensed builders to establish a rough idea of what kind of build is possible within your budget and to get an idea of the possible timeline. If going that route, this is a good time to engage a private certifier.</li>\n<li>If you're not using a private certifier, consider booking a Pre-Lodgement Meeting with Council's building certifier to assist with preparing your building application and to discuss the necessary standards for your build to pass inspection when construction begins.</li>\n</ol>\n<p>At every step, Council staff are happy to help you understand the process — it's not a test, and you don't have to know all the terminology before you ring. That's what the duty planner is there for.</p>\n<p>Connecting a new home or secondary dwelling to town water and sewer has its own application and fees — see <em>Can I connect my property to Council's water and sewer?</em> on the Water tab.</p>"
         },
         {
           "type": "group",
@@ -1640,7 +1893,7 @@
         {
           "type": "faq",
           "q": "Can I get a rates adjustment if I had an unexpected leak?",
-          "a": "<p>In rare circumstances Council may consider an adjustment for water lost to an undetected leak. Contact Council's Revenue Team on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> to discuss. Having your repair invoice available will assist with the assessment.</p>"
+          "a": "<p>Only in limited cases. Under Council's Rate Concessions Policy, relief from water consumption charges is available when:</p>\n<ul>\n<li><strong>The leak was on Council's side</strong> — the water main, the pipe to the meter, or the meter itself — and Council repaired it or confirmed the failure. The rebate covers the extra water above your usual usage (at least 10 kilolitres), for one billing period.</li>\n<li><strong>The leak was a hidden plumbing failure on your side of the meter, on a property connected to the Yangan water network.</strong> A licensed plumber must repair it and confirm in a report that the leak couldn't reasonably have been seen. The rebate is half the extra water, between 10 and 250 kilolitres.</li>\n</ul>\n<p>For leaks on your side of the meter anywhere else, relief isn't available.</p>\n<div class=\"note\">If a smart water meter has been installed at your property for 6 months or more, and the leak could have been picked up through the <a href=\"https://mysdrcwater.sdrc.qld.gov.au/\" target=\"_blank\" data-var-href=\"url_mysdrcwater_sdrc_qld_gov_au\">My SDRC Water portal</a>, relief won't be granted except in exceptional circumstances. Sign up to the portal and set a usage alert — see <em>How can I monitor my water usage between bills?</em></div>\n<div class=\"warn\"><strong>Act quickly.</strong> You have 5 business days to investigate and a further 10 business days to repair, from when you became aware of the leak. You're taken to be aware 5 business days after Council issues a rates notice or high-usage letter, or on the day Council calls or emails you. Apply within 30 days after the due date of the water charge. One claim is allowed per property every 5 years, and later claims need records of meter readings taken at least monthly. Applying doesn't extend the due date or stop interest.</div>\n<p>To apply, contact Council's Revenue Team on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>. Have your repair invoice and plumber's report ready.</p>"
         },
         {
           "type": "faq",
@@ -1651,6 +1904,46 @@
           "type": "faq",
           "q": "Where is my water meter?",
           "a": "<p>Water meters are usually near the front boundary of the property close to the street — often in a small covered box set into the ground. If you can't find yours, call <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> and we can look up the exact location for your address.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Can I connect my property to Council's water and sewer?",
+          "a": "<p>It depends on whether your property is inside Council's water or sewer service area. Two quick checks:</p>\n<ol>\n<li><strong>Check the map.</strong> Open the <a href=\"https://sdrc.spatial.t1cloud.com/spatial/intramaps/?configId=15145eaf-c419-4c91-aa46-f0b9d5637836&amp;project=Online%20Mapping\" target=\"_blank\" data-var-href=\"url_sdrc_spatial_t1cloud_com\">Online Mapping tool</a>, search your address, switch on the <strong>Underground Infrastructure</strong> module and turn on the <strong>Water/Sewer Catchment Overlay</strong>.</li>\n<li><strong>Check your rates notice.</strong> The breakdown of charges on <span class=\"faq-var\" data-var=\"text_rates_notice_charges_page\">page 2</span> of your notice shows a <strong>water access charge</strong> or an <strong>unconnected sewerage charge</strong> if your property is already in the service area and paying to have the service available.</li>\n</ol>\n<p>If you're inside the service area, you can apply for a connection — see <em>How do I apply for a water connection, and what does it cost?</em> and <em>How do I apply for a sewer connection, and what does it cost?</em></p>\n<p>If you're outside it, Council must first approve extending the service area, and the cost of extending the main to your property is yours. Email <span class=\"faq-var\" data-var=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</span> or call <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> for advice about your property. If you can't connect to sewer, you'll need an on-site sewerage facility — see <em>What about sewerage? Do I need a septic tank or a treatment plant?</em> on the Building Rural tab.</p>\n<div class=\"note\">A <strong>standard connection</strong> is one 20mm metered water service per lot, from a Council water main of at least 100mm. Larger services, extra connections, connections to smaller mains, or anything that needs a main extended are assessed separately — call <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> before you apply.</div>\n<p>If you've been paying the water access charge and your application to connect is refused, Council's Water Infrastructure Policy entitles you to a refund of the access charges you paid while you owned the property.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How do I apply for a water connection, and what does it cost?",
+          "a": "<p>Complete the <strong>Application for Water or Sewer Services</strong> on Council's <a href=\"https://www.sdrc.qld.gov.au/payments-services/forms-permits-licences/water-sewerage-forms\" target=\"_blank\" data-var-href=\"url_water_sewerage_forms\">Water &amp; Sewerage Forms</a> page. Payment is made when you submit the application.</p>\n<ul>\n<li><strong>Size</strong> — most homes use a standard 20mm connection. Commercial properties may need 25mm.</li>\n<li><strong>Larger than 25mm</strong> (for example unit developments, commercial premises or fire services) — complete an <strong>Application for Private Works</strong> from the <a href=\"https://www.sdrc.qld.gov.au/payments---services/forms--permits---licences/roads-works-forms\" target=\"_blank\" data-var-href=\"url_roads_works_forms\">Roads &amp; Works Forms</a> page instead, and Council will provide a cost estimate.</li>\n<li><strong>Meter location</strong> — the meter is installed just outside your property boundary. You can show where you'd like it, within 2m of the boundary, using the section on the form or by attaching a screenshot from the <a href=\"https://sdrc.spatial.t1cloud.com/spatial/intramaps/?configId=15145eaf-c419-4c91-aa46-f0b9d5637836&amp;project=Online%20Mapping\" target=\"_blank\" data-var-href=\"url_sdrc_spatial_t1cloud_com\">Online Mapping tool</a> with the spot marked. Exact placement of the meter is at the discretion of the installer.&nbsp;</li>\n</ul>\n<p><strong>Connection fees (2026–27)</strong></p>\n<table>\n<thead>\n<tr>\n<th>Connection</th>\n<th>Fee</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>The developer has already installed the service pipe and the meter</td>\n<td><span class=\"faq-var\" data-var=\"money_water_connection_developer_meter\">$0</span></td>\n</tr>\n<tr>\n<td>20mm, where the developer has installed the service pipe and meter box (everything except the meter)</td>\n<td><span class=\"faq-var\" data-var=\"money_water_connection_20mm_developer\">$642</span></td>\n</tr>\n<tr>\n<td>All other 20mm connections</td>\n<td><span class=\"faq-var\" data-var=\"money_water_connection_20mm\">$2,900</span></td>\n</tr>\n<tr>\n<td>25mm, where the developer has installed the service pipe and meter box (everything except the meter)</td>\n<td><span class=\"faq-var\" data-var=\"money_water_connection_25mm_developer\">$659</span></td>\n</tr>\n<tr>\n<td>All other 25mm connections</td>\n<td><span class=\"faq-var\" data-var=\"money_water_connection_25mm\">$3,130</span></td>\n</tr>\n<tr>\n<td>Larger than 25mm, and all multiple connections</td>\n<td>Quoted through Private Works</td>\n</tr>\n</tbody>\n</table>\n<div class=\"warn\">If your property isn't currently rated for water — there's no water access charge on your rates notice — an additional fee equal to the water supply headworks contribution applies: <span class=\"faq-var\" data-var=\"money_water_headworks\">$5,090</span> for properties connecting to the Warwick or Stanthorpe water supply schemes. For other towns, call <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong>. This doesn't apply if you already paid headworks contributions as a condition of a development approval.</div>"
+        },
+        {
+          "type": "faq",
+          "q": "How do I apply for a sewer connection, and what does it cost?",
+          "a": "<p>Use the <strong>Application for Water or Sewer Services</strong> on Council's <a href=\"https://www.sdrc.qld.gov.au/payments-services/forms-permits-licences/water-sewerage-forms\" target=\"_blank\" data-var-href=\"url_water_sewerage_forms\">Water &amp; Sewerage Forms</a> page. Payment is made when you submit the application.</p>\n<p><strong>Connection fees (2026–27)</strong></p>\n<table>\n<thead>\n<tr>\n<th>Connection</th>\n<th>Fee</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>A lot where the developer has installed the connection point (the \"jump-up\") and marked its location on site</td>\n<td><span class=\"faq-var\" data-var=\"money_sewer_connection_developer\">$0</span></td>\n</tr>\n<tr>\n<td>All other connections in Council's sewer service areas</td>\n<td><span class=\"faq-var\" data-var=\"money_sewer_connection\">$2,520</span></td>\n</tr>\n<tr>\n<td>Reconnection where vacant charges apply&nbsp;</td>\n<td><span class=\"faq-var\" data-var=\"money_sewer_reconnection_vacant\">$2,520</span></td>\n</tr>\n</tbody>\n</table>\n<div class=\"warn\">If your property isn't currently rated for sewerage, an additional <span class=\"faq-var\" data-var=\"money_sewer_headworks\">$3,085</span> applies for properties connecting to the Warwick or Stanthorpe sewerage schemes. For other towns, call <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong>. This doesn't apply if you already paid wastewater headworks contributions as a condition of a development approval.</div>\n<p>Some towns, including Dalveen, Killarney and Wallangarra, are served by a common effluent drainage (CED) scheme. For how a connection works there, call <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong>.</p>\n<p>Need to know how deep the sewer is, or exactly where it runs? See <em>How do I find out how deep the sewer is, or exactly where it runs?</em></p>"
+        },
+        {
+          "type": "faq",
+          "q": "How much will connecting to town water and sewer add to my rates?",
+          "a": "<p>If your property is already in the service area, connecting mostly adds the cost of the water you use — your access charges only go up a little.</p>\n<p><strong>Access charges.</strong> While a property in the service area is unconnected, it pays a reduced <em>base</em> access charge. Once it's connected, that becomes the full charge. Per year, 2026–27:</p>\n<table>\n<thead>\n<tr>\n<th>Service</th>\n<th>Unconnected</th>\n<th>Connected (20mm)</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Water — Supply Area 1</td>\n<td><span class=\"faq-var\" data-var=\"money_water_base_access_sa1\">$776</span></td>\n<td><span class=\"faq-var\" data-var=\"money_water_access_sa1\">$862</span></td>\n</tr>\n<tr>\n<td>Water — Supply Area 2</td>\n<td><span class=\"faq-var\" data-var=\"money_water_base_access_sa2\">$620</span></td>\n<td><span class=\"faq-var\" data-var=\"money_water_access_sa2\">$690</span></td>\n</tr>\n<tr>\n<td>Sewerage — Warwick and Stanthorpe</td>\n<td><span class=\"faq-var\" data-var=\"money_sewer_base_cat1\">$800</span></td>\n<td><span class=\"faq-var\" data-var=\"money_sewer_residential_cat1\">$888</span></td>\n</tr>\n<tr>\n<td>Sewerage — CED schemes (e.g. Dalveen, Killarney, Wallangarra)</td>\n<td><span class=\"faq-var\" data-var=\"money_sewer_base_cat2\">$640</span></td>\n<td><span class=\"faq-var\" data-var=\"money_sewer_residential_cat2\">$710</span></td>\n</tr>\n</tbody>\n</table>\n<p><strong>Water usage.</strong> Residential, per kilolitre, for water used from August 2026:</p>\n<table>\n<thead>\n<tr>\n<th>Supply area</th>\n<th>First <span class=\"faq-var\" data-var=\"text_water_first_level_limit\">125 kL</span> each half-year</th>\n<th>Above that</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Supply Area 1</td>\n<td><span class=\"faq-var\" data-var=\"money_water_usage_sa1_first\">$3.90</span></td>\n<td><span class=\"faq-var\" data-var=\"money_water_usage_sa1_second\">$5.85</span></td>\n</tr>\n<tr>\n<td>Supply Area 2</td>\n<td><span class=\"faq-var\" data-var=\"money_water_usage_sa2_first\">$3.12</span></td>\n<td><span class=\"faq-var\" data-var=\"money_water_usage_sa2_second\">$4.68</span></td>\n</tr>\n</tbody>\n</table>\n<ul>\n<li><strong>Supply Area 1</strong> — Allora, Warwick, Yangan, Killarney, Stanthorpe and Wallangarra</li>\n<li><strong>Supply Area 2</strong> — Dalveen, Leyburn and Pratten</li>\n</ul>\n<p>Water usage is billed twice a year, in August and February. If your rates notice doesn't show a water access charge now, the full charge starts when you connect, and an additional connection fee applies — see <em>How do I apply for a water connection, and what does it cost?</em></p>\n<p>The full detail is in Council's Revenue Statement, on the <a href=\"https://www.sdrc.qld.gov.au/payments-services/property-rates-charges/rates-charges-explained\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_18\">Rates &amp; Charges Explained page</a>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Can I disconnect from town water or sewer?",
+          "a": "<p>From town water, only if the lot is vacant. If there's a building on the property, the water service has to stay connected — for fire protection, cleaning and sanitation — unless you can show there's another water supply.</p>\n<p>To disconnect a vacant lot, apply on Council's <a href=\"https://www.sdrc.qld.gov.au/payments-services/forms-permits-licences/water-sewerage-forms\" target=\"_blank\" data-var-href=\"url_water_sewerage_forms\">Water &amp; Sewerage Forms</a> page. A temporary disconnection is done on your side of the meter by a licensed plumber; a permanent disconnection is done by Council at the main. Never remove the meter yourself.</p>\n<p><strong>Disconnection fees (2026–27)</strong></p>\n<table>\n<thead>\n<tr>\n<th>Service</th>\n<th>Fee</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Water — 20mm or 25mm residential service</td>\n<td><span class=\"faq-var\" data-var=\"money_water_disconnection\">$967</span></td>\n</tr>\n<tr>\n<td>Water — all other services</td>\n<td>Quoted through Private Works</td>\n</tr>\n<tr>\n<td>Sewerage — property to be left vacant, work done by Council</td>\n<td><span class=\"faq-var\" data-var=\"money_sewer_disconnection\">$1,395</span></td>\n</tr>\n<tr>\n<td>Sewerage — work done by your licensed plumber or drainer</td>\n<td>Plumbing fees apply</td>\n</tr>\n</tbody>\n</table>\n<div class=\"note\">Disconnecting doesn't necessarily stop the charges. A property inside the service area may still pay the base access charge — see <em>How much will connecting to town water and sewer add to my rates?</em></div>"
+        },
+        {
+          "type": "faq",
+          "q": "I think my water meter is wrong. Can it be tested?",
+          "a": "<p><a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1182/Checking%20for%20Water%20Leaks%20Fact%20Sheet.pdf.aspx\" target=\"_blank\">I've been told I have a water leak. How do I find it?</a>&nbsp;&nbsp;Before you call, try the hidden leak test in <em>I've been told I have a water leak. How do I find it?</em> — a meter that keeps moving while nothing is running usually means a leak, not a faulty meter.&nbsp;&nbsp;</p><p>Call <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong>. Field staff can check the meter on site: with no water being used, they run 100 litres through a test meter and compare. If your meter reads within 5%, it's taken to be accurate.</p>\n<p>If you're still not satisfied, you can ask for a <strong>formal test</strong>. Council fits a replacement meter — with at least 48 hours' written notice before the water is turned off — and sends yours to an accredited laboratory.</p>\n<ul>\n<li>20mm and 25mm meters: <span class=\"faq-var\" data-var=\"money_water_meter_test\">$722</span></li>\n<li>Larger meters: quoted</li>\n</ul>\n<p>The fee is refunded if the meter is found to be faulty. Council then works out the charge for the affected period from your average daily usage in earlier billing periods.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Is there help with water costs for home dialysis?",
+          "a": "<p>Yes. If someone at the property has regular haemodialysis treatment at home, Council's <strong>Home Haemodialysis Water Allowance</strong> credits the equivalent of <span class=\"faq-var\" data-var=\"text_haemodialysis_allowance\">65 kL</span> of water each reading period, at the first level water rate, to the property's rates account.</p>\n<p>Complete the <strong>Annual Application for Home Haemodialysis Water Allowance</strong> on Council's <a href=\"https://www.sdrc.qld.gov.au/payments---services/forms--permits---licences/rate-property-forms\" target=\"_blank\" data-var-href=\"url_rate_property_forms\">Rate &amp; Property Forms</a> page, and attach:</p>\n<ul>\n<li>a letter to Council from the patient's doctor, renal specialist or Queensland Health haemodialysis centre manager, confirming the patient has treatment at home, how many hours it takes and how often</li>\n<li>proof that the patient lives permanently at the property and pays the water consumption charges</li>\n</ul>\n<div class=\"note\">The allowance expires on 30 June each year — reapply at the start of each financial year. Let Council know in writing if treatment stops or the patient moves.</div>\n<p>The credit goes to the property's rates account, so if the patient isn't the owner, the patient can't claim it back from Council directly.</p>\n<p>With the patient's permission, Council keeps their contact details so it can warn them of planned water interruptions and treat faults as a priority. Make sure the patient has been trained by their dialysis provider on managing an interruption to supply.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How do I find out how deep the sewer is, or exactly where it runs?",
+          "a": "<p>The <strong>Underground Infrastructure</strong> module in Council's <a href=\"https://sdrc.spatial.t1cloud.com/spatial/intramaps/?configId=15145eaf-c419-4c91-aa46-f0b9d5637836&amp;project=Online%20Mapping\" target=\"_blank\" data-var-href=\"url_sdrc_spatial_t1cloud_com\">Online Mapping tool</a> is a good first look, but it won't confirm how deep a pipe is.</p>\n<p>To have Council locate a pipe on site and confirm its depth, complete an <strong>Application for Private Works</strong> on Council's <a href=\"https://www.sdrc.qld.gov.au/payments---services/forms--permits---licences/roads-works-forms\" target=\"_blank\" data-var-href=\"url_roads_works_forms\">Roads &amp; Works Forms</a> page. Council inspects the site and then quotes the cost.</p>\n<p>If you're planning to build, dig or pave over or near the pipe, you'll also need a <strong>Works Near Water Supply or Sewerage Infrastructure</strong> application (<span class=\"faq-var\" data-var=\"money_works_near_infrastructure\">$397</span>) — see <em>Do I need approval for my driveway?</em> on the Building tabs.</p>"
         }
       ],
       "footer": "Related: <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/water-wastewater/smart-water-meters\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_15\">Smart Water Meters</a> · <a href=\"https://mysdrcwater.sdrc.qld.gov.au/\" target=\"_blank\" data-var-href=\"url_mysdrcwater_sdrc_qld_gov_au\">My SDRC Water Portal</a> · <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/water-wastewater\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_40\">Water &amp; Wastewater</a>",
@@ -1859,7 +2152,7 @@
         {
           "type": "faq",
           "q": "What do the different charges on my rates notice mean?",
-          "a": "<p>The <a href=\"https://www.sdrc.qld.gov.au/payments-services/property-rates-charges/rates-charges-explained\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_18\">Rates &amp; Charges Explained page</a> breaks down each line item — what it funds and how it's calculated. For a specific question about your notice, call <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> and a rates officer can walk through it with you.</p>"
+          "a": "<p>The <a href=\"https://www.sdrc.qld.gov.au/payments-services/property-rates-charges/rates-charges-explained\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_18\">Rates &amp; Charges Explained page</a> breaks down each line item — what it funds and how it's calculated. For a specific question about your notice, call <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> and a rates officer can walk through it with you.</p>\n<p>For the water and sewerage charges, including what changes when you connect, see <em>How much will connecting to town water and sewer add to my rates?</em> on the Water tab.</p>"
         }
       ],
       "footer": "Related: <a href=\"https://www.sdrc.qld.gov.au/payments---services/online-payments\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_17\">Online Payments</a> · <a href=\"https://www.sdrc.qld.gov.au/payments-services/property-rates-charges/rates-charges-explained\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_18\">Rates Explained</a> · <a href=\"https://www.sdrc.qld.gov.au/payments-services/property-rates-charges/payment-agreements-rates-relief-financial-hardship\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_19\">Payment Difficulties</a>",
