@@ -177,6 +177,14 @@
     });
   }
 
+  /** A variable's source as one line: the document, where in it, the link. */
+  function sourceLine(v) {
+    var s = v.source || {};
+    return [s.title, s.excerpt, s.url].map(function (x) {
+      return String(x || '').replace(/\s+/g, ' ').trim();
+    }).filter(Boolean).join(' — ');
+  }
+
   function verificationText(ownerId) {
     var list = variablesByOwner(ownerId);
     var who = ownerId ? ownerName(ownerId) : 'All departments';
@@ -195,6 +203,7 @@
           (usage.processes.length === 1 ? '' : 's') + ' across our processes, ' +
           'knowledge base and public FAQs.');
       }
+      if (Data.hasSource(v)) lines.push('   Our source: ' + sourceLine(v));
       lines.push('   Correct value: ____________________');
       lines.push('');
     });
@@ -215,6 +224,7 @@
           ? '<div class="uses">Appears in ' + usage.processes.length + ' place' +
             (usage.processes.length === 1 ? '' : 's') + '</div>'
           : '') +
+        (Data.hasSource(v) ? '<div class="uses">Our source: ' + e(sourceLine(v)) + '</div>' : '') +
         '</td><td class="val">' + e(v.value || '(blank)') + '</td>' +
         '<td class="fill"></td></tr>';
     }).join('');

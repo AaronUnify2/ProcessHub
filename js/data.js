@@ -343,7 +343,10 @@
       entries.push({
         kind: 'variable', id: v.id, title: title,
         subtitle: (v.type === 'url' ? v.value : v.question),
-        haystack: (v.value + ' ' + v.question + ' ' + v.id).toLowerCase(),
+        // The source's name is searchable too, so "fees schedule" finds
+        // every value that schedule backs.
+        haystack: (v.value + ' ' + v.question + ' ' + v.id + ' ' +
+          ((v.source && v.source.title) || '')).toLowerCase(),
         route: '#/variable/' + v.id
       });
     });
@@ -626,6 +629,67 @@
     };
   }
 
+  // ---- public sources ------------------------------------------------------
+  // A variable can name the published document that backs its value:
+  //   source: { title, url, excerpt, checked }
+  // title is the document's name, url where it is, excerpt where in it the
+  // value appears (a page, a section, or the words quoted), and checked the
+  // date someone last saw the document say so. Internal values have no
+  // public source by nature, so they never count as missing one.
+
+  /** True when a variable names a source — a title or a link is enough. */
+  function hasSource(v) {
+    var s = v && v.source;
+    return !!(s && (String(s.title || '').trim() || String(s.url || '').trim()));
+  }
+
+  /** A public variable with no source yet. */
+  function needsSource(v) {
+    return v.internal !== true && !hasSource(v);
+  }
+
+  /**
+   * Every source in use, once each, with the variables that cite it. Two
+   * variables cite the same source when their links match (or, with no
+   * link, their titles). Most-cited first.
+   */
+  function sources() {
+    var byKey = {};
+    var list = [];
+    state.variables.variables.forEach(function (v) {
+      if (!hasSource(v)) return;
+      var url = String(v.source.url || '').trim();
+      var title = String(v.source.title || '').trim();
+      var key = (url || title).toLowerCase();
+      if (!byKey[key]) {
+        byKey[key] = { key: key, title: title, url: url, variables: [] };
+        list.push(byKey[key]);
+      }
+      if (!byKey[key].title && title) byKey[key].title = title;
+      byKey[key].variables.push(v);
+    });
+    return list.sort(function (a, b) {
+      return b.variables.length - a.variables.length ||
+        String(a.title || a.url).localeCompare(String(b.title || b.url));
+    });
+  }
+
+  /** The variables an HTML answer refers to, once each, in order. */
+  function variablesIn(html) {
+    var seen = {};
+    var out = [];
+    var m;
+    ANSWER_VARS.lastIndex = 0;
+    while ((m = ANSWER_VARS.exec(html || ''))) {
+      var id = m[1] || m[2];
+      if (seen[id]) continue;
+      seen[id] = true;
+      var v = variable(id);
+      if (v) out.push(v);
+    }
+    return out;
+  }
+
   /** FAQ figures for a set of questions. */
   function tallyFaqs(list) {
     var out = { total: list.length, published: 0, notReady: 0, linked: 0, unconfirmed: 0 };
@@ -788,6 +852,10 @@
     coverage: coverage,
     faqFacts: faqFacts,
     tallyFaqs: tallyFaqs,
+    hasSource: hasSource,
+    needsSource: needsSource,
+    sources: sources,
+    variablesIn: variablesIn,
     STATUSES: STATUSES,
     makeId: makeId,
     stripTags: stripTags,
