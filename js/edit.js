@@ -17,7 +17,7 @@
      faq:<fid>:<key>        (key may be dotted, e.g. publish.tabId)
      tab:<tabid>:<key>      a publish tab on the FAQ page
      tabstep:<tabid>:<n>:<key>  one step of a tab's step strip
-     variable:<vid>:<key>
+     variable:<vid>:<key>   (key may be dotted, e.g. source.url)
 
    Structural changes (adding a step, deleting an article, drawing an arrow)
    are functions further down. All of them end in touch(), which rebuilds the
@@ -648,6 +648,29 @@
     touch();
   }
 
+  /**
+   * Give a variable the same source document as other variables already
+   * cite (a Data.sources() entry). Only the document is copied: where in it
+   * this value appears is this variable's own business.
+   */
+  function useSource(id, title, url) {
+    var v = Data.variable(id);
+    if (!v) return;
+    v.source = v.source || {};
+    v.source.title = title || '';
+    v.source.url = url || '';
+    v.source.checked = v.source.checked || today();
+    touch();
+  }
+
+  /** Record that someone has just seen the source say this value. */
+  function sourceSeen(id) {
+    var v = Data.variable(id);
+    if (!v || !Data.hasSource(v)) return;
+    v.source.checked = today();
+    touch();
+  }
+
   // ---- attaching library content -------------------------------------------
 
   function refField(kind) { return kind === 'article' ? 'articleRefs' : 'faqRefs'; }
@@ -889,6 +912,8 @@
     reopenIssue: reopenIssue,
     deleteIssue: deleteIssue,
     verifyVariable: verifyVariable,
+    useSource: useSource,
+    sourceSeen: sourceSeen,
     attach: attach,
     detach: detach,
     createProcess: createProcess,

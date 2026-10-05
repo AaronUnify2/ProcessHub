@@ -238,6 +238,7 @@
       var by = prompt('Verified by (name or department):', '');
       if (by !== null) { Edit.verifyVariable(d.variable, by); refresh(); }
     }
+    if (act === 'source-seen') { Edit.sourceSeen(d.variable); refresh(); }
     if (act === 'copy-verification') {
       copy(Exporter.verificationText(d.owner || ''), node);
     }
@@ -299,6 +300,13 @@
 
   /** The "+ route to…" menus on each step. */
   function handleChange(event) {
+    var reuse = event.target.closest('select[data-use-source]');
+    if (reuse) {
+      var chosen = Data.sources().find(function (src) { return src.key === reuse.value; });
+      if (chosen) Edit.useSource(reuse.dataset.useSource, chosen.title, chosen.url);
+      refresh();
+      return;
+    }
     var mover = event.target.closest('select[data-move-faq]');
     if (mover) {
       FaqOrder.moveToTab(mover.dataset.moveFaq, mover.value);
@@ -831,6 +839,7 @@
         { type: 'select', options: YES_NO }) + '</dd>' +
       '</dl></section>' +
       '<section class="block"><h2>Answer — public wording</h2><div id="richHost"></div></section>' +
+      answerSources(q) +
       renderUsedIn(usage) + '</article>');
 
     RichText.mount(document.getElementById('richHost'), {
@@ -1131,6 +1140,8 @@
     var byStatus = function (st) { return count(function (v) { return v.status === st; }); };
     var unused = count(function (v) { return !usesOf(v.id); });
     var internal = count(function (v) { return v.internal === true; });
+    var sourced = count(Data.hasSource);
+    var unsourced = vars.filter(Data.needsSource);
 
     var html = '<div class="row-actions">' + btn('new-variable', {}, '+ New variable') +
       '<span class="spacer"></span>' +
@@ -1142,6 +1153,8 @@
       tile(byStatus('stale'), 'stale', 'known to need checking', '') +
       tile(internal, 'internal only', 'never published', '') +
       tile(unused, 'not used', 'nothing refers to them', '') +
+      tile(sourced, 'backed by a source', 'a published document to point to', '') +
+      tile(unsourced.length, 'need a source', 'public values with none yet', '') +
       '</section>';
 
     html += '<h2 class="group">By owning department</h2>' +
@@ -1186,6 +1199,25 @@
           (toVerify.length > SHOW ? '<p class="hint-block">…and ' + (toVerify.length - SHOW) +
             ' more. Verified ones drop off this list, and the next come up.</p>' : '')
         : '<p class="empty">Every variable is verified.</p>');
+
+    // Sources: what still needs one, then every document already cited.
+    html += '<h2 class="group">Needs a public source <span>' + unsourced.length + '</span></h2>' +
+      (unsourced.length
+        ? '<p class="hint-block">Public values that don\'t yet name the published document ' +
+          'they come from. Add one on the variable\'s own page.</p>' +
+          unsourced.slice(0, SHOW).map(function (v) {
+            return listRow('#/variable/' + v.id, v.value,
+              (v.question || '') + (v.ownerId ? ' · ' + Data.taxonomyName(v.ownerId) : ''), '');
+          }).join('') +
+          (unsourced.length > SHOW ? '<p class="hint-block">…and ' + (unsourced.length - SHOW) +
+            ' more. Each drops off this list once it has a source.</p>' : '')
+        : '<p class="empty">Every public value has a source.</p>');
+
+    var cited = Data.sources();
+    html += '<h2 class="group">Public sources <span>' + cited.length + '</span></h2>' +
+      (cited.length
+        ? cited.map(sourceCard).join('')
+        : '<p class="empty">No sources recorded yet.</p>');
 
     var unusedList = vars.filter(function (v) { return !usesOf(v.id); });
     html += '<h2 class="group">Not used anywhere <span>' + unusedList.length + '</span></h2>' +
@@ -1245,6 +1277,8 @@
         : btn('del-variable', { variable: id }, 'Delete variable', 'small danger')) +
       '</div></header>' +
 
+      sourceBlock(v) +
+
       '<section class="block meta"><h2>Verification</h2><dl>' +
       '<dt>Last verified</dt><dd>' + e(v.lastVerified || '— never —') + '</dd>' +
       '<dt>Verified by</dt><dd>' + e(v.verifiedBy || '—') + '</dd>' +
@@ -1257,6 +1291,89 @@
       '<section class="block"><h2>Used in ' + plural(usage.processes.length, 'place') + '</h2>' +
       (used || '<p class="empty">Not referenced anywhere yet.</p>') +
       '</section></article>');
+  }
+
+  // ---- public sources ------------------------------------------------------
+
+  /** A link that is safe to put in an href: web addresses only. */
+  function webLink(url, label) {
+    url = String(url || '').trim();
+    if (!/^https?:\/\//i.test(url)) return '';
+    return '<a class="btn tiny" href="' + e(url) + '" target="_blank" rel="noopener">' +
+      e(label || 'Open ↗') + '</a>';
+  }
+
+  /** The published document behind one variable, on the variable's page. */
+  function sourceBlock(v) {
+    var id = v.id;
+    var s = v.source || {};
+    var mine = Data.hasSource(v) ? String(s.url || s.title || '').trim().toLowerCase() : '';
+    var others = Data.sources().filter(function (src) { return src.key !== mine; });
+
+    return '<section class="block meta source-block"><h2>Public source</h2>' +
+      (v.internal === true
+        ? '<p class="hint-block">This value is internal and never published, so it doesn\'t ' +
+          'need a public source.</p>'
+        : '<p class="hint-block">The published document this value comes from, so you can ' +
+          'point to it if anyone asks.</p>') +
+      '<dl>' +
+      '<dt>Document</dt><dd>' + f('variable:' + id + ':source.title',
+        { placeholder: 'e.g. Fees and Charges 2026–27' }) + '</dd>' +
+      '<dt>Link</dt><dd class="source-link">' + f('variable:' + id + ':source.url',
+        { placeholder: 'https://…' }) + webLink(s.url) + '</dd>' +
+      '<dt>Where it says so</dt><dd>' + f('variable:' + id + ':source.excerpt',
+        { type: 'multiline', placeholder: 'Page or section, or the words quoted' }) + '</dd>' +
+      '<dt>Last checked</dt><dd class="source-link">' + f('variable:' + id + ':source.checked',
+        { placeholder: 'YYYY-MM-DD' }) +
+      (Data.hasSource(v)
+        ? btn('source-seen', { variable: id }, '✓ Seen it today', 'tiny',
+            'Record that the source still says this, today')
+        : '') + '</dd>' +
+      '</dl>' +
+      (others.length
+        ? '<label class="source-reuse">Or use a source already cited ' +
+          '<select class="inline-select" data-use-source="' + e(id) + '">' +
+          '<option value="">Choose a document…</option>' +
+          others.map(function (src) {
+            return '<option value="' + e(src.key) + '">' + e(src.title || src.url) +
+              ' (' + src.variables.length + ')</option>';
+          }).join('') + '</select></label>'
+        : '') +
+      '</section>';
+  }
+
+  /** One cited document on the variables dashboard, with what it backs. */
+  function sourceCard(src) {
+    return '<div class="source-card">' +
+      '<div class="source-head"><span class="source-title">' + e(src.title || src.url) + '</span>' +
+      webLink(src.url) +
+      '<span class="hint">' + plural(src.variables.length, 'value') + '</span></div>' +
+      '<div class="source-vars">' + src.variables.map(function (v) {
+        return '<a class="source-var" href="#/variable/' + e(v.id) + '"' +
+          (v.question ? ' title="' + e(v.question) + '"' : '') + '>' + e(v.value) + '</a>';
+      }).join('') + '</div></div>';
+  }
+
+  /** On an FAQ page: each value in the answer and where it comes from. */
+  function answerSources(q) {
+    var vars = Data.variablesIn(q.a);
+    if (!vars.length) return '';
+    var missing = vars.filter(Data.needsSource).length;
+    return '<section class="block"><h2>Where the values come from</h2>' +
+      '<p class="hint-block">Each fee, time, number or link in this answer, and the published ' +
+      'document behind it' + (missing ? ' — ' + missing + ' with no source yet' : '') + '.</p>' +
+      vars.map(function (v) {
+        var s = v.source || {};
+        var why;
+        if (v.internal === true) why = '<span class="hint">internal — not published</span>';
+        else if (!Data.hasSource(v)) why = '<span class="source-missing">no source yet</span>';
+        else {
+          why = '<span class="source-title">' + e(s.title || s.url) + '</span>' + webLink(s.url) +
+            (s.excerpt ? '<span class="source-excerpt">' + e(s.excerpt) + '</span>' : '');
+        }
+        return '<div class="source-cite"><a class="source-var" href="#/variable/' + e(v.id) + '">' +
+          e(v.value) + '</a>' + why + '</div>';
+      }).join('') + '</section>';
   }
 
   // ---- issues register -----------------------------------------------------

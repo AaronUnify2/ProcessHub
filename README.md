@@ -68,7 +68,7 @@ a dashboard for the section as a whole.
 | Processes | the department tree | totals, handoffs, the processes with most handoffs |
 | FAQ | publish tabs, headings and questions — drag to reorder (below) | what needs attention, figures per tab |
 | Articles | knowledge base articles by owning department | current vs draft, not attached, without an owner |
-| Variables | variables by owning department, coloured by verification | verified, pending, stale, unused; a verification email or sheet per department |
+| Variables | variables by owning department, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
 | Issues | open issues by severity, then resolved | severity counts, issues by department, the full register and rule findings |
 | Rules | every content rule with its severity and finding count | findings by severity; each rule opens on its own page with everything it finds |
 | Coverage | the department tree with a status bar per department | status by department; each department opens on its processes |

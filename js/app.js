@@ -75,8 +75,8 @@
 
   // Fields whose value changes more than their own box: a department move
   // redraws the handoff markers, a status change redraws the badge and the
-  // tree, a reparent moves the process, a publish tab moves an FAQ.
-  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal|publish\.tabId|parentId|name|severity|condition|stepperFrom|label|new)$/;
+  // tree, a reparent moves the process, a publish tab moves an FAQ, a source shows its link.
+  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal|publish\.tabId|parentId|name|severity|condition|stepperFrom|label|new|source\.title|source\.url)$/;
 
   function showDirty(count, spec) {
     if (!count) return;
