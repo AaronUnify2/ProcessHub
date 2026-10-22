@@ -313,6 +313,12 @@
       refresh();
       return;
     }
+    var sectionMover = event.target.closest('select[data-move-section]');
+    if (sectionMover) {
+      FaqOrder.moveToSection(sectionMover.dataset.moveSection, Number(sectionMover.value));
+      refresh();
+      return;
+    }
     var select = event.target.closest('select[data-add-route]');
     if (!select || !select.value) return;
     Edit.addConnection(select.dataset.process, select.dataset.addRoute, select.value, '');
@@ -801,6 +807,19 @@
           e(Data.plainText(t.label)) + '</option>';
       }).join('');
 
+    // The section headings in this tab, for moving without dragging. A
+    // heading's value is its row index; -1 is the top of the tab, above the
+    // first heading, where a question has no section.
+    var section = FaqOrder.sectionOf(id);
+    var headings = [];
+    rows.forEach(function (r, i) { if (r.type === 'group') headings.push({ index: i, title: r.title }); });
+    var sectionOptions = '<option value="-1"' + (section === -1 ? ' selected' : '') +
+      '>No section (top of the tab)</option>' +
+      headings.map(function (h) {
+        return '<option value="' + h.index + '"' + (h.index === section ? ' selected' : '') + '>' +
+          e(h.title) + '</option>';
+      }).join('');
+
     paint('<article class="pane">' +
       '<header class="pane-head">' +
       '<div class="crumbs">FAQ · ' + (tab
@@ -827,6 +846,11 @@
       '<section class="block meta"><h2>Where it is published</h2><dl>' +
       '<dt>Tab on the FAQ page</dt><dd><select class="inline-select" data-move-faq="' + e(id) +
       '" aria-label="Tab on the FAQ page">' + tabOptions + '</select></dd>' +
+      (tabId && headings.length
+        ? '<dt>Section</dt><dd class="faq-section"><select class="inline-select" data-move-section="' + e(id) +
+          '" aria-label="Section">' + sectionOptions + '</select>' +
+          '<span class="hint">Moves it to the end of that section.</span></dd>'
+        : '') +
       '<dt>Position</dt><dd class="faq-position">' +
       (position ? position + ' of ' + questions.length : '—') +
       (heading ? ', under <strong>' + e(heading) + '</strong>' : '') +
