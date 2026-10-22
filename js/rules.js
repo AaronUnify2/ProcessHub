@@ -27,7 +27,7 @@
 (function (global) {
   'use strict';
 
-  var SCOPES = ['process', 'step', 'article', 'faq', 'variable'];
+  var SCOPES = ['process', 'step', 'factsheet', 'faq', 'variable'];
 
   function rules() {
     return (Data.state.processes && Data.state.processes.rules) || [];
@@ -61,12 +61,12 @@
       });
     }
 
-    if (scope === 'article') {
-      Data.state.library.articles.forEach(function (a) {
+    if (scope === 'factsheet') {
+      Data.state.library.factSheets.forEach(function (s) {
         out.push({
-          kind: 'article', obj: a, id: a.id, label: a.title,
-          where: 'Knowledge base', route: '#/article/' + a.id,
-          text: [a.title, stripTags(a.body)].join('\n')
+          kind: 'factsheet', obj: s, id: s.id, label: s.title,
+          where: 'Fact sheet', route: '#/factsheet/' + s.id,
+          text: [s.title, s.summary, stripTags(s.body)].join('\n')
         });
       });
     }
@@ -308,7 +308,7 @@
         name: 'Merit has been replaced by the CRM',
         kind: 'text',
         match: { mode: 'phrase', value: 'Merit', caseSensitive: true, wholeWord: true },
-        scope: ['process', 'step', 'article', 'faq'],
+        scope: ['process', 'step', 'factsheet', 'faq'],
         severity: 'high',
         message: 'Still refers to Merit. The CRM replaced it — the request ID now goes ' +
           'to the customer by SMS, so the wording needs rewriting, not just renaming.',
@@ -347,15 +347,6 @@
         severity: 'medium',
         message: 'This value has not been confirmed by its owning department ' +
           'within the last 12 months.',
-        enabled: true
-      },
-      {
-        id: 'rule_unused_article',
-        name: 'Article nothing references',
-        kind: 'unused',
-        scope: ['article'],
-        severity: 'low',
-        message: 'No process or step links to this article, so nobody will find it.',
         enabled: true
       }
     ];

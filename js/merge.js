@@ -1,7 +1,7 @@
 /* ===========================================================================
    merge.js — combining a local draft with published files that moved on.
 
-   Works one item at a time: a process, an article, an FAQ question, a
+   Works one item at a time: a process, a fact sheet, an FAQ question, a
    variable, a department, a rule or a publish tab. For each item there are up
    to three copies — yours, the published one, and the base both started from.
 
@@ -21,7 +21,7 @@
     { file: 'processes', key: 'processes', kind: 'Process', label: function (x) { return x.name; } },
     { file: 'processes', key: 'taxonomy', kind: 'Department', label: function (x) { return x.name; } },
     { file: 'processes', key: 'rules', kind: 'Rule', label: function (x) { return x.name; } },
-    { file: 'library', key: 'articles', kind: 'Article', label: function (x) { return x.title; } },
+    { file: 'library', key: 'factSheets', kind: 'Fact sheet', label: function (x) { return x.title; } },
     { file: 'library', key: 'faqs', kind: 'FAQ', label: function (x) { return Data.plainText(x.q); } },
     { file: 'library', key: 'publishTabs', kind: 'Publish tab', label: function (x) { return Data.plainText(x.label); } },
     { file: 'variables', key: 'variables', kind: 'Variable', label: function (x) { return x.value; } }

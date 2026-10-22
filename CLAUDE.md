@@ -1,6 +1,6 @@
 # Process Hub
 
-Process maps, knowledge base articles and public FAQ content in one editor.
+Process maps, public FAQ content and fact sheets in one editor.
 A multi-file static web app: plain HTML, CSS and JavaScript, no build step, no
 framework, no `package.json`, no dependency install. The browser loads the
 files as they sit in the repository.
@@ -11,7 +11,7 @@ Read `README.md` for how the app works. The content and its data model
 ## Public repository — keep it that way
 
 This repository is public and served by GitHub Pages. **Never add council
-content to it**: no data files, no copies of articles, processes or issues, no
+content to it**: no data files, no copies of fact sheets, processes or issues, no
 internal system names beyond what the code already needs, no test fixtures
 made from real content. The only content file here is `exports/FAQ.json`,
 which is public by design and written by Process Hub's Publish button.

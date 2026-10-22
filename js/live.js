@@ -169,7 +169,7 @@
 
   function renderStep(step, i, p) {
     var isCurrent = i === call.stepIndex;
-    var attachedArticles = step.articleRefs || [];
+    var attachedSheets = step.factSheetRefs || [];
     var attachedFaqs = step.faqRefs || [];
 
     if (!isCurrent) {
@@ -177,8 +177,8 @@
       return '<button class="run-step collapsed" data-goto="' + i + '">' +
         '<span class="run-n">' + (i + 1) + '</span>' +
         '<span class="run-title">' + e(Data.freeze(step.title)) + '</span>' +
-        (attachedArticles.length + attachedFaqs.length
-          ? '<span class="run-badge">' + (attachedArticles.length + attachedFaqs.length) + '</span>'
+        (attachedSheets.length + attachedFaqs.length
+          ? '<span class="run-badge">' + (attachedSheets.length + attachedFaqs.length) + '</span>'
           : '') +
         (ticks ? '<span class="run-ticks">' + ticks + ' ✓</span>' : '') +
         '</button>';
@@ -211,7 +211,7 @@
         }).join('') + '</ul>';
     }
 
-    html += renderPanel('article', 'Knowledge base', step, p, attachedArticles);
+    html += renderPanel('factsheet', 'Fact sheets', step, p, attachedSheets);
     html += renderPanel('faq', 'What the customer can read', step, p, attachedFaqs);
 
     // A step with more than one way out asks the question: one button per
@@ -249,7 +249,7 @@
     var key = step.id + ':' + kind;
     var open = call.openPanels[key];
     var suggestions = Data.suggest(step, p, kind, attached);
-    var lookup = kind === 'article' ? Data.state.index.articles : Data.state.index.faqs;
+    var lookup = kind === 'factsheet' ? Data.state.index.factSheets : Data.state.index.faqs;
 
     var summary = attached.length
       ? attached.length + ' attached'
@@ -273,14 +273,17 @@
     attached.forEach(function (id) {
       var item = lookup[id];
       if (!item) return;
-      var title = kind === 'article' ? item.title : item.q;
-      var body = kind === 'article' ? item.body : item.a;
+      var sheet = kind === 'factsheet';
+      var title = sheet ? e(item.title) : Data.plainText(item.q);
+      var body = sheet ? item.body : item.a;
       html += '<div class="content-card">' +
-        '<div class="content-head"><strong>' + e(title) + '</strong>' +
+        '<div class="content-head"><strong>' + (sheet ? title : e(title)) + '</strong>' +
+        (sheet ? '<span class="content-status">' +
+          e(Data.FACT_SHEET_STATUS_LABEL[item.status] || item.status) + '</span>' : '') +
         '<button class="lbtn tiny" data-detach="' + e(id) + '" data-kind="' + kind +
         '" data-step="' + e(step.id) + '">Detach</button></div>' +
-        '<div class="content-body ' + (kind === 'faq' ? 'faq-preview' : '') + '">' +
-        '<div class="' + (kind === 'faq' ? 'faq-a-inner' : '') + '">' +
+        '<div class="content-body faq-preview' + (sheet ? ' fs-preview' : '') + '">' +
+        '<div class="' + (sheet ? 'fs-doc' : 'faq-a-inner') + '">' +
         Data.resolveHtml(body) + '</div></div></div>';
     });
 
@@ -290,7 +293,7 @@
         html += '<div class="suggest-row">' +
           '<button class="lbtn tiny primary" data-attach="' + e(s.doc.id) +
           '" data-kind="' + kind + '" data-step="' + e(step.id) + '">Attach</button>' +
-          '<span class="suggest-title">' + e(s.doc.title) + '</span>' +
+          '<span class="suggest-title">' + e(Data.plainText(s.doc.title)) + '</span>' +
           '<span class="suggest-why">' + e(s.hits.slice(0, 4).join(' · ')) + '</span>' +
           '</div>';
       });
@@ -305,7 +308,7 @@
     var p = process();
     var step = p && p.steps.find(function (s) { return s.id === stepId; });
     if (!step) return;
-    var field = kind === 'article' ? 'articleRefs' : 'faqRefs';
+    var field = kind === 'factsheet' ? 'factSheetRefs' : 'faqRefs';
     step[field] = step[field] || [];
     if (step[field].indexOf(id) === -1) step[field].push(id);
     Edit.touch();
@@ -316,7 +319,7 @@
     var p = process();
     var step = p && p.steps.find(function (s) { return s.id === stepId; });
     if (!step) return;
-    var field = kind === 'article' ? 'articleRefs' : 'faqRefs';
+    var field = kind === 'factsheet' ? 'factSheetRefs' : 'faqRefs';
     step[field] = (step[field] || []).filter(function (x) { return x !== id; });
     Edit.touch();
     render();

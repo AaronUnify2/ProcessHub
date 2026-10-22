@@ -61,7 +61,7 @@
   }
 
   /**
-   * HTML in, HTML out, for article and FAQ bodies.
+   * HTML in, HTML out, for fact sheets and FAQ answers.
    *
    * Two reference styles have to be handled. Process text uses {{var_id}},
    * while content imported from the published FAQ uses the span form the
@@ -152,7 +152,7 @@
       taxonomy: {},
       children: {},
       processes: {},
-      articles: {},
+      factSheets: {},
       faqs: {},
       variables: {},
       usage: {},
@@ -161,7 +161,7 @@
     };
 
     state.variables.variables.forEach(function (v) { index.variables[v.id] = v; });
-    state.library.articles.forEach(function (a) { index.articles[a.id] = a; });
+    state.library.factSheets.forEach(function (s) { index.factSheets[s.id] = s; });
     state.library.faqs.forEach(function (f) { index.faqs[f.id] = f; });
 
     state.processes.taxonomy.forEach(function (node) {
@@ -181,7 +181,7 @@
       index.flow[p.id] = buildFlow(p);
 
       p.steps.forEach(function (step) {
-        noteUsage(index, step.articleRefs, p, step);
+        noteUsage(index, step.factSheetRefs, p, step);
         noteUsage(index, step.faqRefs, p, step);
         countVariables(index, [step.title, step.sop, step.script, step.completionTrigger].join('\n'), p, step);
         (step.checks || []).forEach(function (c) {
@@ -192,12 +192,13 @@
       (p.connections || []).forEach(function (c) {
         countVariables(index, c.condition, p, null);
       });
-      noteUsage(index, p.articleRefs, p, null);
+      noteUsage(index, p.factSheetRefs, p, null);
       noteUsage(index, p.faqRefs, p, null);
     });
 
-    state.library.articles.forEach(function (a) {
-      countVariables(index, a.body, a, null);
+    state.library.factSheets.forEach(function (s) {
+      countVariables(index, s.body, s, null);
+      countVariables(index, s.rationale, s, null);
     });
     state.library.faqs.forEach(function (f) {
       countVariables(index, f.a, f, null);
@@ -318,12 +319,12 @@
       });
     });
 
-    state.library.articles.forEach(function (a) {
+    state.library.factSheets.forEach(function (s) {
       entries.push({
-        kind: 'article', id: a.id, title: a.title,
-        subtitle: 'Knowledge base',
-        haystack: (a.title + ' ' + stripTags(a.body)).toLowerCase(),
-        route: '#/article/' + a.id
+        kind: 'factsheet', id: s.id, title: s.title,
+        subtitle: 'Fact sheet · ' + (FACT_SHEET_STATUS_LABEL[s.status] || s.status || 'draft'),
+        haystack: (s.title + ' ' + (s.summary || '') + ' ' + stripTags(s.body)).toLowerCase(),
+        route: '#/factsheet/' + s.id
       });
     });
 
@@ -400,7 +401,7 @@
 
       // A process is usually what someone wants; a variable almost never is,
       // since it is reference data rather than an answer. Nudge accordingly.
-      rank += { process: 0, faq: 0.3, article: 0.5, variable: 1.5 }[entry.kind] || 0.5;
+      rank += { process: 0, faq: 0.3, factsheet: 0.3, variable: 1.5 }[entry.kind] || 0.5;
       results.push({ entry: entry, rank: rank });
     });
 
@@ -411,9 +412,9 @@
   }
 
   // ---- suggestions ---------------------------------------------------------
-  // Shared by the editor's attach picker and the live call view: articles and
-  // FAQ answers whose wording overlaps a step, scored on how rare the shared
-  // words are.
+  // Shared by the editor's attach picker and the live call view: fact sheets
+  // and FAQ answers whose wording overlaps a step (or a fact sheet), scored on
+  // how rare the shared words are.
 
   var STOPWORDS = ('the a an and or of to in on for with by at from is are was ' +
     'be been it its this that these those if then when where what which who how ' +
@@ -466,8 +467,8 @@
    */
   function buildSuggestIndex() {
     var docs = [];
-    state.library.articles.forEach(function (a) {
-      docs.push({ kind: 'article', id: a.id, title: a.title, body: a.body });
+    state.library.factSheets.forEach(function (s) {
+      docs.push({ kind: 'factsheet', id: s.id, title: s.title, body: (s.summary || '') + ' ' + s.body });
     });
     state.library.faqs.forEach(function (f) {
       docs.push({ kind: 'faq', id: f.id, title: f.q, body: f.a });
@@ -495,14 +496,23 @@
 
   /**
    * step may be null, in which case the process as a whole is the query.
-   * kind is 'article' or 'faq'.
+   * kind is 'factsheet' or 'faq'.
    */
   function suggest(step, process, kind, alreadyAttached) {
-    if (!suggestIndex) suggestIndex = buildSuggestIndex();
     var source = step
       ? [step.title, step.sop, step.script, process.name]
       : [process.name, process.purpose, process.resolutionDefinition];
-    var query = unique(terms(source.join(' ')));
+    return suggestFor(source.join(' '), kind, alreadyAttached);
+  }
+
+  /**
+   * The same scoring for any piece of text — a fact sheet looking for the
+   * FAQ answers it expands on, say. Matches whose id is in alreadyAttached
+   * are left out.
+   */
+  function suggestFor(text, kind, alreadyAttached) {
+    if (!suggestIndex) suggestIndex = buildSuggestIndex();
+    var query = unique(terms(text));
     if (!query.length) return [];
 
     var taken = {};
@@ -626,6 +636,42 @@
       ready: f.status === 'published' || f.status === 'approved',
       linked: !!(usage && usage.processes.length),
       unconfirmed: unconfirmed
+    };
+  }
+
+  // ---- fact sheets ---------------------------------------------------------
+  // A fact sheet is the longer, public version of what the FAQ answers say:
+  // written here, signed off by the people who have to agree to it, then
+  // handed to comms to publish. Nothing publishes it from Process Hub.
+
+  var FACT_SHEET_STATUSES = ['draft', 'signoff', 'approved', 'live'];
+  var FACT_SHEET_STATUS_LABEL = {
+    draft: 'Draft', signoff: 'In sign-off', approved: 'Approved', live: 'Live'
+  };
+  var SIGNOFF_LABEL = { pending: 'Waiting', approved: 'Approved', changes: 'Changes requested' };
+
+  /**
+   * The facts the fact sheet dashboard counts: where it is in its life,
+   * how far sign-off has got, whether a process uses it, and whether its
+   * wording leans on a value nobody has verified (or one that must never be
+   * published).
+   */
+  function factSheetFacts(s) {
+    var usage = state.index.usage[s.id];
+    var used = variablesIn(s.body);
+    var people = s.signoffs || [];
+    return {
+      status: FACT_SHEET_STATUSES.indexOf(s.status) === -1 ? 'draft' : s.status,
+      linked: !!(usage && usage.processes.length),
+      unconfirmed: used.filter(function (v) { return v.status !== 'current'; }).length,
+      internal: used.filter(function (v) { return v.internal === true; }).length,
+      unsourced: used.filter(needsSource).length,
+      faqs: (s.faqRefs || []).length,
+      signers: people.length,
+      approvedBy: people.filter(function (x) { return x.decision === 'approved'; }).length,
+      changesFrom: people.filter(function (x) { return x.decision === 'changes'; }).length,
+      replaces: !!String((s.current && (s.current.url || s.current.title)) || '').trim(),
+      rationale: !!plainText(s.rationale)
     };
   }
 
@@ -782,8 +828,8 @@
   }
 
   /**
-   * A readable id, unique within its kind: "art_" + "Which side of the
-   * meter?" becomes art_which_side_of_the_meter. Readable ids matter because
+   * A readable id, unique within its kind: "fs_" + "Building a New House"
+   * becomes fs_building_a_new_house. Readable ids matter because
    * they appear in HTML content and in git diffs.
    */
   function makeId(prefix, text, taken) {
@@ -815,6 +861,7 @@
     if (!Array.isArray(state.processes.rules)) state.processes.rules = [];
     scrubDerived(state.processes);
     state.library = data.library;
+    if (!Array.isArray(state.library.factSheets)) state.library.factSheets = [];
     state.variables = data.variables;
     suggestIndex = null;
     buildIndexes();
@@ -857,6 +904,11 @@
     sources: sources,
     variablesIn: variablesIn,
     STATUSES: STATUSES,
+    suggestFor: suggestFor,
+    factSheetFacts: factSheetFacts,
+    FACT_SHEET_STATUSES: FACT_SHEET_STATUSES,
+    FACT_SHEET_STATUS_LABEL: FACT_SHEET_STATUS_LABEL,
+    SIGNOFF_LABEL: SIGNOFF_LABEL,
     makeId: makeId,
     stripTags: stripTags,
     plainText: plainText

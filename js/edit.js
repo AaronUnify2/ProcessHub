@@ -13,13 +13,14 @@
      issue:<pid>:<iid>:<key>
      rule:<rid>:<key>  ·  rule:<rid>:match:<key>
      taxonomy:<tid>:<key>
-     article:<aid>:<key>
+     factsheet:<fsid>:<key> (key may be dotted, e.g. current.url)
+     signoff:<fsid>:<sid>:<key>  one person on a fact sheet's sign-off list
      faq:<fid>:<key>        (key may be dotted, e.g. publish.tabId)
      tab:<tabid>:<key>      a publish tab on the FAQ page
      tabstep:<tabid>:<n>:<key>  one step of a tab's step strip
      variable:<vid>:<key>   (key may be dotted, e.g. source.url)
 
-   Structural changes (adding a step, deleting an article, drawing an arrow)
+   Structural changes (adding a step, deleting a fact sheet, drawing an arrow)
    are functions further down. All of them end in touch(), which rebuilds the
    indexes and schedules the draft save.
    =========================================================================== */
@@ -103,7 +104,12 @@
       var stepItem = owning && (owning.stepper || [])[Number(parts[2])];
       return stepItem ? { obj: stepItem, key: parts[3] } : null;
     }
-    if (kind === 'article') return index.articles[parts[1]] ? { obj: index.articles[parts[1]], key: parts[2] } : null;
+    if (kind === 'factsheet') return index.factSheets[parts[1]] ? { obj: index.factSheets[parts[1]], key: parts[2] } : null;
+    if (kind === 'signoff') {
+      var sheet = index.factSheets[parts[1]];
+      var person = sheet && findIn(sheet.signoffs, parts[2]);
+      return person ? { obj: person, key: parts[3] } : null;
+    }
     if (kind === 'faq') return index.faqs[parts[1]] ? { obj: index.faqs[parts[1]], key: parts[2] } : null;
     if (kind === 'variable') return index.variables[parts[1]] ? { obj: index.variables[parts[1]], key: parts[2] } : null;
     return null;
@@ -434,7 +440,7 @@
       departmentId: departmentId || '',
       responsibleRole: '', escalationPoint: '', timeframe: '', sop: '',
       completionTrigger: '', script: '', checks: [], systems: [],
-      articleRefs: [], faqRefs: [], custom: {}
+      factSheetRefs: [], faqRefs: [], custom: {}
     };
   }
 
@@ -673,7 +679,7 @@
 
   // ---- attaching library content -------------------------------------------
 
-  function refField(kind) { return kind === 'article' ? 'articleRefs' : 'faqRefs'; }
+  function refField(kind) { return kind === 'factsheet' ? 'factSheetRefs' : 'faqRefs'; }
 
   /** stepId null attaches to the process as a whole. */
   function attach(processId, stepId, kind, id) {
@@ -698,16 +704,77 @@
     touch();
   }
 
-  /** Strip every reference to a library item, from steps and processes alike. */
+  /**
+   * Strip every reference to a library item, from steps and processes alike
+   * — and, for an FAQ question, from the fact sheets that list it as related.
+   */
   function dropRefs(kind, id) {
     var key = refField(kind);
+    var owners = [];
     Data.state.processes.processes.forEach(function (p) {
-      [p].concat(p.steps).forEach(function (owner) {
-        if (owner[key] && owner[key].indexOf(id) !== -1) {
-          owner[key] = owner[key].filter(function (x) { return x !== id; });
-        }
-      });
+      owners = owners.concat([p], p.steps);
     });
+    if (kind === 'faq') owners = owners.concat(Data.state.library.factSheets);
+    owners.forEach(function (owner) {
+      if (owner[key] && owner[key].indexOf(id) !== -1) {
+        owner[key] = owner[key].filter(function (x) { return x !== id; });
+      }
+    });
+  }
+
+  // ---- fact sheets: related FAQ answers and sign-off -----------------------
+
+  function sheet(id) { return Data.state.index.factSheets[id] || null; }
+
+  /** An FAQ question this fact sheet expands on, carried into its review pack. */
+  function relateFaq(sheetId, faqId) {
+    var s = sheet(sheetId);
+    if (!s || !Data.state.index.faqs[faqId]) return;
+    s.faqRefs = s.faqRefs || [];
+    if (s.faqRefs.indexOf(faqId) !== -1) return;
+    s.faqRefs.push(faqId);
+    touch();
+  }
+
+  function unrelateFaq(sheetId, faqId) {
+    var s = sheet(sheetId);
+    if (!s) return;
+    s.faqRefs = (s.faqRefs || []).filter(function (x) { return x !== faqId; });
+    touch();
+  }
+
+  /** Someone who has to agree to the fact sheet before it goes to comms. */
+  function addSignoff(sheetId, name, role) {
+    var s = sheet(sheetId);
+    if (!s) return null;
+    s.signoffs = s.signoffs || [];
+    var person = {
+      id: shortId('so_'), name: name || '', role: role || '',
+      decision: 'pending', date: '', note: ''
+    };
+    s.signoffs.push(person);
+    touch();
+    return person.id;
+  }
+
+  function removeSignoff(sheetId, personId) {
+    var s = sheet(sheetId);
+    if (!s) return;
+    s.signoffs = (s.signoffs || []).filter(function (x) { return x.id !== personId; });
+    touch();
+  }
+
+  /**
+   * Record a decision, dated today. Going back to "waiting" clears the date,
+   * since nobody has decided anything yet.
+   */
+  function decideSignoff(sheetId, personId, decision) {
+    var s = sheet(sheetId);
+    var person = s && findIn(s.signoffs, personId);
+    if (!person) return;
+    person.decision = decision;
+    person.date = decision === 'pending' ? '' : today();
+    touch();
   }
 
   // ---- creating and deleting -----------------------------------------------
@@ -739,7 +806,7 @@
       steps: [entry, done],
       connections: [{ id: shortId('conn_'), from: entry.id, to: done.id, condition: '' }],
       issues: [],
-      articleRefs: [],
+      factSheetRefs: [],
       faqRefs: [],
       canvas: { cardDetail: 'default' },
       created: today(),
@@ -760,22 +827,30 @@
     touch();
   }
 
-  function createArticle(title) {
+  /**
+   * A new fact sheet starts as a draft. current is the version on the
+   * council site it would replace (left empty for a sheet that replaces
+   * nothing), and rationale the case for replacing it.
+   */
+  function createFactSheet(title) {
     var lib = Data.state.library;
-    var id = Data.makeId('art_', title, takenIds(lib.articles));
-    lib.articles.push({
+    var id = Data.makeId('fs_', title, takenIds(lib.factSheets));
+    lib.factSheets.push({
       id: id, title: title, summary: '', body: '<p></p>',
-      audience: 'internal', ownerId: '', status: 'draft', lastReviewed: '',
-      tags: [], internal: true
+      ownerId: '', status: 'draft', lastReviewed: '',
+      current: { title: '', url: '' },
+      rationale: '',
+      faqRefs: [],
+      signoffs: []
     });
     touch();
     return id;
   }
 
-  function deleteArticle(id) {
+  function deleteFactSheet(id) {
     var lib = Data.state.library;
-    lib.articles = lib.articles.filter(function (a) { return a.id !== id; });
-    dropRefs('article', id);
+    lib.factSheets = lib.factSheets.filter(function (s) { return s.id !== id; });
+    dropRefs('factsheet', id);
     touch();
   }
 
@@ -847,7 +922,7 @@
       if (p.taxonomyId === id) used.processes++;
       p.steps.forEach(function (s) { if (s.departmentId === id) used.steps++; });
     });
-    Data.state.library.articles.concat(Data.state.library.faqs, Data.state.variables.variables)
+    Data.state.library.factSheets.concat(Data.state.library.faqs, Data.state.variables.variables)
       .forEach(function (x) { if (x.ownerId === id) used.owned++; });
     used.total = used.children + used.processes + used.steps + used.owned;
     return used;
@@ -918,8 +993,13 @@
     detach: detach,
     createProcess: createProcess,
     deleteProcess: deleteProcess,
-    createArticle: createArticle,
-    deleteArticle: deleteArticle,
+    createFactSheet: createFactSheet,
+    deleteFactSheet: deleteFactSheet,
+    relateFaq: relateFaq,
+    unrelateFaq: unrelateFaq,
+    addSignoff: addSignoff,
+    removeSignoff: removeSignoff,
+    decideSignoff: decideSignoff,
     createFaq: createFaq,
     deleteFaq: deleteFaq,
     createVariable: createVariable,

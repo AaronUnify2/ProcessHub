@@ -3,7 +3,7 @@
 
    One render function per route. Fields are rendered through Edit.field, so
    anything shown here can be clicked and changed; structural actions (add a
-   step, draw a route, attach an article, resolve an issue) go through Edit
+   step, draw a route, attach a fact sheet, resolve an issue) go through Edit
    too.
    =========================================================================== */
 
@@ -67,6 +67,9 @@
   var YES_NO = [{ value: false, label: 'No' }, { value: true, label: 'Yes' }];
 
   var STATUS = ['draft', 'mapped', 'reviewed', 'published', 'needs_rework'];
+  var FS_STATUS_OPTIONS = Data.FACT_SHEET_STATUSES.map(function (st) {
+    return { value: st, label: Data.FACT_SHEET_STATUS_LABEL[st] };
+  });
   var STEP_TYPES = ['entry', 'action', 'decision', 'resolution'];
   var STEP_LABEL = {
     entry: 'Entry', action: 'Action', decision: 'Decision', resolution: 'Resolution'
@@ -121,7 +124,7 @@
     }
 
     // -- attachments
-    if (act === 'attach') openAttach(d.process, d.step || null, d.kind || 'article');
+    if (act === 'attach') openAttach(d.process, d.step || null, d.kind || 'factsheet');
     if (act === 'detach') { Edit.detach(d.process, d.step || null, d.kind, d.ref); refresh(); }
 
     // -- creating and deleting
@@ -137,19 +140,41 @@
       Edit.deleteProcess(d.process);
       onNavigate('#/');
     }
-    if (act === 'new-article') {
-      name = ask('Title of the new article:');
-      if (name) onNavigate('#/article/' + Edit.createArticle(name));
+    if (act === 'new-factsheet') {
+      name = ask('Title of the new fact sheet:');
+      if (name) onNavigate('#/factsheet/' + Edit.createFactSheet(name));
     }
-    if (act === 'del-article') {
-      var aUse = Data.state.index.usage[d.article];
-      if (confirm('Delete this article?' + (aUse && aUse.processes.length
-          ? ' It is attached in ' + plural(aUse.processes.length, 'process', 'processes') +
-            ', and will be detached from all of them.' : ''))) {
-        Edit.deleteArticle(d.article);
-        onNavigate('#/articles');
+    if (act === 'del-factsheet') {
+      var sUse = Data.state.index.usage[d.sheet];
+      if (confirm('Delete this fact sheet, with its rationale and sign-off list?' +
+          (sUse && sUse.processes.length
+            ? ' It is attached in ' + plural(sUse.processes.length, 'process', 'processes') +
+              ', and will be detached from all of them.' : ''))) {
+        Edit.deleteFactSheet(d.sheet);
+        onNavigate('#/factsheets');
       }
     }
+
+    // -- a fact sheet: related FAQ answers, sign-off, exports
+    if (act === 'fs-relate') openRelate(d.sheet);
+    if (act === 'fs-relate-add') { Edit.relateFaq(d.sheet, d.faq); refresh(); }
+    if (act === 'fs-unrelate') { Edit.unrelateFaq(d.sheet, d.faq); refresh(); }
+    if (act === 'fs-add-signoff') {
+      name = ask('Who has to sign it off? (name)');
+      if (name) {
+        var role = ask('Their role or team (optional):');
+        Edit.addSignoff(d.sheet, name, role || '');
+        refresh();
+      }
+    }
+    if (act === 'fs-del-signoff' && confirm('Take this person off the sign-off list?')) {
+      Edit.removeSignoff(d.sheet, d.person);
+      refresh();
+    }
+    if (act === 'fs-word') FactSheetExport.word(d.sheet);
+    if (act === 'fs-print') FactSheetExport.print(d.sheet);
+    if (act === 'fs-pack-word') FactSheetExport.packWord(d.sheet);
+    if (act === 'fs-pack-print') FactSheetExport.packPrint(d.sheet);
     if (act === 'new-faq') {
       name = ask('The new question, as a customer would ask it:');
       if (name) onNavigate('#/faq/' + Edit.createFaq(name));
@@ -257,7 +282,7 @@
     if (act === 'add-rule') {
       id = Rules.add({
         name: 'New rule', kind: 'text', match: { mode: 'phrase', value: '' },
-        scope: ['process', 'step', 'article', 'faq'], severity: 'medium', message: ''
+        scope: ['process', 'step', 'factsheet', 'faq'], severity: 'medium', message: ''
       });
       onNavigate('#/rule/' + id);
       return;
@@ -298,8 +323,15 @@
     }
   }
 
-  /** The "+ route to…" menus on each step. */
+  /** The "+ route to…" menus on each step, and the other in-page selects. */
   function handleChange(event) {
+    var decide = event.target.closest('select[data-decide]');
+    if (decide) {
+      var who = decide.dataset.decide.split(':');
+      Edit.decideSignoff(who[0], who[1], decide.value);
+      refresh();
+      return;
+    }
     var reuse = event.target.closest('select[data-use-source]');
     if (reuse) {
       var chosen = Data.sources().find(function (src) { return src.key === reuse.value; });
@@ -392,7 +424,9 @@
     document.getElementById('imBy').value = prefs.raisedBy || '';
   }
 
-  // ---- attaching articles and FAQ answers ----------------------------------
+  // ---- attaching fact sheets and FAQ answers -------------------------------
+  // The same picker serves two jobs: attaching content to a process step, and
+  // naming the FAQ answers a fact sheet expands on (target.sheetId set).
 
   var attachTarget = null;
 
@@ -404,17 +438,37 @@
     document.getElementById('amWhere').textContent = step
       ? 'Step: ' + Data.freeze(step.title)
       : 'The process as a whole: ' + p.name;
+    modal.querySelector('.am-tabs').hidden = false;
     document.getElementById('amSearch').value = '';
     drawAttach();
     modal.hidden = false;
     document.getElementById('amSearch').focus();
   }
 
+  function openRelate(sheetId) {
+    var sheet = Data.state.index.factSheets[sheetId];
+    if (!sheet) return;
+    attachTarget = { sheetId: sheetId, kind: 'faq' };
+    var modal = document.getElementById('attachModal');
+    document.getElementById('amWhere').textContent = 'FAQ answers related to the fact sheet: ' + sheet.title;
+    modal.querySelector('.am-tabs').hidden = true;
+    document.getElementById('amSearch').value = '';
+    drawAttach();
+    modal.hidden = false;
+    document.getElementById('amSearch').focus();
+  }
+
+  /** The text a fact sheet is matched on when suggesting related FAQ answers. */
+  function sheetText(sheet) {
+    return [sheet.title, sheet.summary, Data.plainText(sheet.body)].join(' ');
+  }
+
   function drawAttach() {
     var t = attachTarget;
-    var p = Data.state.index.processes[t.processId];
-    var owner = t.stepId ? p.steps.find(function (s) { return s.id === t.stepId; }) : p;
-    var field = t.kind === 'article' ? 'articleRefs' : 'faqRefs';
+    var sheet = t.sheetId ? Data.state.index.factSheets[t.sheetId] : null;
+    var p = sheet ? null : Data.state.index.processes[t.processId];
+    var owner = sheet || (t.stepId ? p.steps.find(function (s) { return s.id === t.stepId; }) : p);
+    var field = t.kind === 'factsheet' ? 'factSheetRefs' : 'faqRefs';
     var attached = owner[field] || [];
     var q = document.getElementById('amSearch').value.trim();
 
@@ -422,14 +476,17 @@
       b.classList.toggle('on', b.dataset.kind === t.kind);
     });
 
+    var found = sheet
+      ? Data.suggestFor(sheetText(sheet), 'faq', attached)
+      : Data.suggest(t.stepId ? owner : null, p, t.kind, attached);
     var rows = [];
     if (q.length >= 2) {
       rows = Data.search(q, 40).filter(function (m) {
         return m.kind === t.kind && attached.indexOf(m.id) === -1;
       }).map(function (m) { return { id: m.id, title: m.title, why: m.subtitle }; });
     } else {
-      rows = Data.suggest(t.stepId ? owner : null, p, t.kind, attached).map(function (s) {
-        return { id: s.doc.id, title: s.doc.title, why: 'suggested · ' + s.hits.slice(0, 4).join(' · ') };
+      rows = found.map(function (s) {
+        return { id: s.doc.id, title: Data.plainText(s.doc.title), why: 'suggested · ' + s.hits.slice(0, 4).join(' · ') };
       });
     }
 
@@ -440,11 +497,12 @@
         '<span class="pick-q">' + e(r.why || '') + '</span></button>';
     }).join('') || '<p class="empty">' + (q.length >= 2
       ? 'Nothing matches.'
-      : 'No suggestions for this step — type to search.') + '</p>';
+      : (sheet ? 'No suggestions yet' : 'No suggestions for this step') + ' — type to search.') + '</p>';
 
     Array.prototype.forEach.call(list.querySelectorAll('.pick-row'), function (row) {
       row.addEventListener('click', function () {
-        Edit.attach(t.processId, t.stepId, t.kind, row.dataset.id);
+        if (sheet) Edit.relateFaq(sheet.id, row.dataset.id);
+        else Edit.attach(t.processId, t.stepId, t.kind, row.dataset.id);
         document.getElementById('attachModal').hidden = true;
         refresh();
       });
@@ -662,29 +720,29 @@
     return html + '</div>';
   }
 
-  /** Attached articles and FAQ answers, for a step or (step null) the process. */
+  /** Attached fact sheets and FAQ answers, for a step or (step null) the process. */
   function renderAttached(p, step) {
     var owner = step || p;
     var base = { process: p.id, step: step ? step.id : '' };
     var chips = [];
 
-    (owner.articleRefs || []).forEach(function (ref) {
-      var a = Data.state.index.articles[ref];
-      chips.push('<span class="chip"><button class="chip-link" data-route="#/article/' + e(ref) +
-        '">📖 ' + e(a ? a.title : ref + ' (missing)') + '</button>' +
-        btn('detach', Object.assign({ kind: 'article', ref: ref }, base), '×', 'chip-x', 'Detach') +
+    (owner.factSheetRefs || []).forEach(function (ref) {
+      var sh = Data.state.index.factSheets[ref];
+      chips.push('<span class="chip"><button class="chip-link" data-route="#/factsheet/' + e(ref) +
+        '">📄 ' + e(sh ? sh.title : ref + ' (missing)') + '</button>' +
+        btn('detach', Object.assign({ kind: 'factsheet', ref: ref }, base), '×', 'chip-x', 'Detach') +
         '</span>');
     });
     (owner.faqRefs || []).forEach(function (ref) {
       var q = Data.state.index.faqs[ref];
       chips.push('<span class="chip"><button class="chip-link faq" data-route="#/faq/' + e(ref) +
-        '">❓ ' + e(q ? q.q : ref + ' (missing)') + '</button>' +
+        '">❓ ' + e(q ? Data.plainText(q.q) : ref + ' (missing)') + '</button>' +
         btn('detach', Object.assign({ kind: 'faq', ref: ref }, base), '×', 'chip-x', 'Detach') +
         '</span>');
     });
 
     return '<div class="attached">' + chips.join('') +
-      btn('attach', Object.assign({ kind: 'article' }, base), '+ Article', 'tiny') +
+      btn('attach', Object.assign({ kind: 'factsheet' }, base), '+ Fact sheet', 'tiny') +
       btn('attach', Object.assign({ kind: 'faq' }, base), '+ FAQ', 'tiny') +
       '</div>';
   }
@@ -752,39 +810,169 @@
     }
   });
 
-  // ---- article and FAQ -----------------------------------------------------
+  // ---- fact sheet ----------------------------------------------------------
 
-  function renderArticle(id) {
-    var a = Data.state.index.articles[id];
-    if (!a) return paint(notFound('article', id));
+  function renderFactSheet(id) {
+    var sheet = Data.state.index.factSheets[id];
+    if (!sheet) return paint(notFound('fact sheet', id));
     var usage = Data.state.index.usage[id] || { processes: [], steps: 0 };
+    var facts = Data.factSheetFacts(sheet);
+    var spec = 'factsheet:' + id + ':';
+    var current = sheet.current || {};
+
+    var warnings = '';
+    if (facts.internal) {
+      warnings += '<div class="fs-alert bad">This fact sheet uses ' +
+        plural(facts.internal, 'internal value') + ' — a system name, extension or intranet ' +
+        'link that must not be published. It would be printed in every export. See <em>Where ' +
+        'the values come from</em> below.</div>';
+    }
+    if (facts.changesFrom) {
+      warnings += '<div class="fs-alert">' + plural(facts.changesFrom, 'reviewer has', 'reviewers have') +
+        ' asked for changes — see <em>Sign-off</em> below.</div>';
+    }
 
     paint('<article class="pane">' +
       '<header class="pane-head">' +
-      '<div class="crumbs">Knowledge base</div>' +
-      '<h1 class="editable-h1">' + f('article:' + id + ':title') + '</h1>' +
+      '<div class="crumbs"><a href="#/factsheets">Fact sheets</a>' +
+      (sheet.ownerId ? ' · ' + e(Data.taxonomyPath(sheet.ownerId)) : '') + '</div>' +
+      '<h1 class="editable-h1">' + f(spec + 'title') + '</h1>' +
       '<div class="badges">' +
-      '<span class="badge status-' + e(a.status) + '">' + f('article:' + id + ':status',
-        { type: 'select', options: options(['draft', 'review', 'current']) }) + '</span>' +
-      '<span class="badge quiet">' + f('article:' + id + ':audience',
-        { type: 'select', options: options(['internal', 'public', 'both']) }) + '</span>' +
-      '<span class="badge quiet">' + f('article:' + id + ':ownerId',
+      '<span class="badge fs-badge fs-' + e(facts.status) + '">' + f(spec + 'status',
+        { type: 'select', options: FS_STATUS_OPTIONS }) + '</span>' +
+      '<span class="badge quiet">' + f(spec + 'ownerId',
         { type: 'select', options: departmentOptions('No owner yet'), placeholder: 'No owner yet' }) + '</span>' +
-      '<span class="badge quiet">🔒 Internal only: ' + f('article:' + id + ':internal',
-        { type: 'select', options: YES_NO }) + '</span>' +
-      '</div>' + renderUsage(usage) +
-      '<div class="row-actions"><span class="spacer"></span>' +
-      btn('del-article', { article: id }, 'Delete article', 'small danger') + '</div>' +
-      '</header>' +
-      '<section class="block"><h2>Body</h2><div id="richHost"></div></section>' +
+      '<span class="badge quiet">Last reviewed: ' + f(spec + 'lastReviewed',
+        { placeholder: 'e.g. October 2026' }) + '</span>' +
+      '</div>' +
+      '<div class="lede">' + f(spec + 'summary',
+        { placeholder: 'One line: what this sheet covers and who it is for' }) + '</div>' +
+      renderUsage(usage) +
+      '<div class="row-actions fs-actions">' +
+      '<span class="action-group"><span class="action-label">Fact sheet</span>' +
+      btn('fs-word', { sheet: id }, '⤓ Word', 'small', 'Download as a Word document for comms') +
+      btn('fs-print', { sheet: id }, '⎙ PDF', 'small', 'Open a printable copy — choose Save as PDF') +
+      '</span>' +
+      '<span class="action-group"><span class="action-label">Review pack</span>' +
+      btn('fs-pack-word', { sheet: id }, '⤓ Word', 'small',
+        'The sheet with its rationale, the current FAQ answers, sources and a sign-off table') +
+      btn('fs-pack-print', { sheet: id }, '⎙ PDF', 'small', 'The review pack, printable') +
+      '</span>' +
+      '<span class="spacer"></span>' +
+      btn('del-factsheet', { sheet: id }, 'Delete fact sheet', 'small danger') +
+      '</div></header>' +
+      warnings +
+      '<section class="block"><h2>The fact sheet</h2><div id="fsBody"></div></section>' +
+
+      '<section class="block meta"><h2>What it replaces</h2>' +
+      '<p class="hint-block">The version on the council website now, if there is one, so ' +
+      'reviewers can compare. Leave it empty for a sheet that replaces nothing.</p><dl>' +
+      '<dt>Current fact sheet</dt><dd>' + f(spec + 'current.title',
+        { placeholder: 'Its title, as published' }) + '</dd>' +
+      '<dt>Link</dt><dd class="source-link">' + f(spec + 'current.url',
+        { placeholder: 'https://…' }) + webLink(current.url) + '</dd>' +
+      '</dl></section>' +
+
+      '<section class="block"><h2>Why replace it</h2>' +
+      '<p class="hint-block">What this version does that the current one doesn\'t — the case ' +
+      'for replacing it, which reviewers read first.</p><div id="fsRationale"></div></section>' +
+
+      renderRelated(sheet) +
+      renderSignoffs(sheet, facts) +
+      valueSources(sheet.body, 'Each fee, time, number or link in this fact sheet, and the ' +
+        'published document behind it') +
       renderUsedIn(usage) + '</article>');
 
-    RichText.mount(document.getElementById('richHost'), {
-      html: a.body,
-      headerHtml: '',
-      onChange: function (html) { Edit.set('article:' + id + ':body', html); }
+    RichText.mount(document.getElementById('fsBody'), {
+      html: sheet.body,
+      headerHtml: e(sheet.title),
+      document: true,
+      previewFrame: 'faq-preview fs-preview',
+      previewClass: 'fs-doc',
+      previewLabel: 'Preview — how it reads when exported',
+      onChange: function (html) { Edit.set(spec + 'body', html); }
+    });
+    RichText.mount(document.getElementById('fsRationale'), {
+      html: sheet.rationale || '',
+      preview: false,
+      onChange: function (html) { Edit.set(spec + 'rationale', html); }
     });
   }
+
+  /** The FAQ answers a fact sheet expands on, and a few it probably should. */
+  function renderRelated(sheet) {
+    var refs = sheet.faqRefs || [];
+    var suggestions = Data.suggestFor(sheetText(sheet), 'faq', refs);
+
+    var html = '<section class="block"><h2>Related FAQ answers <span class="count">' +
+      refs.length + '</span></h2>' +
+      '<p class="hint-block">The FAQ questions this sheet expands on. The review pack prints ' +
+      'their answers as they stand now beside the new sheet, so reviewers see both.</p>';
+
+    html += refs.map(function (ref) {
+      var q = Data.state.index.faqs[ref];
+      var where = '';
+      if (q) {
+        var tab = q.publish && q.publish.tabId ? FaqOrder.tab(q.publish.tabId) : null;
+        where = (tab ? Data.plainText(tab.label) : 'not published') + ' · ' + (q.status || 'no status');
+      }
+      return '<div class="verify-row">' +
+        (q ? listRow('#/faq/' + ref, Data.plainText(q.q), where, '')
+           : '<span class="list-row"><span class="list-title">' + e(ref) + ' (deleted)</span></span>') +
+        btn('fs-unrelate', { sheet: sheet.id, faq: ref }, '×', 'small danger', 'Not related after all') +
+        '</div>';
+    }).join('');
+
+    html += '<div class="row-actions">' + btn('fs-relate', { sheet: sheet.id }, '+ FAQ answer') + '</div>';
+
+    if (suggestions.length) {
+      html += '<div class="suggest-label">Possibly related</div>' +
+        suggestions.map(function (sg) {
+          return '<div class="verify-row">' +
+            listRow('#/faq/' + sg.doc.id, Data.plainText(sg.doc.title), sg.hits.slice(0, 4).join(' · '), '') +
+            btn('fs-relate-add', { sheet: sheet.id, faq: sg.doc.id }, '+ Add', 'small') +
+            '</div>';
+        }).join('');
+    }
+    return html + '</section>';
+  }
+
+  /** Everyone who has to agree to the sheet, and what each has said. */
+  function renderSignoffs(sheet, facts) {
+    var people = sheet.signoffs || [];
+    var decisions = Object.keys(Data.SIGNOFF_LABEL);
+
+    var html = '<section class="block"><h2>Sign-off <span class="count">' +
+      (people.length ? facts.approvedBy + ' of ' + people.length + ' approved' : 'nobody listed yet') +
+      '</span></h2>' +
+      '<p class="hint-block">Everyone who has to agree before the sheet goes to comms. Choosing ' +
+      'a decision dates it today. The review pack carries this list as a sign-off table.</p>';
+
+    html += '<div class="signoffs">' + people.map(function (x) {
+      var sp = 'signoff:' + sheet.id + ':' + x.id + ':';
+      var decision = decisions.indexOf(x.decision) === -1 ? 'pending' : x.decision;
+      return '<div class="signoff so-' + e(decision) + '">' +
+        '<div class="so-head">' +
+        '<span class="so-name">' + f(sp + 'name', { placeholder: 'Name' }) + '</span>' +
+        '<span class="so-role">' + f(sp + 'role', { placeholder: 'Role or team' }) + '</span>' +
+        '<select class="inline-select so-decision" data-decide="' + e(sheet.id + ':' + x.id) +
+        '" aria-label="Decision">' + decisions.map(function (dc) {
+          return '<option value="' + dc + '"' + (dc === decision ? ' selected' : '') + '>' +
+            e(Data.SIGNOFF_LABEL[dc]) + '</option>';
+        }).join('') + '</select>' +
+        (x.date ? '<span class="so-date">' + e(x.date) + '</span>' : '') +
+        btn('fs-del-signoff', { sheet: sheet.id, person: x.id }, '×', 'tiny danger', 'Remove from the list') +
+        '</div>' +
+        '<div class="so-note">' + f(sp + 'note',
+          { type: 'multiline', placeholder: 'Their comments, or what they asked to change' }) + '</div>' +
+        '</div>';
+    }).join('') + '</div>';
+
+    return html + '<div class="row-actions">' +
+      btn('fs-add-signoff', { sheet: sheet.id }, '+ Person') + '</div></section>';
+  }
+
+  // ---- FAQ -----------------------------------------------------------------
 
   var PUBLIC_FAQ = 'https://aaronunify2.github.io/UnifyVersion1/FAQ.html';
 
@@ -863,7 +1051,9 @@
         { type: 'select', options: YES_NO }) + '</dd>' +
       '</dl></section>' +
       '<section class="block"><h2>Answer — public wording</h2><div id="richHost"></div></section>' +
-      answerSources(q) +
+      valueSources(q.a, 'Each fee, time, number or link in this answer, and the published ' +
+        'document behind it') +
+      sheetsExpanding(id) +
       renderUsedIn(usage) + '</article>');
 
     RichText.mount(document.getElementById('richHost'), {
@@ -1065,6 +1255,18 @@
     });
   }
 
+  /** On an FAQ page: the fact sheets that list this question as related. */
+  function sheetsExpanding(faqId) {
+    var list = Data.state.library.factSheets.filter(function (sh) {
+      return (sh.faqRefs || []).indexOf(faqId) !== -1;
+    });
+    if (!list.length) return '';
+    return '<section class="block"><h2>Expanded on in</h2>' + list.map(function (sh) {
+      return listRow('#/factsheet/' + sh.id, sh.title, 'Fact sheet · ' +
+        (Data.FACT_SHEET_STATUS_LABEL[sh.status] || sh.status), '');
+    }).join('') + '</section>';
+  }
+
   function renderUsage(usage) {
     if (!usage.processes.length) {
       return '<p class="usage none">Not referenced by any process yet.</p>';
@@ -1105,55 +1307,91 @@
     return usage ? usage.processes.length : 0;
   }
 
-  // ---- knowledge base dashboard --------------------------------------------
+  // ---- fact sheets dashboard -----------------------------------------------
 
-  function renderArticleDashboard() {
-    var articles = Data.state.library.articles;
-    var count = function (test) { return articles.filter(test).length; };
-    var current = count(function (a) { return a.status === 'current'; });
-    var notCurrent = articles.length - current;
-    var unused = count(function (a) { return !usesOf(a.id); });
-    var noOwner = count(function (a) { return !a.ownerId; });
-    var publicOnes = count(function (a) { return a.audience === 'public' || a.audience === 'both'; });
+  function renderFactSheetDashboard() {
+    var sheets = Data.state.library.factSheets;
+    var rows = sheets.map(function (sh) { return { sheet: sh, facts: Data.factSheetFacts(sh) }; });
+    var count = function (test) { return rows.filter(test).length; };
+    var inStatus = function (st) { return count(function (x) { return x.facts.status === st; }); };
+    var waitingOn = rows.reduce(function (n, x) {
+      return x.facts.status === 'signoff' ? n + (x.facts.signers - x.facts.approvedBy) : n;
+    }, 0);
 
-    var html = '<div class="row-actions">' + btn('new-article', {}, '+ New article') + '</div>' +
+    var html = '<div class="row-actions">' + btn('new-factsheet', {}, '+ New fact sheet') + '</div>' +
+      '<p class="hint-block">A fact sheet is the longer public version of what the FAQ answers ' +
+      'say, built from the same variables. Write it here, list who has to sign it off, send ' +
+      'them the review pack, then hand the Word copy to comms. Nothing here publishes it.</p>' +
       '<section class="tiles">' +
-      tile(articles.length, 'articles', 'in the knowledge base', '') +
-      tile(current, 'current', notCurrent + ' draft or in review', '') +
-      tile(unused, 'not attached', 'no process step links to them', '') +
-      tile(noOwner, 'without an owner', 'no department accountable', '') +
-      tile(publicOnes, 'public-facing', (articles.length - publicOnes) + ' internal only', '') +
+      tile(sheets.length, 'fact sheets', '', '') +
+      tile(inStatus('draft'), 'draft', 'being written', '') +
+      tile(inStatus('signoff'), 'in sign-off', plural(waitingOn, 'decision') + ' still to come', '') +
+      tile(inStatus('approved'), 'approved', 'ready for comms', '') +
+      tile(inStatus('live'), 'live', 'on the council website', '') +
+      tile(count(function (x) { return !x.facts.linked; }), 'not attached',
+        'no process step links to them', '') +
+      tile(count(function (x) { return x.facts.unconfirmed; }), 'use unconfirmed values',
+        'a fee, time or link not yet verified', '#/variables') +
       '</section>';
 
-    html += '<h2 class="group">By owning department</h2>' +
-      '<div class="cov-table dash-table" role="table">' +
-      '<div class="cov-row cov-headrow" role="row"><span>Department</span><span>Articles</span>' +
-      '<span>Current</span><span>Not attached</span></div>' +
-      byOwner(articles).map(function (g) {
-        return '<div class="cov-row" role="row"><span class="cov-name">' + e(g.label) + '</span>' +
-          '<span class="num">' + g.items.length + '</span>' +
-          '<span class="num">' + g.items.filter(function (a) { return a.status === 'current'; }).length + '</span>' +
-          '<span class="num">' + g.items.filter(function (a) { return !usesOf(a.id); }).length + '</span></div>';
-      }).join('') + '</div>';
+    // --- sign-off, sheet by sheet
+    var signing = rows.filter(function (x) { return x.facts.status === 'signoff'; });
+    html += '<h2 class="group">In sign-off <span>' + signing.length + '</span></h2>' +
+      (signing.length
+        ? signing.map(function (x) {
+            var people = x.sheet.signoffs || [];
+            var waiting = people.filter(function (pp) { return pp.decision !== 'approved'; })
+              .map(function (pp) {
+                return pp.name + (pp.decision === 'changes' ? ' (changes requested)' : '');
+              });
+            return listRow('#/factsheet/' + x.sheet.id, x.sheet.title,
+              people.length
+                ? (waiting.length ? 'Waiting on ' + waiting.join(', ') : 'Everyone has approved — mark it approved')
+                : 'Nobody on the sign-off list yet',
+              x.facts.approvedBy + ' of ' + x.facts.signers);
+          }).join('')
+        : '<p class="empty">Nothing out for sign-off.</p>');
 
-    var attention = articles.filter(function (a) {
-      return !usesOf(a.id) || !a.ownerId || a.status !== 'current';
-    });
+    // --- needs attention
+    var attention = rows.map(function (x) {
+      var why = [];
+      if (x.facts.internal) why.push('uses an internal value');
+      if (x.facts.changesFrom) why.push('changes requested');
+      if (!x.sheet.ownerId) why.push('no owner');
+      if (x.facts.replaces && !x.facts.rationale) why.push('no reason given for replacing the current sheet');
+      if (!x.facts.faqs) why.push('no related FAQ answers');
+      if (x.facts.status !== 'draft' && !x.facts.signers) why.push('nobody on the sign-off list');
+      if (x.facts.unconfirmed) why.push(plural(x.facts.unconfirmed, 'unconfirmed value'));
+      return { sheet: x.sheet, why: why };
+    }).filter(function (x) { return x.why.length; });
+
     html += '<h2 class="group">Needs attention <span>' + attention.length + '</span></h2>' +
       (attention.length
-        ? attention.slice(0, 12).map(function (a) {
-            var why = [];
-            if (a.status !== 'current') why.push(a.status || 'no status');
-            if (!usesOf(a.id)) why.push('not attached to any step');
-            if (!a.ownerId) why.push('no owner');
-            return listRow('#/article/' + a.id, a.title, why.join(' · '), '');
+        ? attention.slice(0, 15).map(function (x) {
+            return listRow('#/factsheet/' + x.sheet.id, x.sheet.title, x.why.join(' · '), '');
           }).join('') +
-          (attention.length > 12 ? '<p class="hint-block">…and ' + (attention.length - 12) +
+          (attention.length > 15 ? '<p class="hint-block">…and ' + (attention.length - 15) +
             ' more in the list on the left.</p>' : '')
-        : '<p class="empty">Nothing outstanding.</p>');
+        : '<p class="empty">' + (sheets.length ? 'Nothing outstanding.' : 'No fact sheets yet.') + '</p>');
 
-    paint(listPane('Knowledge base', plural(articles.length, 'article') +
-      ' for officers. Pick one on the left to edit it.', html));
+    // --- by owner
+    if (sheets.length) {
+      html += '<h2 class="group">By owning department</h2>' +
+        '<div class="cov-table dash-table" role="table">' +
+        '<div class="cov-row cov-headrow" role="row"><span>Department</span><span>Sheets</span>' +
+        '<span>In sign-off</span><span>Approved or live</span></div>' +
+        byOwner(sheets).map(function (g) {
+          var n = function (test) { return g.items.filter(test).length; };
+          return '<div class="cov-row" role="row"><span class="cov-name">' + e(g.label) + '</span>' +
+            '<span class="num">' + g.items.length + '</span>' +
+            '<span class="num">' + n(function (sh) { return sh.status === 'signoff'; }) + '</span>' +
+            '<span class="num">' + n(function (sh) { return sh.status === 'approved' || sh.status === 'live'; }) +
+            '</span></div>';
+        }).join('') + '</div>';
+    }
+
+    paint(listPane('Fact sheets', plural(sheets.length, 'fact sheet') +
+      '. Pick one on the left to edit it.', html));
   }
 
   // ---- variables dashboard -------------------------------------------------
@@ -1266,10 +1504,10 @@
     var used = usage.processes.map(function (ownerId) {
       var p = Data.state.index.processes[ownerId];
       if (p) return listRow('#/process/' + p.id, p.name, Data.taxonomyPath(p.taxonomyId), '');
-      var a = Data.state.index.articles[ownerId];
-      if (a) return listRow('#/article/' + a.id, a.title, 'Knowledge base', '');
+      var sh = Data.state.index.factSheets[ownerId];
+      if (sh) return listRow('#/factsheet/' + sh.id, sh.title, 'Fact sheet', '');
       var q = Data.state.index.faqs[ownerId];
-      if (q) return listRow('#/faq/' + q.id, q.q, 'FAQ', '');
+      if (q) return listRow('#/faq/' + q.id, Data.plainText(q.q), 'FAQ', '');
       return '';
     }).join('');
 
@@ -1378,14 +1616,16 @@
       }).join('') + '</div></div>';
   }
 
-  /** On an FAQ page: each value in the answer and where it comes from. */
-  function answerSources(q) {
-    var vars = Data.variablesIn(q.a);
+  /**
+   * On an FAQ answer or a fact sheet: each value in the text and where it
+   * comes from. intro is the sentence above the list.
+   */
+  function valueSources(html, intro) {
+    var vars = Data.variablesIn(html);
     if (!vars.length) return '';
     var missing = vars.filter(Data.needsSource).length;
     return '<section class="block"><h2>Where the values come from</h2>' +
-      '<p class="hint-block">Each fee, time, number or link in this answer, and the published ' +
-      'document behind it' + (missing ? ' — ' + missing + ' with no source yet' : '') + '.</p>' +
+      '<p class="hint-block">' + e(intro) + (missing ? ' — ' + missing + ' with no source yet' : '') + '.</p>' +
       vars.map(function (v) {
         var s = v.source || {};
         var why;
@@ -1670,7 +1910,7 @@
 
     if (!all.length) {
       html += '<p class="empty">No rules yet. A rule is a standing check across ' +
-        'every process, article and FAQ — add one whenever something in the ' +
+        'every process, fact sheet and FAQ — add one whenever something in the ' +
         'organisation changes.</p>';
     } else {
       html += '<h2 class="group">All rules</h2>' +
@@ -1998,7 +2238,7 @@
     });
     var lib = Data.state.library;
     var owns = {
-      articles: lib.articles.filter(function (a) { return a.ownerId === id; }),
+      factSheets: lib.factSheets.filter(function (sh) { return sh.ownerId === id; }),
       faqs: lib.faqs.filter(function (q) { return q.ownerId === id; }),
       variables: Data.state.variables.variables.filter(function (v) { return v.ownerId === id; })
     };
@@ -2048,8 +2288,9 @@
         return listRow('#/process/' + x.p.id, x.p.name, Data.taxonomyPath(x.p.taxonomyId),
           plural(x.n, 'step'));
       }) +
-      section('Owns these articles', owns.articles, function (a) {
-        return listRow('#/article/' + a.id, a.title, a.status, '');
+      section('Owns these fact sheets', owns.factSheets, function (sh) {
+        return listRow('#/factsheet/' + sh.id, sh.title,
+          Data.FACT_SHEET_STATUS_LABEL[sh.status] || sh.status, '');
       }) +
       section('Owns these FAQ questions', owns.faqs, function (q) {
         return listRow('#/faq/' + q.id, Data.plainText(q.q), '', '');
@@ -2075,15 +2316,17 @@
 
     paint('<article class="pane">' +
       '<header class="pane-head"><h1>Process Hub</h1>' +
-      '<p class="lede">Process maps, knowledge base articles and public FAQ ' +
-      'content in one place. Pick a process from the tree, or press ' +
+      '<p class="lede">Process maps, public FAQ content and fact sheets, built from ' +
+      'one set of variables. Pick a process from the tree, or press ' +
       '<kbd>/</kbd> to search. Click any field to edit it.</p></header>' +
       '<section class="tiles">' +
       tile(processes.length, 'processes', drafts.length + ' still draft', '#/coverage') +
       tile(crossing.length, 'cross departments',
         crossing.reduce(function (n, p) { return n + Data.flow(p).handoffs; }, 0) +
         ' handoffs total', '#/coverage') +
-      tile(Data.state.library.articles.length, 'articles', 'knowledge base', '#/articles') +
+      tile(Data.state.library.factSheets.length, 'fact sheets',
+        Data.state.library.factSheets.filter(function (sh) { return sh.status === 'signoff'; }).length +
+        ' in sign-off', '#/factsheets') +
       tile(Data.state.library.faqs.length, 'FAQ questions',
         plural(Data.state.library.publishTabs.length, 'published tab'), '#/faqs') +
       tile(Data.state.variables.variables.length, 'variables',
@@ -2133,9 +2376,9 @@
   global.Detail = {
     init: init,
     process: renderProcess,
-    article: renderArticle,
+    factSheet: renderFactSheet,
     faq: renderFaq,
-    articleList: renderArticleDashboard,
+    factSheetList: renderFactSheetDashboard,
     faqDashboard: renderFaqDashboard,
     tab: renderTab,
     variableList: renderVariableDashboard,
