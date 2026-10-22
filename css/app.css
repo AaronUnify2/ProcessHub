@@ -1620,8 +1620,8 @@ button.cov-row.cov-link:hover { background: var(--bg); }
   font: inherit; font-size: 0.88rem; padding: 0.3rem 0.5rem; max-width: 100%;
   border: 1px solid var(--border-strong); border-radius: 7px; background: var(--surface);
 }
-.faq-position { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
-.faq-position .hint { margin-left: 0.3rem; }
+.faq-position, .faq-section { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+.faq-position .hint, .faq-section .hint { margin-left: 0.3rem; }
 .crumbs a { color: inherit; }
 .crumbs a:hover { color: var(--accent); }
 

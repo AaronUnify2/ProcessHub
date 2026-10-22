@@ -160,6 +160,42 @@
     return move(at, { tab: tabId, index: rows(tabId).length });
   }
 
+  /** The row index of the heading a question sits under, or -1 if none. */
+  function sectionOf(faqId) {
+    var at = indexOf(faqId);
+    if (!at || at.index === -1 || !at.tab) return -1;
+    var list = rows(at.tab);
+    for (var i = at.index - 1; i >= 0; i--) {
+      if (list[i].type === 'group') return i;
+    }
+    return -1;
+  }
+
+  /**
+   * Put a question at the end of a section in its own tab. headingIndex is
+   * the heading's row index from rows(); -1 means "no section", which is the
+   * top of the tab, above the first heading — the only place a question can
+   * sit without one. The same move a drag makes, for when dragging is
+   * awkward (a phone).
+   */
+  function moveToSection(faqId, headingIndex) {
+    var at = indexOf(faqId);
+    if (!at || at.index === -1 || !at.tab) return false;
+    if (sectionOf(faqId) === headingIndex) return false;
+    var list = rows(at.tab);
+
+    var to = 0;
+    if (headingIndex !== -1) {
+      if (!list[headingIndex] || list[headingIndex].type !== 'group') return false;
+      // The end of the section: just before the next heading, or the end.
+      to = headingIndex + 1;
+      while (to < list.length && list[to].type !== 'group') to++;
+      // move() places the row after removing it from the same list.
+      if (at.index < to) to--;
+    }
+    return move(at, { tab: at.tab, index: to });
+  }
+
   /** A new heading at the end of a tab, held until a question sits under it. */
   function addHeading(tabId, title) {
     if (!tabId || !title) return;
@@ -250,6 +286,8 @@
     nudge: nudge,
     indexOf: indexOf,
     moveToTab: moveToTab,
+    sectionOf: sectionOf,
+    moveToSection: moveToSection,
     addHeading: addHeading,
     renameHeading: renameHeading,
     deleteHeading: deleteHeading,
