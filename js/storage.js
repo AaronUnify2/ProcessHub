@@ -61,6 +61,12 @@
   function loadDraft() {
     return withStore('readonly', function (store) {
       return store.get(DRAFT_KEY);
+    }).then(function (draft) {
+      if (draft) {
+        upgrade(draft.data);
+        upgrade(draft.base);
+      }
+      return draft;
     }).catch(function (err) {
       console.warn('Could not read the draft:', err);
       return null;
@@ -114,6 +120,51 @@
     }
   }
 
+  // ---- bringing older content up to date -----------------------------------
+
+  /**
+   * Content saved before fact sheets replaced the knowledge base still
+   * carries articles. They are dropped here, on the way in, from the
+   * published files and from a saved draft and its base alike — all three
+   * the same way, so a merge between them sees no difference where nobody
+   * made one. Safe to run on content that is already up to date.
+   *
+   *   library.articles                 removed
+   *   articleRefs on steps, processes  removed
+   *   library.factSheets               added, empty, where missing
+   *   factSheetRefs                    added, empty, on every step and process
+   *   rules scoped to articles         rescoped to fact sheets; the rule that
+   *                                    only looked for unused articles goes
+   */
+  function upgrade(data) {
+    if (!data) return data;
+    var lib = data.library;
+    if (lib) {
+      delete lib.articles;
+      if (!Array.isArray(lib.factSheets)) lib.factSheets = [];
+    }
+    var file = data.processes;
+    if (file) {
+      (file.processes || []).forEach(function (p) {
+        [p].concat(p.steps || []).forEach(function (owner) {
+          delete owner.articleRefs;
+          if (!Array.isArray(owner.factSheetRefs)) owner.factSheetRefs = [];
+        });
+      });
+      if (Array.isArray(file.rules)) {
+        file.rules = file.rules.filter(function (r) { return r.id !== 'rule_unused_article'; });
+        file.rules.forEach(function (r) {
+          if (!Array.isArray(r.scope)) return;
+          var at = r.scope.indexOf('article');
+          if (at === -1) return;
+          if (r.scope.indexOf('factsheet') === -1) r.scope.splice(at, 1, 'factsheet');
+          else r.scope.splice(at, 1);
+        });
+      }
+    }
+    return data;
+  }
+
   // ---- fetching the published files ---------------------------------------
 
   var FILES = ['processes', 'library', 'variables'];
@@ -132,7 +183,7 @@
     })).then(function (results) {
       var out = {};
       FILES.forEach(function (name, i) { out[name] = results[i]; });
-      return out;
+      return upgrade(out);
     });
   }
 
@@ -181,6 +232,7 @@
 
   global.Storage = {
     FILES: FILES,
+    upgrade: upgrade,
     fetchLive: fetchLive,
     versionsOf: versionsOf,
     reconcile: reconcile,

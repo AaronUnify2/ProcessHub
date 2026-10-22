@@ -11,11 +11,11 @@
                 rearrange. Drag a row to move it (into another tab too), or use
                 ↑ ↓ on the open question, which also works on a phone.
 
-   And one each for the knowledge base, variables, the issues register,
-   content rules, coverage and departments: a list to jump straight to
-   anything, while the content area shows that section's dashboard.
+   And one each for fact sheets, variables, the issues register, content
+   rules, coverage and departments: a list to jump straight to anything,
+   while the content area shows that section's dashboard.
 
-   Search is one keystroke away everywhere. In the FAQ, knowledge base and
+   Search is one keystroke away everywhere. In the FAQ, fact sheets and
    variables sections it searches only that kind of content.
    =========================================================================== */
 
@@ -29,14 +29,14 @@
 
   // Where each section's button leads: its dashboard.
   var SECTION_HOME = {
-    processes: '#/', faq: '#/faqs', articles: '#/articles', variables: '#/variables',
+    processes: '#/', faq: '#/faqs', factsheets: '#/factsheets', variables: '#/variables',
     issues: '#/issues', rules: '#/rules', coverage: '#/coverage', departments: '#/departments'
   };
 
   // Sections whose search looks at one kind of content only.
-  var SEARCH_KIND = { faq: 'faq', articles: 'article', variables: 'variable' };
+  var SEARCH_KIND = { faq: 'faq', factsheets: 'factsheet', variables: 'variable' };
   var PLACEHOLDER = {
-    faq: 'Search FAQ questions…', articles: 'Search articles…', variables: 'Search variables…'
+    faq: 'Search FAQ questions…', factsheets: 'Search fact sheets…', variables: 'Search variables…'
   };
 
   function e(text) { return Data.escapeHtml(text); }
@@ -113,7 +113,7 @@
     var top = el.body.scrollTop;
     var draw = {
       faq: renderFaqTree,
-      articles: renderArticlesTree,
+      factsheets: renderFactSheetsTree,
       variables: renderVariablesTree,
       issues: renderIssuesTree,
       rules: renderRulesTree,
@@ -128,7 +128,7 @@
   // ---- search results ------------------------------------------------------
 
   var KIND_LABEL = {
-    process: 'Process', article: 'Article', faq: 'FAQ', variable: 'Variable'
+    process: 'Process', factsheet: 'Fact sheet', faq: 'FAQ', variable: 'Variable'
   };
 
   function renderSearch() {
@@ -231,7 +231,7 @@
     }).join('');
 
     el.count.textContent = Data.state.processes.processes.length + ' processes · ' +
-      Data.state.library.articles.length + ' articles · ' +
+      Data.state.library.factSheets.length + ' fact sheets · ' +
       Data.state.library.faqs.length + ' FAQs';
   }
 
@@ -539,9 +539,9 @@
 
   function sideAction(act) {
     var name;
-    if (act === 'new-article') {
-      name = prompt('Title of the new article:', '');
-      if (name && name.trim()) onNavigate('#/article/' + Edit.createArticle(name.trim()));
+    if (act === 'new-factsheet') {
+      name = prompt('Title of the new fact sheet:', '');
+      if (name && name.trim()) onNavigate('#/factsheet/' + Edit.createFactSheet(name.trim()));
     }
     if (act === 'new-variable') {
       name = prompt('The value (for example $300, or a phone number):', '');
@@ -550,7 +550,7 @@
     if (act === 'new-rule') {
       onNavigate('#/rule/' + Rules.add({
         name: 'New rule', kind: 'text', match: { mode: 'phrase', value: '' },
-        scope: ['process', 'step', 'article', 'faq'], severity: 'medium', message: ''
+        scope: ['process', 'step', 'factsheet', 'faq'], severity: 'medium', message: ''
       }));
     }
     if (act === 'seed-rules') {
@@ -584,22 +584,32 @@
     return usage ? usage.processes.length : 0;
   }
 
-  // ---- knowledge base
+  // ---- fact sheets
+  // Grouped by where each sheet is in its life rather than by owner: the
+  // question this list answers is "what is waiting on whom".
 
-  function renderArticlesTree() {
-    var articles = Data.state.library.articles;
-    var html = ownerGroups(articles).map(function (g) {
-      var list = g.items.slice().sort(function (a, b) { return a.title.localeCompare(b.title); });
-      var open = list.some(function (a) { return a.id === view.active; });
-      return group('articles:' + g.key, g.label, list.length, list.map(function (a) {
-        return row('#/article/' + a.id, a.id === view.active, e(a.title),
-          a.status !== 'current' ? '<span class="status-dot status-draft" title="' + e(a.status) + '"></span>' : '',
-          usesOf(a.id) ? '' : 'unused');
-      }).join(''), open);
+  function renderFactSheetsTree() {
+    var sheets = Data.state.library.factSheets;
+    var html = Data.FACT_SHEET_STATUSES.map(function (status) {
+      var list = sheets.filter(function (s) { return Data.factSheetFacts(s).status === status; })
+        .sort(function (a, b) { return a.title.localeCompare(b.title); });
+      if (!list.length) return '';
+      var open = list.some(function (s) { return s.id === view.active; });
+      return group('factsheets:' + status, Data.FACT_SHEET_STATUS_LABEL[status], list.length,
+        list.map(function (s) {
+          var facts = Data.factSheetFacts(s);
+          var tail = facts.signers ? facts.approvedBy + '/' + facts.signers + ' signed' : '';
+          return row('#/factsheet/' + s.id, s.id === view.active, e(s.title),
+            '<span class="status-dot fs-' + e(facts.status) + '" title="' +
+              e(Data.FACT_SHEET_STATUS_LABEL[facts.status]) + '"></span>',
+            tail, s.summary || '');
+        }).join(''), open);
     }).join('');
-    el.tree.innerHTML = html + foot('<button class="btn tiny" data-side-act="new-article">+ New article</button>');
-    el.count.textContent = articles.length + ' articles · ' +
-      articles.filter(function (a) { return !usesOf(a.id); }).length + ' not attached';
+    el.tree.innerHTML = (html || '<p class="empty">No fact sheets yet.</p>') +
+      foot('<button class="btn tiny" data-side-act="new-factsheet">+ New fact sheet</button>');
+    var waiting = sheets.filter(function (s) { return s.status === 'signoff'; }).length;
+    el.count.textContent = sheets.length + ' fact sheets' +
+      (waiting ? ' · ' + waiting + ' in sign-off' : '');
   }
 
   // ---- variables

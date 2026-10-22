@@ -1,6 +1,7 @@
 # Process Hub
 
-Process maps, knowledge base articles and public FAQ content in one editor.
+Process maps, public FAQ content and fact sheets in one editor, all built from
+one set of variables.
 
 Live at **https://aaronunify2.github.io/ProcessHub/** — Pages serves the `main`
 branch as it stands, so every push to `main` is live within a minute or two.
@@ -12,7 +13,7 @@ branch as it stands, so every push to `main` is live within a minute or two.
 | **ProcessHub** (this one) | public | The app, and `exports/FAQ.json` — the published FAQ content the public FAQ page reads |
 | **ProcessHub-data** | private | The content: `data/processes.json`, `library.json`, `variables.json`, plus the spec and migration tools |
 
-The content is internal to the council — internal articles, system names,
+The content is internal to the council — draft fact sheets, system names,
 extension numbers, the issues register — so it lives in the private
 repository and is never served by the public site. The app reads it through
 the GitHub API with each person's own token. Without a token that can read
@@ -33,7 +34,8 @@ content in those older public copies was judged acceptable to leave.
   live.html          the live call view
   css/app.css · css/live.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
-                     rules.js · export.js · faq.js · richtext.js · canvas.js
+                     rules.js · export.js · factsheet-export.js · faq.js
+                     richtext.js · canvas.js
                      ui-sidebar.js · ui-detail.js · app.js · live.js
   exports/
     FAQ.json         the live published FAQ content — the public FAQ page reads this
@@ -67,14 +69,14 @@ a dashboard for the section as a whole.
 |---|---|---|
 | Processes | the department tree | totals, handoffs, the processes with most handoffs |
 | FAQ | publish tabs, headings and questions — drag to reorder (below) | what needs attention, figures per tab |
-| Articles | knowledge base articles by owning department | current vs draft, not attached, without an owner |
+| Fact sheets | fact sheets by stage: draft, in sign-off, approved, live | counts by stage, who sign-off is waiting on, what needs attention, by owner |
 | Variables | variables by owning department, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
 | Issues | open issues by severity, then resolved | severity counts, issues by department, the full register and rule findings |
 | Rules | every content rule with its severity and finding count | findings by severity; each rule opens on its own page with everything it finds |
 | Coverage | the department tree with a status bar per department | status by department; each department opens on its processes |
 | Depts | the department tree | the tree editor; each department opens on everything filed under, done by or owned by it |
 
-Search looks at FAQ questions, articles or variables only when in those
+Search looks at FAQ questions, fact sheets or variables only when in those
 sections, and at everything elsewhere.
 
 Single issues, rules, departments and a department's coverage each have a
@@ -116,6 +118,47 @@ Behind the scenes each question stores its tab, its position and the heading
 it sits under; the list and the published `FAQ.json` are two views of the
 same thing, and reordering nothing leaves `FAQ.json` byte-for-byte unchanged.
 
+## Fact sheets
+
+A fact sheet is the longer public version of what the FAQ answers say, built
+from the same variables, so a fee or phone number changed once is right in
+both. Fact sheets are not published from Process Hub: they go out for sign-off
+as a review pack, and once approved go to comms as a Word document for the
+council's style guide to be put on.
+
+The Fact sheets section lists them by stage — **Draft → In sign-off →
+Approved → Live** (live meaning comms have published it on the council
+website). The dashboard shows who each sheet in sign-off is still waiting on,
+and what needs attention: an internal value in the wording, changes requested,
+no reason given for replacing the current sheet, no related FAQ answers.
+
+Each fact sheet's page holds:
+
+| | |
+|---|---|
+| The fact sheet | Written in the rich text editor, with section headings (H2, H3) and **☐ List** for a checklist, as well as everything an FAQ answer can use. The preview shows it as it will be exported. |
+| What it replaces | The title and link of the version on the council website now, if there is one |
+| Why replace it | The case for the new sheet — what it does that the current one doesn't |
+| Related FAQ answers | The FAQ questions it expands on, with suggestions drawn from its wording. Each FAQ question's page lists the fact sheets that expand on it. |
+| Sign-off | Everyone who has to agree, with their role, decision (Waiting, Approved, Changes requested — dated when chosen) and comments |
+| Where the values come from | Every value it uses, and the public source behind each |
+
+**Exports**, from the buttons at the top of the page:
+
+| | |
+|---|---|
+| Fact sheet → Word | A `.doc` file with Word's own headings, lists and tables, for comms to restyle |
+| Fact sheet → PDF | A printable page; choose *Save as PDF* in the print dialog |
+| Review pack → Word or PDF | Sign-off table, the reason for replacing the current sheet and a link to it, the proposed sheet, the related FAQ answers as they read now, and a table of every value with its source and whether it has been verified |
+
+A sheet still in draft or sign-off carries a *not yet approved* line at the
+top of every export. Values are frozen into the text; an internal value is
+never printed — it is replaced with *[internal value withheld]*, and the page
+warns about it before you export.
+
+Fact sheets attach to process steps with `+ Fact sheet`, and appear in the
+live call view's **Fact sheets** panel.
+
 ## Running the app
 
 It reads its content from GitHub, so it needs a connection and a token the
@@ -123,10 +166,10 @@ first time; see *Signing in* above.
 
 Keyboard: <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd> jumps to search,
 <kbd>Esc</kbd> clears it. The tree is the default view; search filters across
-processes, articles, FAQ questions and variables at once.
+processes, fact sheets, FAQ questions and variables at once.
 
 Every view has its own address — `#/process/<id>`, `#/faq/<id>`,
-`#/tab/<id>`, `#/article/<id>`, `#/variable/<id>`, `#/issue/<process>/<id>`,
+`#/tab/<id>`, `#/factsheet/<id>`, `#/variable/<id>`, `#/issue/<process>/<id>`,
 `#/rule/<id>`, `#/coverage/<id>`, `#/department/<id>`, and each section's
 dashboard — so back, forward and copied links all work.
 
@@ -141,15 +184,15 @@ browser only asks "leave site?" if something typed has not reached the draft
 yet.
 
 **Creating and deleting.** The `+` beside any department in the tree starts a
-new process there (an entry step joined to a resolution step). The article,
+new process there (an entry step joined to a resolution step). The fact sheet,
 FAQ and variable lists each have a `+ New` button, and every item has a
-delete button on its own page. Deleting an article or FAQ detaches it from
+delete button on its own page. Deleting a fact sheet or FAQ detaches it from
 every step first; a variable can only be deleted once nothing uses it.
 Departments are managed at `#/departments`: rename, move under a new parent,
 reorder, add sub-departments, and delete once nothing points at them.
 
 **Attaching content.** Each step, and the process as a whole, has
-`+ Article` and `+ FAQ`. The picker opens on suggestions for that step (the
+`+ Fact sheet` and `+ FAQ`. The picker opens on suggestions for that step (the
 same scoring the live call view uses) and searches the library as you type.
 
 **Issues.** `⚑ Raise issue` on a process, or `⚑` on a single step, records an
@@ -190,7 +233,7 @@ the clipboard, or downloaded as a printable sheet. Variables are frozen to
 their values in everything that leaves the app, and anything marked internal is
 withheld from a public export.
 
-**Prose editing.** Knowledge base articles and FAQ answers use the rich text
+**Prose editing.** Fact sheets and FAQ answers use the rich text
 editor carried over from the FAQ Editor: bold, italic, paragraph, lists, links,
 the Note / Warn / Term boxes, a starter table, and a `</> HTML` toggle for when
 the markup needs a hand.
@@ -204,7 +247,7 @@ A chip is `contenteditable="false"`, so a reference can be deleted whole but
 never half-edited into nonsense. The link builder can point at a URL variable
 instead of a typed address, so a changed web address is still one edit.
 
-**Content rules.** A rule is a standing check across every process, article
+**Content rules.** A rule is a standing check across every process, fact sheet
 and FAQ. When something in the organisation changes — a system renamed, a form
 retired, a team restructured — add a rule rather than hunt through 112
 processes, and everything now wrong appears in the issues register.
@@ -311,11 +354,11 @@ Each step carries two panels:
 
 | | |
 |---|---|
-| Knowledge base | The internal articles attached to this step |
+| Fact sheets | The fact sheets attached to this step, with their stage |
 | What the customer can read | The FAQ answers attached to this step, rendered as the public page renders them |
 
 Both stay shut until you open them, and both list **suggestions** underneath
-what is already attached — articles and FAQ answers whose wording overlaps this
+what is already attached — fact sheets and FAQ answers whose wording overlaps this
 step. Suggestions are scored on how rare the shared words are, so boilerplate
 counts for nothing and a shared term like *kerbside* counts for a lot. Attach
 one and it stops being a suggestion and becomes a reference on the step,

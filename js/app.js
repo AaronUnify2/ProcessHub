@@ -16,15 +16,15 @@
   // ---- routing -------------------------------------------------------------
 
   // Each route names the sidebar section it belongs to and what to highlight.
-  // A route with no section (articles, variables…) leaves the sidebar on
+  // A route with no section leaves the sidebar on
   // whichever section was showing.
   var ROUTES = [
     [/^#\/process\/(.+)$/, 'processes', function (id) { Detail.process(id); return id; }],
     [/^#\/faq\/(.+)$/, 'faq', function (id) { Detail.faq(id); return id; }],
     [/^#\/faqs$/, 'faq', function () { Detail.faqDashboard(); }],
     [/^#\/tab\/(.+)$/, 'faq', function (id) { Detail.tab(id); return 'tab:' + id; }],
-    [/^#\/article\/(.+)$/, 'articles', function (id) { Detail.article(id); return id; }],
-    [/^#\/articles$/, 'articles', function () { Detail.articleList(); }],
+    [/^#\/factsheet\/(.+)$/, 'factsheets', function (id) { Detail.factSheet(id); return id; }],
+    [/^#\/factsheets$/, 'factsheets', function () { Detail.factSheetList(); }],
     [/^#\/variable\/(.+)$/, 'variables', function (id) { Detail.variable(id); return id; }],
     [/^#\/variables$/, 'variables', function () { Detail.variableList(); }],
     [/^#\/issue\/([^/]+)\/(.+)$/, 'issues', function (pid, iid) {
@@ -76,14 +76,15 @@
   // Fields whose value changes more than their own box: a department move
   // redraws the handoff markers, a status change redraws the badge and the
   // tree, a reparent moves the process, a publish tab moves an FAQ, a source shows its link.
-  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal|publish\.tabId|parentId|name|severity|condition|stepperFrom|label|new|source\.title|source\.url)$/;
+  var STRUCTURAL = /:(departmentId|type|status|taxonomyId|ownerId|internal|publish\.tabId|parentId|name|severity|condition|stepperFrom|label|new|source\.title|source\.url|current\.url)$/;
 
   function showDirty(count, spec) {
     if (!count) return;
     setStatus('draft', 'Draft · ' + count + ' change' + (count === 1 ? '' : 's'));
     // Every part of a rule changes what it finds, so any rule edit redraws.
+    // A fact sheet's title is also its preview's heading and its sidebar row.
     if (spec && (STRUCTURAL.test(spec) || spec.indexOf('rule:') === 0 ||
-        spec.indexOf('taxonomy:') === 0)) route();
+        spec.indexOf('taxonomy:') === 0 || /^factsheet:[^:]+:title$/.test(spec))) route();
     else if (spec) Sidebar.render();
   }
 
@@ -293,7 +294,7 @@
     changes.forEach(function (c) { counts[c.c.kind] = (counts[c.c.kind] || 0) + 1; });
     var NOUNS = {
       Process: ['process', 'processes'], Department: ['department', 'departments'],
-      Rule: ['rule', 'rules'], Article: ['article', 'articles'],
+      Rule: ['rule', 'rules'], 'Fact sheet': ['fact sheet', 'fact sheets'],
       FAQ: ['FAQ question', 'FAQ questions'], 'Publish tab': ['publish tab', 'publish tabs'],
       Variable: ['variable', 'variables']
     };

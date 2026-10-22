@@ -357,7 +357,7 @@ a.btn { display: inline-block; text-decoration: none; white-space: nowrap; }
   color: var(--text-soft);
 }
 .kind-process { background: var(--accent-soft); color: var(--accent); }
-.kind-article { background: #EFEAF8; color: #5B3FA8; }
+.kind-factsheet { background: #EFEAF8; color: #5B3FA8; }
 .kind-faq { background: #EAF6EE; color: var(--good); }
 .kind-variable { background: var(--warn-soft); color: var(--warn); }
 
@@ -635,7 +635,7 @@ button.tile:hover { border-color: var(--accent); }
 
 .empty { color: var(--text-soft); font-size: 0.87rem; padding: 0.5rem 0.2rem; }
 
-/* ---- prose (article and FAQ bodies) -------------------------------------- */
+/* ---- prose (fact sheet and FAQ bodies) ----------------------------------- */
 
 .prose { font-size: 0.93rem; line-height: 1.7; }
 .prose p { margin-bottom: 0.7rem; }
@@ -1129,6 +1129,41 @@ select.edit-input { padding: 0.3rem 0.4rem; }
   background: #fafafc; font-weight: 700; color: #111;
 }
 
+/* A fact sheet's preview reads as a document: its title as a heading, then
+   sections, checklists and plain tables. */
+.fs-preview .preview-q { padding: 0.6rem 0 0.2rem; }
+.fs-preview .faq-q-text { font-size: 22px; line-height: 1.25; }
+.fs-doc { padding: 8px 0 4px; font-size: 14px; color: #333; line-height: 1.7; }
+.fs-doc h2 { font-size: 18px; color: #111; margin: 22px 0 8px; line-height: 1.3; }
+.fs-doc h3 { font-size: 15.5px; color: #111; margin: 16px 0 6px; line-height: 1.35; }
+.fs-doc p { margin-bottom: 10px; }
+.fs-doc ol, .fs-doc ul { margin: 8px 0 12px 22px; }
+.fs-doc li { margin-bottom: 5px; }
+.fs-doc a { color: #2d2d7a; }
+.fs-doc table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 13.5px; }
+.fs-doc th, .fs-doc td {
+  border: 1px solid #c7c7d6; padding: 7px 10px; vertical-align: top; text-align: left; line-height: 1.5;
+}
+.fs-doc th, .fs-doc thead td { background: #f0f0f8; color: #2d2d7a; font-weight: 700; }
+.fs-doc .note { background: #f0f0f8; border-left: 3px solid #2d2d7a; padding: 8px 12px; margin: 10px 0; }
+.fs-doc .warn { background: #fff8e6; border-left: 3px solid #e0a800; padding: 8px 12px; margin: 10px 0; }
+.fs-doc .term { background: #eef4ee; border-left: 3px solid #3a7a3a; padding: 8px 12px; margin: 10px 0; }
+
+/* A checklist is a bullet list with boxes drawn in place of the bullets. */
+ul.checklist { list-style: none; margin-left: 0.2rem; }
+ul.checklist > li { position: relative; padding-left: 1.6rem; }
+ul.checklist > li::before {
+  content: ''; position: absolute; left: 0.1rem; top: 0.32em;
+  width: 13px; height: 13px; border: 1.5px solid #666; border-radius: 3px;
+}
+/* Headings inside a document are the document's own, not the pane's small
+   uppercase section labels. */
+.rt-area h2, .rt-area h3, .fs-doc h2, .fs-doc h3 {
+  text-transform: none; letter-spacing: normal; font-weight: 700;
+}
+.rt-area h2 { font-size: 1.12rem; color: var(--text); margin: 1rem 0 0.4rem; }
+.rt-area h3 { font-size: 1rem; color: var(--text); margin: 0.8rem 0 0.35rem; }
+
 /* Variables read as ordinary text in the preview, because that is how a
    member of the public will see them. */
 .faq-preview .faq-var {
@@ -1314,6 +1349,7 @@ details.resolved summary {
 
 .am-tabs { display: flex; gap: 2px; background: var(--bg); border-radius: 8px;
   padding: 2px; margin-bottom: 0.5rem; }
+.am-tabs[hidden] { display: none; }
 .am-tab {
   flex: 1; font: inherit; font-size: 0.8rem; font-weight: 600; border: none;
   border-radius: 6px; background: none; color: var(--text-soft);
@@ -1779,3 +1815,54 @@ button.cov-row.cov-link:hover { background: var(--bg); }
 .source-cite:last-child { border-bottom: none; }
 .source-excerpt { flex-basis: 100%; font-size: 0.8rem; color: var(--text-soft); white-space: pre-line; }
 .source-missing { font-size: 0.8rem; color: var(--warn); font-weight: 600; }
+
+/* ===========================================================================
+   Fact sheets
+   =========================================================================== */
+
+.status-dot.fs-draft { background: #D9A441; }
+.status-dot.fs-signoff { background: #3B8FD9; }
+.status-dot.fs-approved { background: var(--good); }
+.status-dot.fs-live { background: #5B3FA8; }
+.badge.fs-badge.fs-draft { background: #FBF0DC; color: #8A6314; }
+.badge.fs-badge.fs-signoff { background: var(--accent-soft); color: var(--accent); }
+.badge.fs-badge.fs-approved { background: #EAF6EE; color: var(--good); }
+.badge.fs-badge.fs-live { background: #EFEAF8; color: #5B3FA8; }
+
+.fs-actions { align-items: center; }
+.action-group {
+  display: inline-flex; align-items: center; gap: 0.25rem; flex-wrap: wrap;
+  padding: 0.15rem 0.3rem 0.15rem 0.5rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface);
+}
+.action-label { font-size: 0.7rem; font-weight: 700; color: var(--text-soft); margin-right: 0.15rem; }
+
+.fs-alert {
+  margin: 0 0 1rem; padding: 0.55rem 0.8rem; border-radius: 8px; font-size: 0.86rem;
+  background: var(--warn-soft); color: #7A4A0A; border-left: 3px solid #E0A100;
+}
+.fs-alert.bad { background: #FBEAE8; color: #8E2A1F; border-left-color: var(--danger); }
+
+.suggest-label {
+  font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-soft); margin: 1rem 0 0.35rem;
+}
+
+.signoffs { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 0.2rem; }
+.signoff {
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid #D9A441;
+  border-radius: 8px; padding: 0.5rem 0.7rem;
+}
+.signoff.so-approved { border-left-color: var(--good); }
+.signoff.so-changes { border-left-color: var(--danger); }
+.so-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.7rem; }
+.so-name { font-weight: 650; min-width: 8rem; }
+.so-role { flex: 1 1 8rem; color: var(--text-soft); font-size: 0.86rem; min-width: 0; }
+.so-decision { font-size: 0.8rem; padding: 0.2rem 0.4rem; }
+.signoff.so-approved .so-decision { color: var(--good); border-color: rgba(46, 125, 83, 0.4); }
+.signoff.so-changes .so-decision { color: var(--danger); border-color: rgba(192, 57, 43, 0.4); }
+.so-date { font-size: 0.74rem; color: var(--text-soft); }
+.so-note { margin-top: 0.35rem; font-size: 0.86rem; }
+@media (max-width: 560px) {
+  .so-name { min-width: 0; flex: 1 1 100%; }
+}

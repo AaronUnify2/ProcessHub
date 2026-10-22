@@ -1,6 +1,6 @@
 /* ===========================================================================
-   richtext.js — the prose editor for knowledge base articles and FAQ answers,
-   carried over from the FAQ Editor.
+   richtext.js — the prose editor for fact sheets and FAQ answers, carried
+   over from the FAQ Editor.
 
    A toolbar over a contenteditable area, a raw HTML toggle for when the markup
    needs a hand, and a live preview underneath styled like the published page —
@@ -36,6 +36,11 @@
    * opts.onChange     called with the canonical markup, debounced
    * opts.headerHtml   shown above the preview body (the FAQ question)
    * opts.previewClass the published class the body renders under
+   * opts.previewFrame classes on the preview's outer box (default faq-preview)
+   * opts.previewLabel the words over the preview
+   * opts.preview      false leaves the preview out altogether
+   * opts.document     true adds what a longer document needs: headings and
+   *                   a checklist (a list ticked off item by item)
    */
   function mount(host, opts) {
     opts = opts || {};
@@ -129,9 +134,48 @@
     toolbar.appendChild(button('<b>B</b>', 'Bold', function () { exec('bold'); sync(); }));
     toolbar.appendChild(button('<i>I</i>', 'Italic', function () { exec('italic'); sync(); }));
     toolbar.appendChild(separator());
-    toolbar.appendChild(button('¶', 'Paragraph', function () { exec('formatBlock', 'p'); sync(); }));
+    toolbar.appendChild(button('¶', 'Paragraph', function () { exec('formatBlock', '<p>'); sync(); }));
+    if (opts.document) {
+      toolbar.appendChild(button('H2', 'Section heading', function () { exec('formatBlock', '<h2>'); sync(); }));
+      toolbar.appendChild(button('H3', 'Sub-heading', function () { exec('formatBlock', '<h3>'); sync(); }));
+    }
     toolbar.appendChild(button('• List', 'Bullet list', function () { exec('insertUnorderedList'); sync(); }));
     toolbar.appendChild(button('1. List', 'Numbered list', function () { exec('insertOrderedList'); sync(); }));
+    if (opts.document) {
+      toolbar.appendChild(button('☐ List', 'Checklist — a box to tick beside each item', function () {
+        toggleChecklist(); sync();
+      }));
+    }
+    /**
+     * A checklist is an ordinary bullet list with the class "checklist", so
+     * it survives anything that understands lists — Word included — and
+     * only the styling draws the boxes. Pressed inside a checklist it turns
+     * back into plain bullets.
+     */
+    function listAtCaret() {
+      var selection = window.getSelection();
+      var at = selection && selection.anchorNode;
+      while (at && at !== area) {
+        if (at.nodeType === 1 && (at.tagName === 'UL' || at.tagName === 'OL')) return at;
+        at = at.parentNode;
+      }
+      return null;
+    }
+
+    function toggleChecklist() {
+      restoreSelection();
+      var list = listAtCaret();
+      if (list && list.tagName === 'UL') {
+        list.classList.toggle('checklist');
+        if (!list.className) list.removeAttribute('class');
+      } else {
+        try { document.execCommand('insertUnorderedList', false, null); } catch (err) { /* ignore */ }
+        list = listAtCaret();
+        if (list && list.tagName === 'UL') list.classList.add('checklist');
+      }
+      rememberSelection();
+    }
+
     toolbar.appendChild(separator());
     toolbar.appendChild(button('🔗 Link', 'Insert a link', function () {
       openLinkModal(selectionText(), insertHtml);
@@ -182,9 +226,9 @@
 
     var previewWrap = node('div', 'preview-wrap');
     previewWrap.appendChild(node('div', 'preview-label',
-      'Live preview — how it looks on the page'));
+      e(opts.previewLabel || 'Live preview — how it looks on the page')));
     var previewBody = node('div', 'preview-body');
-    var preview = node('div', 'faq-preview');
+    var preview = node('div', opts.previewFrame || 'faq-preview');
     var previewHeader = node('div', 'preview-q');
     var previewInner = node('div', opts.previewClass || 'faq-a-inner');
     preview.appendChild(previewHeader);
@@ -247,7 +291,7 @@
     root.appendChild(area);
     root.appendChild(source);
     host.appendChild(root);
-    host.appendChild(previewWrap);
+    if (opts.preview !== false) host.appendChild(previewWrap);
     updatePreview();
 
     var instance = { commit: commit, setHeader: setHeader };
