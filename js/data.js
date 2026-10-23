@@ -183,7 +183,7 @@
       p.steps.forEach(function (step) {
         noteUsage(index, step.factSheetRefs, p, step);
         noteUsage(index, step.faqRefs, p, step);
-        countVariables(index, [step.title, step.sop, step.script, step.completionTrigger].join('\n'), p, step);
+        countVariables(index, [step.title, step.sop, step.script, step.completionTrigger, step.timeframe].join('\n'), p, step);
         (step.checks || []).forEach(function (c) {
           countVariables(index, c.text, p, step);
         });
