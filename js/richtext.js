@@ -84,12 +84,18 @@
       }
     }
 
+    // Taken before focusing: when a dialog (the variable picker, the link
+    // builder) had the focus, focusing the area fires its focus listener,
+    // which would record wherever the browser put the caret — the start —
+    // over the position saved before the dialog opened.
     function restoreSelection() {
+      var range = savedRange;
       area.focus();
       var selection = window.getSelection();
       selection.removeAllRanges();
-      if (savedRange && area.contains(savedRange.commonAncestorContainer)) {
-        selection.addRange(savedRange);
+      if (range && area.contains(range.commonAncestorContainer)) {
+        selection.addRange(range);
+        savedRange = range;
         return;
       }
       var atEnd = document.createRange();
@@ -182,8 +188,11 @@
     }));
     toolbar.appendChild(button('＋Var', 'Insert a reusable value (fee, URL, phone…)', function () {
       openVariablePicker(function (v) {
-        insertHtml('<span class="faq-var" data-var="' + e(v.id) +
-          '" contenteditable="false">' + e(v.value) + '</span>&nbsp;');
+        // Through editableHtml, so the new reference is a chip like the rest
+        // from the moment it lands: highlighted, dotted while unverified,
+        // and closed to the caret.
+        insertHtml(Data.editableHtml('<span class="faq-var" data-var="' + e(v.id) + '">' +
+          e(v.value) + '</span>') + '&nbsp;');
       });
     }, 'var-btn'));
     toolbar.appendChild(separator());
