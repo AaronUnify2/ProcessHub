@@ -247,7 +247,7 @@
     if (view.detail !== 'simple') {
       body += '<div class="node-meta">' +
         '<span class="node-dept">' + e(Data.taxonomyName(step.departmentId)) + '</span>' +
-        (step.timeframe ? '<span>' + e(step.timeframe) + '</span>' : '') +
+        (step.timeframe ? '<span>' + e(Data.freeze(step.timeframe)) + '</span>' : '') +
         '</div>';
     }
     if (view.detail === 'context') {

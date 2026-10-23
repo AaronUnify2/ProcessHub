@@ -298,7 +298,7 @@
         '<h3>' + e(Data.freeze(s.title)) + '</h3></div>' +
         '<div class="meta"><span class="dept">' + e(Data.taxonomyName(s.departmentId)) + '</span>' +
         (s.responsibleRole ? '<span>' + e(s.responsibleRole) + '</span>' : '') +
-        (s.timeframe ? '<span>' + e(s.timeframe) + '</span>' : '') + '</div>' +
+        (s.timeframe ? '<span>' + e(Data.freeze(s.timeframe)) + '</span>' : '') + '</div>' +
         (s.script ? '<blockquote>' + e(Data.freeze(s.script)) + '</blockquote>' : '') +
         (s.sop ? '<p>' + e(Data.freeze(s.sop)).replace(/\n/g, '<br>') + '</p>' : '') +
         ((s.checks || []).length
