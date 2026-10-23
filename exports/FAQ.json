@@ -1821,6 +1821,36 @@
       "owner": "Rates",
       "type": "time",
       "note": "As stated in the published answer \"I believe my property has been wrongly categorised\" on the NPPR tab. No public source recorded yet."
+    },
+    {
+      "id": "text_rural_residential_front_setback",
+      "question": "Is this still the front boundary setback for a house or shed in the Rural Residential zone: 6 m?",
+      "value": "6 m",
+      "owner": "Planning",
+      "note": "Applies to dwellings (Class 1a) and sheds (Class 10a); a building that cannot meet it needs planning approval. From internal Council advice to Aaron, 23 October 2026 — no public source recorded. Council's Dual Occupancy (Duplex) information sheet quotes the zone code differently (AO1.3: 10 m from all boundaries on lots over 1 ha)."
+    },
+    {
+      "id": "text_rural_residential_setback",
+      "question": "Is this still the setback for a house or shed in the Rural Residential zone from the side and rear boundaries: 10 m?",
+      "value": "10 m",
+      "owner": "Planning",
+      "note": "Applies to dwellings (Class 1a) and sheds (Class 10a); a building that cannot meet it needs planning approval. From internal Council advice to Aaron, 23 October 2026 — no public source recorded."
+    },
+    {
+      "id": "time_removal_permit_validity",
+      "question": "Is this still how long a building permit for a removal dwelling is valid: 12 months?",
+      "value": "12 months",
+      "owner": "Building",
+      "type": "time",
+      "note": "Building permit for a removal (relocated) dwelling."
+    },
+    {
+      "id": "time_removal_representations",
+      "question": "Is this still how long an applicant has, from Council's response letter, to ask the certifier to pause a removal home decision and make representations: 10 business days?",
+      "value": "10 business days",
+      "owner": "Building",
+      "type": "time",
+      "note": "As stated in the published answer \"What conditions does Council typically put on a removal home approval?\". No public source recorded yet."
     }
   ],
   "tabs": [
