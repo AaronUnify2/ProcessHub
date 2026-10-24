@@ -312,11 +312,6 @@
       refresh();
       return;
     }
-    if (act === 'toggle-rule-block') {
-      opened[d.rule] = !opened[d.rule];
-      refresh();
-      return;
-    }
   }
 
   /** The "+ route to…" menus on each step, and the other in-page selects. */
@@ -1654,8 +1649,6 @@
   // ---- issues register -----------------------------------------------------
 
   var expanded = {};
-  var opened = {};
-  var SHOW_FIRST = 8;
 
   function issueRoute(entry) {
     return '#/issue/' + entry.process.id + '/' + entry.issue.id;
@@ -1666,7 +1659,6 @@
     var resolved = Data.allIssues({ resolved: 'only' });
     var counts = { high: 0, medium: 0, low: 0 };
     recorded.forEach(function (x) { counts[x.issue.severity] = (counts[x.issue.severity] || 0) + 1; });
-    var ruleTotals = Rules.totals();
     var affected = {};
     recorded.forEach(function (x) { affected[x.process.id] = true; });
 
@@ -1674,7 +1666,7 @@
       btn('export-issues-html', {}, '⤓ Report (HTML)') +
       btn('export-issues-csv', {}, '⤓ CSV') +
       '<span class="spacer"></span>' +
-      '<button class="btn small" data-route="#/rules">⚙ Content rules</button>' +
+      '<button class="btn small" data-route="#/rules">⚙ Rules</button>' +
       '</div>' +
       '<section class="tiles">' +
       tile(recorded.length, 'open issues', Object.keys(affected).length + ' processes affected', '') +
@@ -1682,7 +1674,6 @@
       tile(counts.medium || 0, 'medium', '', '') +
       tile(counts.low || 0, 'low', '', '') +
       tile(resolved.length, 'resolved', 'kept as a record', '') +
-      tile(ruleTotals.findings, 'flagged by rules', 'from ' + plural(ruleTotals.rules, 'content rule'), '#/rules') +
       '</section>';
 
     // --- by department
@@ -1734,21 +1725,13 @@
         }).join('') + '</details>';
     }
 
-    // --- flagged by rules: computed, so collapsed until wanted
-    html += '<h2 class="group">Flagged by rules <span>' +
-      ruleTotals.findings + ' from ' + plural(ruleTotals.rules, 'rule') + '</span></h2>';
-
-    var results = Rules.run().filter(function (r) { return !r.skipped; });
-    if (!results.length) {
-      html += '<p class="empty">No rules yet. Add text that should no longer appear on the ' +
-        '<a href="#/rules">Rules tab</a>.</p>';
-    } else {
-      html += results.map(renderRuleFindings).join('');
-    }
+    // What the software finds is on the Rules tab; this page is what people raise.
+    html += '<p class="hint-block">Issues are what people raise — from a process with ⚑, or ' +
+      'from the live call view. What Process Hub finds by itself is on the ' +
+      '<a href="#/rules">Rules tab</a>.</p>';
 
     paint(listPane('Issues register',
-      recorded.length + ' open · ' + resolved.length + ' resolved · ' +
-      ruleTotals.findings + ' flagged by rules', html));
+      recorded.length + ' open · ' + resolved.length + ' resolved', html));
   }
 
   // ---- a single issue ------------------------------------------------------
@@ -1792,50 +1775,6 @@
       '<dt>Process sits under</dt><dd>' + e(Data.taxonomyPath(p.taxonomyId)) + '</dd>' +
       '<dt>Process status</dt><dd>' + e(p.status) + '</dd>' +
       '</dl></section></article>');
-  }
-
-  function renderRuleFindings(result) {
-    var rule = result.rule;
-    var findings = result.findings;
-    var isOpen = opened[rule.id];
-    var showAll = expanded[rule.id];
-    var shown = showAll ? findings : findings.slice(0, SHOW_FIRST);
-
-    var head = '<div class="rule-block sev-' + e(rule.severity || 'medium') + '">' +
-      '<button class="rule-head" data-act="toggle-rule-block" data-rule="' + e(rule.id) + '"' +
-      (findings.length ? '' : ' disabled') + '>' +
-      '<span class="caret">' + (findings.length ? (isOpen ? '▾' : '▸') : '') + '</span>' +
-      '<span class="sev">' + e(rule.severity || 'medium') + '</span>' +
-      '<span class="rule-name">' + e(rule.name) + '</span>' +
-      '<span class="rule-count' + (findings.length ? '' : ' clear') + '">' +
-      (findings.length ? findings.length + ' found' : 'nothing found') + '</span>' +
-      '</button>';
-
-    if (result.error) {
-      return head + '<p class="rule-error">' + e(result.error) + '</p></div>';
-    }
-    var skipped = result.draftsSkipped
-      ? '<p class="rule-skipped">' + plural(result.draftsSkipped, 'draft') +
-        ' not checked yet — this rule leaves drafts alone.</p>'
-      : '';
-    if (!findings.length || !isOpen) return head + skipped + '</div>';
-
-    var body = rule.message
-      ? '<p class="rule-message">' + e(rule.message) + '</p>' : '';
-
-    body += shown.map(function (f) {
-      return '<button class="list-row finding" data-route="' + e(f.route) + '">' +
-        '<span class="list-title">' + e(f.label) + '</span>' +
-        '<span class="list-sub">' + e(f.where) +
-        (f.detail ? ' — ' + e(f.detail) : '') + '</span></button>';
-    }).join('');
-
-    if (findings.length > SHOW_FIRST) {
-      body += '<button class="btn tiny" data-act="show-all" data-rule="' + e(rule.id) + '">' +
-        (showAll ? 'Show fewer' : 'Show all ' + findings.length) + '</button>';
-    }
-
-    return head + skipped + body + '</div>';
   }
 
   // ---- rules ---------------------------------------------------------------
