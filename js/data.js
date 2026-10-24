@@ -754,10 +754,10 @@
     var byKey = {};
     var list = [];
     state.variables.variables.forEach(function (v) {
-      if (!hasSource(v)) return;
+      var key = sourceKey(v);
+      if (!key) return;
       var url = String(v.source.url || '').trim();
       var title = String(v.source.title || '').trim();
-      var key = (url || title).toLowerCase();
       if (!byKey[key]) {
         byKey[key] = { key: key, title: title, url: url, variables: [] };
         list.push(byKey[key]);
@@ -769,6 +769,34 @@
       return b.variables.length - a.variables.length ||
         String(a.title || a.url).localeCompare(String(b.title || b.url));
     });
+  }
+
+  /**
+   * What a variable's source is known by: its link, or with no link its
+   * title, in lower case. '' when it names no source.
+   */
+  function sourceKey(v) {
+    if (!hasSource(v)) return '';
+    return (String(v.source.url || '').trim() || String(v.source.title || '').trim()).toLowerCase();
+  }
+
+  /** One cited source by its key, or null. */
+  function sourceByKey(key) {
+    return sources().find(function (src) { return src.key === key; }) || null;
+  }
+
+  /**
+   * Why a variable can't simply be carried forward when its document is
+   * next updated: not verified, known to be stale, or an open issue on it.
+   * An empty list means it is still correct.
+   */
+  function attentionReasons(v) {
+    var out = [];
+    if (v.status === 'stale') out.push('stale');
+    else if (v.status !== 'current') out.push('not yet verified');
+    var open = openIssues(v).length;
+    if (open) out.push(open + ' open issue' + (open === 1 ? '' : 's'));
+    return out;
   }
 
   /** The variables an HTML answer refers to, once each, in order. */
@@ -986,6 +1014,9 @@
     hasSource: hasSource,
     needsSource: needsSource,
     sources: sources,
+    sourceKey: sourceKey,
+    sourceByKey: sourceByKey,
+    attentionReasons: attentionReasons,
     variablesIn: variablesIn,
     STATUSES: STATUSES,
     suggestFor: suggestFor,

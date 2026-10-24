@@ -1566,20 +1566,13 @@
     var v = Data.variable(id);
     if (!v) return paint(notFound('variable', id));
     var usage = Data.state.index.usage[id] || { processes: [], steps: 0 };
-
-    var used = usage.processes.map(function (ownerId) {
-      var p = Data.state.index.processes[ownerId];
-      if (p) return listRow('#/process/' + p.id, p.name, Data.taxonomyPath(p.taxonomyId), '');
-      var sh = Data.state.index.factSheets[ownerId];
-      if (sh) return listRow('#/factsheet/' + sh.id, sh.title, 'Fact sheet', '');
-      var q = Data.state.index.faqs[ownerId];
-      if (q) return listRow('#/faq/' + q.id, Data.plainText(q.q), 'FAQ', '');
-      return '';
-    }).join('');
+    var verified = v.lastVerified
+      ? 'Last verified ' + v.lastVerified + (v.verifiedBy ? ' by ' + v.verifiedBy : '')
+      : 'Never verified';
 
     paint('<article class="pane">' +
       '<header class="pane-head">' +
-      '<div class="crumbs">Variable</div>' +
+      variableCrumbs(v) +
       '<h1 class="editable-h1">' + f('variable:' + id + ':value') + '</h1>' +
       '<div class="badges">' +
       '<span class="badge status-' + e(v.status) + '">' + f('variable:' + id + ':status',
@@ -1591,6 +1584,7 @@
       '<span class="badge quiet">' + f('variable:' + id + ':ownerId',
         { type: 'select', options: departmentOptions('No owner yet'), placeholder: 'No owner yet' }) + '</span>' +
       (v.internal ? '<span class="badge lock">🔒 internal</span>' : '') +
+      '<span class="hint">' + e(verified) + '</span>' +
       '</div>' +
       '<div class="lede">' + f('variable:' + id + ':question',
         { placeholder: 'What you would ask the department' }) + '</div>' +
@@ -1599,6 +1593,7 @@
       '<div class="row-actions">' +
       btn('verify', { variable: id }, '✓ Mark verified') +
       btn('copy-verification', { owner: v.ownerId || '' }, '⧉ Copy verification email') +
+      (v.type === 'url' ? webLink(v.value, 'Open this link ↗', 'small') : '') +
       '<span class="spacer"></span>' +
       (usage.processes.length
         ? '<span class="hint">In use, so it cannot be deleted</span>'
@@ -1606,54 +1601,168 @@
       '</div></header>' +
 
       sourceBlock(v) +
+      usedBlock(id, usage) +
+      issuesBlock(id) +
 
-      '<section class="block meta"><h2>Verification</h2><dl>' +
+      '<section class="block meta"><h2>Details</h2><dl>' +
       '<dt>Last verified</dt><dd>' + e(v.lastVerified || '— never —') + '</dd>' +
       '<dt>Verified by</dt><dd>' + e(v.verifiedBy || '—') + '</dd>' +
       '<dt>Identifier</dt><dd><code>' + e(v.id) + '</code></dd>' +
       '<dt>Internal only</dt><dd>' + f('variable:' + id + ':internal',
         { type: 'select', options: [{ value: true, label: 'Yes — never publish' },
           { value: false, label: 'No — safe to publish' }] }) + '</dd>' +
-      '</dl></section>' +
+      '</dl></section></article>');
+  }
 
-      '<section class="block"><h2>Used in ' + plural(usage.processes.length, 'place') + '</h2>' +
-      (used || '<p class="empty">Not referenced anywhere yet.</p>') +
-      '</section>' + issuesBlock(id) + '</article>');
+  /** Variables › department › sub-department › source, each a link. */
+  function variableCrumbs(v) {
+    var parts = ['<a href="#/variables">Variables</a>'];
+    var chain = [];
+    var node = Data.state.index.taxonomy[v.ownerId];
+    var guard = 0;
+    while (node && guard++ < 50) {
+      chain.unshift(node);
+      node = node.parentId ? Data.state.index.taxonomy[node.parentId] : null;
+    }
+    chain.forEach(function (n) {
+      parts.push('<a href="#/department/' + e(n.id) + '">' + e(n.name) + '</a>');
+    });
+    if (!chain.length) parts.push('No owner');
+    var key = Data.sourceKey(v);
+    if (key) parts.push(sourceLink(key, v.source.title || v.source.url));
+    return '<div class="crumbs">' + parts.join(' › ') + '</div>';
+  }
+
+  function sourceRoute(key) {
+    return '#/source/' + encodeURIComponent(key);
+  }
+
+  function sourceLink(key, label) {
+    return '<a href="' + e(sourceRoute(key)) + '">' + e(label) + '</a>';
+  }
+
+  /**
+   * Where a variable is used, by kind: fact sheets, processes (with the
+   * steps that use it), then FAQ answers.
+   */
+  function usedBlock(id, usage) {
+    var sheets = [], processes = [], faqs = [];
+    usage.processes.forEach(function (ownerId) {
+      var p = Data.state.index.processes[ownerId];
+      if (p) return processes.push(p);
+      var sh = Data.state.index.factSheets[ownerId];
+      if (sh) return sheets.push(sh);
+      var q = Data.state.index.faqs[ownerId];
+      if (q) faqs.push(q);
+    });
+    var byName = function (key) { return function (a, b) { return a[key].localeCompare(b[key]); }; };
+    sheets.sort(byName('title'));
+    processes.sort(byName('name'));
+    var total = sheets.length + processes.length + faqs.length;
+
+    var part = function (title, list, render) {
+      if (!list.length) return '';
+      return '<h3 class="used-kind">' + e(title) + ' <span class="count">' + list.length + '</span></h3>' +
+        list.map(render).join('');
+    };
+
+    return '<section class="block used-in"><h2>Where it\'s used <span class="count">' +
+      (total ? plural(total, 'place') : 'nowhere yet') + '</span></h2>' +
+      (total
+        ? '<p class="hint-block">Change the value here and every one of these changes with it.</p>'
+        : '<p class="empty">Not referenced anywhere yet.</p>') +
+      part('Fact sheets', sheets, function (sh) {
+        return listRow('#/factsheet/' + sh.id, sh.title,
+          (Data.FACT_SHEET_STATUS_LABEL[sh.status] || sh.status) +
+          (sh.ownerId ? ' · ' + Data.taxonomyPath(sh.ownerId) : ''), '');
+      }) +
+      part('Processes', processes, function (p) {
+        return listRow('#/process/' + p.id, p.name,
+          [stepsUsing(p, id), Data.taxonomyPath(p.taxonomyId)].filter(Boolean).join(' · '), '');
+      }) +
+      part('FAQ answers', faqs, function (q) {
+        var tab = q.publish && q.publish.tabId ? FaqOrder.tab(q.publish.tabId) : null;
+        return listRow('#/faq/' + q.id, Data.plainText(q.q),
+          (tab ? Data.plainText(tab.label) + ' tab' : 'Not published') +
+          (q.status ? ' · ' + q.status : ''), '');
+      }) +
+      '</section>';
+  }
+
+  /** "Steps 2, 5" — the steps of a process whose text uses a variable. */
+  function stepsUsing(p, id) {
+    var ref = new RegExp('(\\{\\{|data-var(-href)?=")' + id + '(\\}\\}|")');
+    var numbers = [];
+    p.steps.forEach(function (step, i) {
+      var text = [step.title, step.sop, step.script, step.completionTrigger, step.timeframe]
+        .concat((step.checks || []).map(function (c) { return c.text; })).join('\n');
+      if (ref.test(text)) numbers.push(i + 1);
+    });
+    if (!numbers.length) return 'in the purpose or a route';
+    return (numbers.length === 1 ? 'Step ' : 'Steps ') + numbers.join(', ');
   }
 
   // ---- public sources ------------------------------------------------------
 
   /** A link that is safe to put in an href: web addresses only. */
-  function webLink(url, label) {
+  function webLink(url, label, size) {
     url = String(url || '').trim();
     if (!/^https?:\/\//i.test(url)) return '';
-    return '<a class="btn tiny" href="' + e(url) + '" target="_blank" rel="noopener">' +
+    return '<a class="btn ' + (size || 'tiny') + '" href="' + e(url) + '" target="_blank" rel="noopener">' +
       e(label || 'Open ↗') + '</a>';
   }
 
-  /** The published document behind one variable, on the variable's page. */
+  /**
+   * Where one variable comes from, on the variable's page: the document,
+   * a button to open it as it stands now, and the words that say so —
+   * then the fields to change them.
+   */
   function sourceBlock(v) {
     var id = v.id;
     var s = v.source || {};
-    var mine = Data.hasSource(v) ? String(s.url || s.title || '').trim().toLowerCase() : '';
+    var mine = Data.sourceKey(v);
     var others = Data.sources().filter(function (src) { return src.key !== mine; });
+    var shared = mine ? Data.sourceByKey(mine) : null;
+    var siblings = shared ? shared.variables.length - 1 : 0;
 
-    return '<section class="block meta source-block"><h2>Public source</h2>' +
-      (v.internal === true
-        ? '<p class="hint-block">This value is internal and never published, so it doesn\'t ' +
-          'need a public source.</p>'
-        : '<p class="hint-block">The published document this value comes from, so you can ' +
-          'point to it if anyone asks.</p>') +
+    var summary;
+    if (v.internal === true) {
+      summary = '<p class="hint-block">This value is internal and never published, so it doesn\'t ' +
+        'need a public source.</p>';
+    } else if (mine) {
+      summary = '<div class="source-summary">' +
+        '<div class="source-summary-head">' +
+        '<span class="source-icon" aria-hidden="true">📄</span>' +
+        '<div class="source-summary-name">' + sourceLink(mine, s.title || s.url) +
+        (s.url && s.title ? '<span class="source-url">' + e(s.url) + '</span>' : '') + '</div>' +
+        webLink(s.url, 'View live page ↗', 'small primary') +
+        '</div>' +
+        (s.excerpt ? '<blockquote class="source-quote">' + e(s.excerpt) + '</blockquote>' : '') +
+        '<div class="source-summary-foot">' +
+        '<span>' + (s.checked ? 'Checked ' + e(s.checked) : 'Not yet checked') + '</span>' +
+        (siblings
+          ? '<a href="' + e(sourceRoute(mine)) + '">' + plural(siblings, 'other value') +
+            ' from this document →</a>'
+          : '<span>The only value from this document</span>') +
+        '</div></div>';
+    } else {
+      summary = '<p class="source-missing">No source yet.</p>' +
+        '<p class="hint-block">Name the published document this value comes from, so you can ' +
+        'point to it if anyone asks.</p>';
+    }
+
+    return '<section class="block meta source-block"><h2>Where it comes from</h2>' + summary +
+      '<h3 class="used-kind">Source details</h3>' +
       '<dl>' +
       '<dt>Document</dt><dd>' + f('variable:' + id + ':source.title',
         { placeholder: 'e.g. Fees and Charges 2026–27' }) + '</dd>' +
       '<dt>Link</dt><dd class="source-link">' + f('variable:' + id + ':source.url',
-        { placeholder: 'https://…' }) + webLink(s.url) + '</dd>' +
+        { placeholder: 'https://…' }) + '</dd>' +
       '<dt>Where it says so</dt><dd>' + f('variable:' + id + ':source.excerpt',
         { type: 'multiline', placeholder: 'Page or section, or the words quoted' }) + '</dd>' +
       '<dt>Last checked</dt><dd class="source-link">' + f('variable:' + id + ':source.checked',
         { placeholder: 'YYYY-MM-DD' }) +
-      (Data.hasSource(v)
+      (mine
         ? btn('source-seen', { variable: id }, '✓ Seen it today', 'tiny',
             'Record that the source still says this, today')
         : '') + '</dd>' +
@@ -1670,10 +1779,84 @@
       '</section>';
   }
 
+  /**
+   * One source document's page: every value it backs, split into those
+   * still correct — carry them forward when the document is next updated —
+   * and those that need attention first.
+   */
+  function renderSource(key) {
+    var src = Data.sourceByKey(key);
+    if (!src) return paint(notFound('source', key));
+
+    var attention = [], fine = [];
+    src.variables.forEach(function (v) {
+      (Data.attentionReasons(v).length ? attention : fine).push(v);
+    });
+    var byLabel = function (a, b) { return String(a.value).localeCompare(String(b.value)); };
+    attention.sort(byLabel);
+    fine.sort(byLabel);
+
+    var owners = {};
+    src.variables.forEach(function (v) {
+      var k = v.ownerId && Data.state.index.taxonomy[v.ownerId] ? v.ownerId : '';
+      owners[k] = (owners[k] || 0) + 1;
+    });
+    var ownerList = Object.keys(owners).map(function (k) {
+      return { id: k, label: k ? Data.taxonomyPath(k) : 'No owner', n: owners[k] };
+    }).sort(function (a, b) { return b.n - a.n || a.label.localeCompare(b.label); });
+
+    var checked = src.variables.map(function (v) { return (v.source && v.source.checked) || ''; })
+      .filter(Boolean).sort();
+    var checkedLine = !checked.length ? 'Not yet checked'
+      : checked[0] === checked[checked.length - 1] ? 'Checked ' + checked[0]
+      : 'Checked between ' + checked[0] + ' and ' + checked[checked.length - 1];
+
+    var varRow = function (v) {
+      var reasons = Data.attentionReasons(v);
+      var bits = [];
+      if (v.source.excerpt) bits.push(v.source.excerpt);
+      if (ownerList.length > 1) bits.push(v.ownerId ? Data.taxonomyPath(v.ownerId) : 'No owner');
+      return listRow('#/variable/' + v.id, v.value, bits.join(' · '),
+        reasons.length ? reasons.join(', ') : 'verified');
+    };
+
+    paint('<article class="pane">' +
+      '<header class="pane-head">' +
+      '<div class="crumbs"><a href="#/variables">Variables</a> › Source</div>' +
+      '<h1>' + e(src.title || src.url) + '</h1>' +
+      (src.url ? '<p class="lede source-url">' + e(src.url) + '</p>' : '') +
+      '<div class="row-actions">' + webLink(src.url, 'View live page ↗', 'small primary') +
+      '<span class="hint">' + e(checkedLine) + '</span></div>' +
+      '</header>' +
+      '<section class="tiles">' +
+      tile(src.variables.length, src.variables.length === 1 ? 'value' : 'values', 'taken from this document', '') +
+      tile(fine.length, 'still correct', 'verified, no open issues', '') +
+      tile(attention.length, 'need attention', 'unverified, stale or with an issue', '') +
+      tile(ownerList.length, ownerList.length === 1 ? 'department' : 'departments', 'own these values', '') +
+      '</section>' +
+      '<p class="hint-block">When this document is next updated, the values under <strong>Still correct</strong> ' +
+      'can be carried forward as they are; the ones under <strong>Needs attention</strong> want ' +
+      'checking first.</p>' +
+      '<section class="block"><h2>Needs attention <span class="count">' + attention.length + '</span></h2>' +
+      (attention.length ? attention.map(varRow).join('') : '<p class="empty">Nothing — every value is verified.</p>') +
+      '</section>' +
+      '<section class="block"><h2>Still correct <span class="count">' + fine.length + '</span></h2>' +
+      (fine.length ? fine.map(varRow).join('') : '<p class="empty">None verified yet.</p>') +
+      '</section>' +
+      '<section class="block"><h2>Departments <span class="count">' + ownerList.length + '</span></h2>' +
+      ownerList.map(function (o) {
+        return o.id
+          ? listRow('#/department/' + o.id, o.label, plural(o.n, 'value') + ' from this document', '')
+          : '<p class="empty">' + plural(o.n, 'value') + ' with no owner yet.</p>';
+      }).join('') +
+      '</section></article>');
+  }
+
   /** One cited document on the variables dashboard, with what it backs. */
   function sourceCard(src) {
     return '<div class="source-card">' +
-      '<div class="source-head"><span class="source-title">' + e(src.title || src.url) + '</span>' +
+      '<div class="source-head"><a class="source-title" href="' + e(sourceRoute(src.key)) + '">' +
+      e(src.title || src.url) + '</a>' +
       webLink(src.url) +
       '<span class="hint">' + plural(src.variables.length, 'value') + '</span></div>' +
       '<div class="source-vars">' + src.variables.map(function (v) {
@@ -2363,6 +2546,9 @@
     var faqs = lib.faqs.filter(mine);
     var sheets = lib.factSheets.filter(mine);
     var vars = Data.state.variables.variables.filter(mine);
+    var deptSources = Data.sources().map(function (src) {
+      return { src: src, n: src.variables.filter(mine).length };
+    }).filter(function (x) { return x.n; });
 
     paint('<article class="pane">' +
       '<header class="pane-head">' +
@@ -2410,6 +2596,11 @@
         var under = whereUnder(sh.ownerId, id);
         return listRow('#/factsheet/' + sh.id, sh.title,
           (under ? under + ' · ' : '') + (Data.FACT_SHEET_STATUS_LABEL[sh.status] || sh.status), '');
+      }) +
+      section('Variable sources', deptSources, function (x) {
+        return listRow(sourceRoute(x.src.key), x.src.title || x.src.url,
+          plural(x.n, 'value') + ' owned here' +
+          (x.n < x.src.variables.length ? ' (of ' + x.src.variables.length + ' in all)' : ''), '');
       }) +
       section('Variables', vars, function (v) {
         var under = whereUnder(v.ownerId, id);
@@ -2505,6 +2696,7 @@
     rule: renderRule,
     department: renderDepartment,
     variable: renderVariable,
+    source: renderSource,
     issues: renderIssueRegister,
     rules: renderRules,
     departments: renderDepartments,

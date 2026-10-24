@@ -13,7 +13,9 @@
 
    And one each for fact sheets, variables, the issues register, content
    rules and departments: a list to jump straight to anything,
-   while the content area shows that section's dashboard.
+   while the content area shows that section's dashboard. Variables nest
+   department › sub-department › source document › value, so you can see
+   where each figure comes from as well as who owns it.
 
    Search is one keystroke away everywhere. In the FAQ, fact sheets and
    variables sections it searches only that kind of content.
@@ -121,6 +123,12 @@
     }[view.section] || renderTree;
     draw();
     el.body.scrollTop = top;
+    // Arriving somewhere new (a link, a breadcrumb), bring what is open into
+    // view; a redraw after an edit leaves the menu where it was.
+    if (state) {
+      var shown = el.tree.querySelector('.side-row.active, .side-group-head.active');
+      if (shown && shown.scrollIntoView) shown.scrollIntoView({ block: 'nearest' });
+    }
     if (el.search.value.trim().length >= 2) renderSearch();
   }
 
@@ -506,10 +514,13 @@
   // ---- the other sections -------------------------------------------------
   // Each is a list of groups, each group a list of rows that open an item.
 
-  /** Collapsed state; groups named in startClosed begin collapsed. */
+  /**
+   * Collapsed state. Resolved issues and each variable source begin
+   * collapsed; everything else begins open.
+   */
   function isCollapsed(key) {
     if (key in prefs.sideCollapsed) return prefs.sideCollapsed[key];
-    return /:resolved$/.test(key);
+    return /:resolved$/.test(key) || key.indexOf('variables:src:') === 0;
   }
 
   function group(key, label, count, rowsHtml, open) {
@@ -556,22 +567,6 @@
       name = prompt('Name of the new department:', '');
       if (name && name.trim()) onNavigate('#/department/' + Edit.createTaxonomy(null, name.trim()));
     }
-  }
-
-  /** Items grouped by owning department, "No owner" last. */
-  function ownerGroups(items) {
-    var groups = {};
-    items.forEach(function (x) {
-      var key = x.ownerId && Data.state.index.taxonomy[x.ownerId] ? x.ownerId : '';
-      (groups[key] = groups[key] || []).push(x);
-    });
-    return Object.keys(groups).map(function (key) {
-      return { key: key, label: key ? Data.taxonomyPath(key) : 'No owner', items: groups[key] };
-    }).sort(function (a, b) {
-      if (!a.key) return 1;
-      if (!b.key) return -1;
-      return a.label.localeCompare(b.label);
-    });
   }
 
   function usesOf(id) {
@@ -622,21 +617,128 @@
       .replace(/^./, function (c) { return c.toUpperCase(); });
   }
 
+  /*
+   * The variables tree: department › sub-department › source › value.
+   * A department's own values sit under its sources after its
+   * sub-departments; a source cited by two departments appears under each,
+   * with that department's values only. Its name opens the source's page,
+   * which lists all of them.
+   */
   function renderVariablesTree() {
     var vars = Data.state.variables.variables;
-    var html = ownerGroups(vars).map(function (g) {
-      var list = g.items.slice().sort(function (a, b) { return String(a.value).localeCompare(String(b.value)); });
-      var open = list.some(function (v) { return v.id === view.active; });
-      return group('variables:' + g.key, g.label, list.length, list.map(function (v) {
-        return row('#/variable/' + v.id, v.id === view.active,
-          e(variableLabel(v)) + (v.internal === true ? ' 🔒' : ''),
-          '<span class="status-dot var-' + e(v.status) + '" title="' + e(v.status) + '"></span>',
-          usesOf(v.id) ? '' : 'unused', v.question);
-      }).join(''), open);
-    }).join('');
+    var index = Data.state.index;
+    var owned = {};
+    vars.forEach(function (v) {
+      var key = v.ownerId && index.taxonomy[v.ownerId] ? v.ownerId : '';
+      (owned[key] = owned[key] || []).push(v);
+    });
+
+    // The departments above the open variable stay open, so it can be seen.
+    var openPath = {};
+    var current = Data.variable(view.active);
+    var node = current && index.taxonomy[current.ownerId];
+    var guard = 0;
+    while (node && guard++ < 50) {
+      openPath[node.id] = true;
+      node = node.parentId ? index.taxonomy[node.parentId] : null;
+    }
+
+    function total(id) {
+      var n = (owned[id] || []).length;
+      (index.children[id] || []).forEach(function (c) { n += total(c.id); });
+      return n;
+    }
+
+    function department(dept, depth) {
+      var n = total(dept.id);
+      if (!n) return '';
+      var inner = (index.children[dept.id] || []).map(function (c) {
+        return department(c, depth + 1);
+      }).join('') + sourceGroups(owned[dept.id] || [], dept.id);
+      return branch({ key: 'variables:dept:' + dept.id, label: dept.name, count: n, inner: inner,
+        open: openPath[dept.id], kind: depth ? 'sub' : 'dept' });
+    }
+
+    var html = (index.children.__root__ || []).map(function (d) { return department(d, 0); }).join('');
+    if (owned['']) {
+      html += branch({ key: 'variables:dept:', label: 'No owner', count: owned[''].length,
+        inner: sourceGroups(owned[''], ''), open: owned[''].indexOf(current) !== -1,
+        kind: 'dept' });
+    }
+
     el.tree.innerHTML = html + foot('<button class="btn tiny" data-side-act="new-variable">+ New variable</button>');
     var pending = vars.filter(function (v) { return v.status !== 'current'; }).length;
-    el.count.textContent = vars.length + ' variables · ' + pending + ' not yet verified';
+    el.count.textContent = vars.length + ' variables · ' + Data.sources().length + ' sources · ' +
+      pending + ' not yet verified';
+  }
+
+  /**
+   * One department's own values, by the document each comes from: the
+   * most-cited first, then those with no source yet, then the internal ones,
+   * which never need one.
+   */
+  function sourceGroups(list, ownerKey) {
+    var groups = {};
+    var order = [];
+    list.forEach(function (v) {
+      var key = Data.sourceKey(v) || (v.internal === true ? ':internal' : ':none');
+      if (!groups[key]) {
+        groups[key] = { key: key, title: key.charAt(0) === ':' ? '' : (v.source.title || v.source.url), items: [] };
+        order.push(groups[key]);
+      }
+      groups[key].items.push(v);
+    });
+    var rank = function (g) { return g.key === ':none' ? 1 : g.key === ':internal' ? 2 : 0; };
+    order.sort(function (a, b) {
+      return rank(a) - rank(b) || b.items.length - a.items.length ||
+        String(a.title).localeCompare(String(b.title));
+    });
+    return order.map(function (g) {
+      var sourced = g.key.charAt(0) !== ':';
+      var rows = g.items.slice().sort(function (a, b) {
+        return variableLabel(a).localeCompare(variableLabel(b));
+      }).map(variableRow).join('');
+      return branch({
+        key: 'variables:src:' + ownerKey + ':' + g.key,
+        label: sourced ? g.title : g.key === ':none' ? 'No source yet' : 'Internal — no source needed',
+        count: g.items.length, inner: rows,
+        open: view.active === 'source:' + g.key || g.items.some(function (v) { return v.id === view.active; }),
+        kind: sourced ? 'source' : 'nosource',
+        route: sourced ? '#/source/' + encodeURIComponent(g.key) : '',
+        active: sourced && view.active === 'source:' + g.key
+      });
+    }).join('');
+  }
+
+  function variableRow(v) {
+    var open = Data.openIssues(v).length;
+    var tail = (open ? '<span class="side-flag" title="' + open + ' open issue' +
+      (open === 1 ? '' : 's') + '">⚑</span>' : '') + (usesOf(v.id) ? '' : 'unused');
+    return row('#/variable/' + v.id, v.id === view.active,
+      e(variableLabel(v)) + (v.internal === true ? ' 🔒' : ''),
+      '<span class="status-dot var-' + e(v.status) + '" title="' + e(v.status) + '"></span>',
+      tail, v.question);
+  }
+
+  /**
+   * A level of the variables tree. A department's name opens and closes it;
+   * a source's name opens the source's own page, and its caret opens and
+   * closes it.
+   */
+  function branch(o) {
+    var collapsed = isCollapsed(o.key) && !o.open;
+    var name = o.route
+      ? '<button class="side-group-name side-group-link" data-route="' + e(o.route) + '" title="' +
+        e(o.label) + ' — open this source">' + e(o.label) + '</button>'
+      : '<button class="side-group-name side-group-link" data-side-toggle="' + e(o.key) + '">' +
+        e(o.label) + '</button>';
+    return '<div class="side-group var-' + o.kind + '">' +
+      '<div class="side-group-head' + (o.active ? ' active' : '') + '">' +
+      '<button class="caret" data-side-toggle="' + e(o.key) + '" aria-label="Expand or collapse">' +
+      (collapsed ? '▸' : '▾') + '</button>' + name +
+      '<span class="tree-count">' + o.count + '</span></div>' +
+      (collapsed ? '' : '<div class="side-rows">' + o.inner + '</div>') +
+      '</div>';
   }
 
   // ---- issues

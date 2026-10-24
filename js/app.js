@@ -27,6 +27,7 @@
     [/^#\/factsheets$/, 'factsheets', function () { Detail.factSheetList(); }],
     [/^#\/variable\/(.+)$/, 'variables', function (id) { Detail.variable(id); return id; }],
     [/^#\/variables$/, 'variables', function () { Detail.variableList(); }],
+    [/^#\/source\/(.+)$/, 'variables', function (key) { Detail.source(key); return 'source:' + key; }],
     [/^#\/issue\/([^/]+)\/(.+)$/, 'issues', function (pid, iid) {
       Detail.issue(pid, iid); return 'issue:' + pid + ':' + iid;
     }],
