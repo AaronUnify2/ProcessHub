@@ -10,7 +10,7 @@
      step:<pid>:<sid>:<key>
      check:<pid>:<sid>:<cid>
      connection:<pid>:<cid>:<key>
-     issue:<pid>:<iid>:<key>
+     issue:<owner>:<iid>:<key>   (owner: a process, FAQ answer, fact sheet or variable id)
      rule:<rid>:<key>  ·  rule:<rid>:match:<key>
      taxonomy:<tid>:<key>
      factsheet:<fsid>:<key> (key may be dotted, e.g. current.url)
@@ -77,9 +77,14 @@
       return conn ? { obj: conn, key: parts[3], process: p } : null;
     }
     if (kind === 'issue') {
-      p = index.processes[parts[1]];
-      var issue = p && findIn(p.issues, parts[2]);
-      return issue ? { obj: issue, key: parts[3], process: p } : null;
+      // issue:<owner id>:<issue id>:<key> — the owner can be a process, an
+      // FAQ answer, a fact sheet or a variable.
+      var about = Data.issueOwner(parts[1]);
+      var found = about && findIn(about.obj.issues, parts[2]);
+      if (!found) return null;
+      return about.kind === 'process'
+        ? { obj: found, key: parts[3], process: about.obj }
+        : { obj: found, key: parts[3] };
     }
     if (kind === 'rule') {
       var rule = findIn(Data.state.processes.rules, parts[1]);
@@ -600,19 +605,30 @@
 
   // ---- issues --------------------------------------------------------------
 
-  function raiseIssue(processId, fields) {
-    var p = proc(processId);
-    if (!p || !fields || !String(fields.note || '').trim()) return null;
-    p.issues = p.issues || [];
+  /** The item an issue sits on, or null. */
+  function issueHolder(ownerId) {
+    var owner = Data.issueOwner(ownerId);
+    return owner ? owner.obj : null;
+  }
+
+  /**
+   * Raise an issue on a process (optionally one of its steps), an FAQ
+   * answer, a fact sheet or a variable.
+   */
+  function raiseIssue(ownerId, fields) {
+    var holder = issueHolder(ownerId);
+    if (!holder || !fields || !String(fields.note || '').trim()) return null;
+    holder.issues = holder.issues || [];
     var issue = {
       id: shortId('iss_'),
-      stepId: fields.stepId || null,
       note: String(fields.note).trim(),
       severity: fields.severity || 'medium',
       raised: today(),
       raisedBy: fields.raisedBy || ''
     };
-    p.issues.push(issue);
+    // Only a process has steps for an issue to be about.
+    if (Data.issueOwner(ownerId).kind === 'process') issue.stepId = fields.stepId || null;
+    holder.issues.push(issue);
     touch();
     return issue.id;
   }
@@ -622,26 +638,27 @@
    * record for the consultants as well as a to-do list, and "what did we
    * fix" is half of what they will ask.
    */
-  function resolveIssue(processId, issueId, note) {
-    var issue = findIn((proc(processId) || {}).issues, issueId);
+  function resolveIssue(ownerId, issueId, note) {
+    var issue = findIn((issueHolder(ownerId) || {}).issues, issueId);
     if (!issue) return;
     issue.resolved = today();
     if (note) issue.resolution = note;
     touch();
   }
 
-  function reopenIssue(processId, issueId) {
-    var issue = findIn((proc(processId) || {}).issues, issueId);
+  function reopenIssue(ownerId, issueId) {
+    var issue = findIn((issueHolder(ownerId) || {}).issues, issueId);
     if (!issue) return;
     delete issue.resolved;
     delete issue.resolution;
     touch();
   }
 
-  function deleteIssue(processId, issueId) {
-    var p = proc(processId);
-    if (!p) return;
-    p.issues = (p.issues || []).filter(function (i) { return i.id !== issueId; });
+  function deleteIssue(ownerId, issueId) {
+    var holder = issueHolder(ownerId);
+    if (!holder) return;
+    holder.issues = (holder.issues || []).filter(function (i) { return i.id !== issueId; });
+    if (!holder.issues.length && Data.issueOwner(ownerId).kind !== 'process') delete holder.issues;
     touch();
   }
 

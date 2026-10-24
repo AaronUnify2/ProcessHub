@@ -2072,3 +2072,10 @@ button.cov-row.cov-link:hover { background: var(--bg); }
   .chk-what { display: inline; }
   .chk-filter { flex: 1 1 100%; }
 }
+
+/* Issues at the foot of a page, and the "what is it about?" search when an
+   issue is raised from the Issues tab. */
+.block.issues h2 { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.block.issues h2 .btn { margin-left: auto; }
+.im-find-list { display: flex; flex-direction: column; gap: 0.25rem; max-height: 14rem; overflow-y: auto; margin-top: 0.35rem; }
+.im-find-list:empty { display: none; }

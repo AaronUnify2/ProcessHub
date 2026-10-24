@@ -646,21 +646,22 @@
     var open = Data.allIssues();
     var resolved = Data.allIssues({ resolved: 'only' });
     var issueRow = function (x) {
-      var key = 'issue:' + x.process.id + ':' + x.issue.id;
-      return row('#/issue/' + x.process.id + '/' + x.issue.id, key === view.active,
-        '<span class="side-row-title">' + e(x.process.name) + '</span>' +
-        '<span class="side-row-sub">' + e(x.issue.note) + '</span>', '', '', '');
+      var key = 'issue:' + x.owner.id + ':' + x.issue.id;
+      return row('#/issue/' + x.owner.id + '/' + x.issue.id, key === view.active,
+        '<span class="side-row-title">' + e(x.owner.label) + '</span>' +
+        '<span class="side-row-sub">' + e(Data.ISSUE_KINDS[x.owner.kind]) + ' · ' + e(x.issue.note) +
+        '</span>', '', '', '');
     };
     var html = ['high', 'medium', 'low'].map(function (sev) {
       var list = open.filter(function (x) { return x.issue.severity === sev; });
       if (!list.length) return '';
-      var isOpen = list.some(function (x) { return view.active === 'issue:' + x.process.id + ':' + x.issue.id; });
+      var isOpen = list.some(function (x) { return view.active === 'issue:' + x.owner.id + ':' + x.issue.id; });
       return group('issues:' + sev, sev.charAt(0).toUpperCase() + sev.slice(1) + ' severity',
         list.length, list.map(issueRow).join(''), isOpen);
     }).join('');
     if (resolved.length) {
       html += group('issues:resolved', 'Resolved', resolved.length, resolved.map(issueRow).join(''),
-        resolved.some(function (x) { return view.active === 'issue:' + x.process.id + ':' + x.issue.id; }));
+        resolved.some(function (x) { return view.active === 'issue:' + x.owner.id + ':' + x.issue.id; }));
     }
     el.tree.innerHTML = (html || '<p class="empty">No issues recorded.</p>') +
       foot('<button class="btn tiny" data-route="#/rules">Rule findings →</button>');

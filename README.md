@@ -80,7 +80,7 @@ Search looks at FAQ questions, fact sheets or variables only when in those
 sections, and at everything elsewhere.
 
 Single issues, rules, departments and a department's coverage each have a
-page of their own (`#/issue/<process>/<issue>`, `#/rule/<id>`,
+page of their own (`#/issue/<item>/<issue>`, `#/rule/<id>`,
 `#/department/<id>`, `#/coverage/<id>`), so choosing one in the sidebar keeps
 you in that section.
 
@@ -169,7 +169,7 @@ Keyboard: <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd> jumps to search,
 processes, fact sheets, FAQ questions and variables at once.
 
 Every view has its own address — `#/process/<id>`, `#/faq/<id>`,
-`#/tab/<id>`, `#/factsheet/<id>`, `#/variable/<id>`, `#/issue/<process>/<id>`,
+`#/tab/<id>`, `#/factsheet/<id>`, `#/variable/<id>`, `#/issue/<item>/<id>`,
 `#/rule/<id>`, `#/coverage/<id>`, `#/department/<id>`, and each section's
 dashboard — so back, forward and copied links all work.
 
@@ -195,10 +195,19 @@ reorder, add sub-departments, and delete once nothing points at them.
 `+ Fact sheet` and `+ FAQ`. The picker opens on suggestions for that step (the
 same scoring the live call view uses) and searches the library as you type.
 
-**Issues.** `⚑ Raise issue` on a process, or `⚑` on a single step, records an
-issue by hand. Resolving keeps the issue, stamped with the date and an
-optional note on how it was fixed, under *resolved* on the process page and in
-the register — the report and CSV carry the history too. Reopen puts it back.
+**Issues.** An issue is something a person has noticed — a number that
+doesn't match, a guess that needs checking, a step that is missing. It can be
+about a process (or one of its steps), an FAQ answer, a fact sheet or a
+variable, and it is kept on that item (`issues` on the process, the FAQ answer,
+the fact sheet or the variable). Raise one with `⚑` on any of those pages, `⚑`
+on a single step, from the live call view, or with **⚑ Raise an issue** on the
+Issues tab, where you search for what it is about.
+
+Each page lists its issues at the foot, after *Used in*: open ones in full,
+resolved ones folded away. Resolving keeps the issue, stamped with the date and
+an optional note on how it was fixed — the register, the report and the CSV
+carry the history too. Reopen puts it back. Issues are internal: neither
+FAQ.json export carries them.
 
 **When the published files move on.** If the files on GitHub have a newer
 version than your draft started from, you stay on your draft and a bar offers
