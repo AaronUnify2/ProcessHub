@@ -70,7 +70,7 @@ a dashboard for the section as a whole.
 | Processes | the department tree | totals, handoffs, the processes with most handoffs |
 | FAQ | publish tabs, headings and questions — drag to reorder (below) | what needs attention, figures per tab |
 | Fact sheets | fact sheets by stage: draft, in sign-off, approved, live | counts by stage, who sign-off is waiting on, what needs attention, by owner |
-| Variables | variables by owning department, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
+| Variables | department › sub-department › source document › value, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
 | Issues | open issues by severity, then resolved | severity counts, issues by department, and the full register of what people have raised |
 | Rules | the built-in checks, then your rules, each with what it finds | the six built-in checks as cards, then your text rules; each opens on its own page |
 | Departments | the department tree with a status bar per department | progress for every department — processes by status, FAQ answers (how many public), fact sheets (how many approved), variables (how many verified), open issues; each row opens the department |
@@ -81,6 +81,31 @@ sections, and at everything elsewhere.
 Single issues, rules and departments each have a page of their own
 (`#/issue/<item>/<issue>`, `#/rule/<id>`, `#/department/<id>`), so choosing
 one in the sidebar keeps you in that section.
+
+## The Variables section
+
+The sidebar nests each variable under the department that owns it, then the
+sub-department (where it is owned by one), then the published document it
+comes from — so you can see at a glance which figures each document backs.
+A department's own values sit under its sources, after its sub-departments;
+values with no source yet, and internal ones that never need one, come last.
+A document cited by two departments appears under each, with that
+department's values.
+
+- Click a **department** to open or close it. Click a **document's name** to
+  open its page; its ▸ opens it in the sidebar. A ⚑ marks a value with an
+  open issue.
+- A **source page** (`#/source/<link>`) has a *View live page* button, every
+  value the document backs split into **Still correct** (verified, no open
+  issue — carry them forward when the document is updated) and **Needs
+  attention** (unverified, stale or with an open issue), and the
+  departments that own them.
+- A **variable's page** reads top to bottom: the value, then **Where it comes
+  from** — the document, a *View live page* button, the words that say so and
+  when someone last checked — then **Where it's used**, by fact sheet,
+  process (with the step numbers) and FAQ answer, then its **Issues**. The
+  breadcrumb at the top is the same path as the sidebar.
+- A department's page lists the **Variable sources** its values draw on.
 
 ## The FAQ section
 
@@ -167,7 +192,7 @@ Keyboard: <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd> jumps to search,
 processes, fact sheets, FAQ questions and variables at once.
 
 Every view has its own address — `#/process/<id>`, `#/faq/<id>`,
-`#/tab/<id>`, `#/factsheet/<id>`, `#/variable/<id>`, `#/issue/<item>/<id>`,
+`#/tab/<id>`, `#/factsheet/<id>`, `#/variable/<id>`, `#/source/<link>`, `#/issue/<item>/<id>`,
 `#/rule/<id>`, `#/department/<id>`, and each section's
 dashboard — so back, forward and copied links all work.
 
