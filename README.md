@@ -73,16 +73,14 @@ a dashboard for the section as a whole.
 | Variables | variables by owning department, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
 | Issues | open issues by severity, then resolved | severity counts, issues by department, and the full register of what people have raised |
 | Rules | the built-in checks, then your rules, each with what it finds | the six built-in checks as cards, then your text rules; each opens on its own page |
-| Coverage | the department tree with a status bar per department | status by department; each department opens on its processes |
-| Depts | the department tree | the tree editor; each department opens on everything filed under, done by or owned by it |
+| Departments | the department tree with a status bar per department | progress for every department — processes by status, FAQ answers (how many public), fact sheets (how many approved), variables (how many verified), open issues; each row opens the department |
 
 Search looks at FAQ questions, fact sheets or variables only when in those
 sections, and at everything elsewhere.
 
-Single issues, rules, departments and a department's coverage each have a
-page of their own (`#/issue/<item>/<issue>`, `#/rule/<id>`,
-`#/department/<id>`, `#/coverage/<id>`), so choosing one in the sidebar keeps
-you in that section.
+Single issues, rules and departments each have a page of their own
+(`#/issue/<item>/<issue>`, `#/rule/<id>`, `#/department/<id>`), so choosing
+one in the sidebar keeps you in that section.
 
 ## The FAQ section
 
@@ -170,7 +168,7 @@ processes, fact sheets, FAQ questions and variables at once.
 
 Every view has its own address — `#/process/<id>`, `#/faq/<id>`,
 `#/tab/<id>`, `#/factsheet/<id>`, `#/variable/<id>`, `#/issue/<item>/<id>`,
-`#/rule/<id>`, `#/coverage/<id>`, `#/department/<id>`, and each section's
+`#/rule/<id>`, `#/department/<id>`, and each section's
 dashboard — so back, forward and copied links all work.
 
 **Editing.** Click any field to change it. Enter saves a single-line field,
@@ -188,8 +186,9 @@ new process there (an entry step joined to a resolution step). The fact sheet,
 FAQ and variable lists each have a `+ New` button, and every item has a
 delete button on its own page. Deleting a fact sheet or FAQ detaches it from
 every step first; a variable can only be deleted once nothing uses it.
-Departments are managed at `#/departments`: rename, move under a new parent,
-reorder, add sub-departments, and delete once nothing points at them.
+Departments are managed on each department's own page: rename, move under a
+new parent, reorder, add sub-departments or processes, and delete once nothing
+points at them. **+ New department** is on the Departments tab.
 
 **Attaching content.** Each step, and the process as a whole, has
 `+ Fact sheet` and `+ FAQ`. The picker opens on suggestions for that step (the
@@ -289,9 +288,9 @@ whole words and exact capitals, so "sufficient merit" is not flagged.
 
 Findings are computed, never stored: fix the content and the finding
 disappears by itself. A recorded issue has to be ticked off by hand; a rule
-finding cannot lie about being fixed. Only text rules count in the coverage
-report and the issues exports (the Issues tab itself lists only what people
-have raised) — the built-in checks have their
+finding cannot lie about being fixed. Only text rules count in the issues
+exports (the Issues tab itself lists only what people have raised) — the
+built-in checks have their
 own pages, where thousands of empty fields would not bury what needs action.
 
 **Writing check.** A panel under the FAQ answer and fact sheet editors, run a
@@ -301,9 +300,16 @@ block, so a sentence never runs across a heading or a list item, and a
 variable counts as its value. Click a flag to select the words in the editor;
 × dismisses it until the page is next opened. It never changes the text.
 
-**Coverage.** `#/coverage` shows each department's processes by status, its
-handoffs, open issues and rule findings, plus variable verification by owning
-department. The same page is in the Export menu as a self-contained report.
+**Departments.** `#/departments` is one table of progress by department, each
+row counting the department and everything under it: processes and their
+status, handoffs, FAQ answers (and how many are on the public page), fact
+sheets (and how many are approved), variables (and how many are verified), and
+open issues on any of it. FAQ answers, fact sheets and variables count under
+their owning department. Each row opens the department's page — its figures,
+everything filed under, done by or owned by it, and the controls to rename,
+move, reorder, add to or delete it. The same table is in the Export menu as a
+self-contained report. The old Coverage addresses (`#/coverage`,
+`#/coverage/<id>`) open the Departments pages.
 
 **Routes and branching.** The arrows between steps are the process's flow. A
 decision step can lead to several places, each route with a label ("Yes",

@@ -1466,27 +1466,6 @@ button.rule-head[disabled] { cursor: default; }
   .cov-table.vars .cov-row > :nth-child(n+4) { display: block; }
 }
 
-/* ---- departments --------------------------------------------------------- */
-
-.dept-list { display: flex; flex-direction: column; gap: 0.3rem; }
-.dept-row {
-  display: grid; grid-template-columns: minmax(8rem, 1.3fr) minmax(6rem, 1fr) minmax(8rem, 1.2fr) auto;
-  gap: 0.5rem; align-items: center;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-  padding: 0.4rem 0.6rem; font-size: 0.86rem;
-}
-.dept-row.depth-0 { font-weight: 650; }
-.dept-row.depth-1 { margin-left: 1.2rem; }
-.dept-row.depth-2 { margin-left: 2.4rem; }
-.dept-used { font-size: 0.74rem; color: var(--text-soft); font-weight: 400; }
-.dept-parent { font-size: 0.78rem; font-weight: 400; color: var(--text-soft); min-width: 0; }
-.dept-tools { display: flex; flex-wrap: wrap; gap: 0.2rem; justify-content: flex-end; }
-@media (max-width: 700px) {
-  .dept-row { grid-template-columns: 1fr; gap: 0.2rem; }
-  .dept-tools { justify-content: flex-start; }
-  .dept-row.depth-1 { margin-left: 0.6rem; }
-  .dept-row.depth-2 { margin-left: 1.2rem; }
-}
 
 /* ===========================================================================
    Publishing to GitHub
@@ -2079,3 +2058,29 @@ button.cov-row.cov-link:hover { background: var(--bg); }
 .block.issues h2 .btn { margin-left: auto; }
 .im-find-list { display: flex; flex-direction: column; gap: 0.25rem; max-height: 14rem; overflow-y: auto; margin-top: 0.35rem; }
 .im-find-list:empty { display: none; }
+
+/* ===========================================================================
+   Departments — one table for processes, FAQ answers, fact sheets and
+   variables, each count with its progress figure under it
+   =========================================================================== */
+
+.section-switch button[data-section="departments"] { grid-column: span 2; }
+
+.cov-table.dept-cov .cov-row {
+  grid-template-columns: minmax(7rem, 1.4fr) 4.2rem minmax(5rem, 1.4fr) 4.2rem 4.8rem 4.8rem 4.8rem 4.2rem;
+}
+.cov-row .num small {
+  display: block; font-size: 0.68rem; font-weight: 500; color: var(--text-soft); white-space: nowrap;
+}
+.cov-row.depth-0 .num small { font-weight: 500; }
+
+@media (max-width: 700px) {
+  /* On a phone: the department, its processes, FAQ answers and variables. */
+  .cov-table.dept-cov .cov-row { grid-template-columns: minmax(0, 1fr) 4.6rem 4.2rem 4.6rem; }
+  .cov-table.dept-cov .cov-row > :nth-child(n) { display: none; }
+  .cov-table.dept-cov .cov-row > :nth-child(1),
+  .cov-table.dept-cov .cov-row > :nth-child(2),
+  .cov-table.dept-cov .cov-row > :nth-child(5),
+  .cov-table.dept-cov .cov-row > :nth-child(7) { display: block; }
+}
+.dept-bar { margin-bottom: 1.4rem; }

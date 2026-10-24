@@ -12,7 +12,7 @@
                 ↑ ↓ on the open question, which also works on a phone.
 
    And one each for fact sheets, variables, the issues register, content
-   rules, coverage and departments: a list to jump straight to anything,
+   rules and departments: a list to jump straight to anything,
    while the content area shows that section's dashboard.
 
    Search is one keystroke away everywhere. In the FAQ, fact sheets and
@@ -30,7 +30,7 @@
   // Where each section's button leads: its dashboard.
   var SECTION_HOME = {
     processes: '#/', faq: '#/faqs', factsheets: '#/factsheets', variables: '#/variables',
-    issues: '#/issues', rules: '#/rules', coverage: '#/coverage', departments: '#/departments'
+    issues: '#/issues', rules: '#/rules', departments: '#/departments'
   };
 
   // Sections whose search looks at one kind of content only.
@@ -117,7 +117,6 @@
       variables: renderVariablesTree,
       issues: renderIssuesTree,
       rules: renderRulesTree,
-      coverage: renderCoverageTree,
       departments: renderDepartmentsTree
     }[view.section] || renderTree;
     draw();
@@ -692,7 +691,7 @@
     el.count.textContent = rules.length + ' rules · ' + Rules.totals().findings + ' findings';
   }
 
-  // ---- coverage and departments share the department tree
+  // ---- departments
 
   function deptTree(renderRow, depthLimit) {
     var index = Data.state.index;
@@ -714,28 +713,20 @@
     }).join('') + '</span>';
   }
 
-  function renderCoverageTree() {
-    var cov = Data.coverage(Rules.byProcess());
+  function renderDepartmentsTree() {
+    var cov = Data.coverage();
     var byId = {};
     cov.rows.forEach(function (r) { byId[r.node.id] = r; });
     el.tree.innerHTML = '<div class="side-rows flat">' + deptTree(function (node, depth) {
       var r = byId[node.id];
-      return row('#/coverage/' + node.id, view.active === 'cov:' + node.id,
-        e(node.name), '', (r ? r.processes : 0) + miniBar(r)).replace('class="side-row', 'class="side-row depth-' + depth);
-    }, 9) + '</div>';
-    var t = cov.total;
-    el.count.textContent = t.processes + ' processes · ' +
-      ((t.byStatus.reviewed || 0) + (t.byStatus.published || 0)) + ' reviewed or published';
-  }
-
-  function renderDepartmentsTree() {
-    el.tree.innerHTML = '<div class="side-rows flat">' + deptTree(function (node, depth) {
       return row('#/department/' + node.id, view.active === 'dept:' + node.id,
-        e(node.name), '', String(Data.processCount(node.id)))
+        e(node.name), '', (r ? r.processes : 0) + miniBar(r))
         .replace('class="side-row', 'class="side-row depth-' + depth);
     }, 9) + '</div>' +
       foot('<button class="btn tiny" data-side-act="new-dept">+ New department</button>');
-    el.count.textContent = Data.state.processes.taxonomy.length + ' departments and sub-departments';
+    var t = cov.total;
+    el.count.textContent = t.processes + ' processes · ' +
+      ((t.byStatus.reviewed || 0) + (t.byStatus.published || 0)) + ' reviewed or published';
   }
 
   global.Sidebar = {

@@ -33,8 +33,9 @@
     [/^#\/issues$/, 'issues', function () { Detail.issues(); }],
     [/^#\/rule\/(.+)$/, 'rules', function (id) { Detail.rule(id); return 'rule:' + id.split('/')[0]; }],
     [/^#\/rules$/, 'rules', function () { Detail.rules(); }],
-    [/^#\/coverage\/(.+)$/, 'coverage', function (id) { Detail.coverageDept(id); return 'cov:' + id; }],
-    [/^#\/coverage$/, 'coverage', function () { Detail.coverage(); }],
+    // Coverage is now part of Departments; old links still land in the right place.
+    [/^#\/coverage\/(.+)$/, 'departments', function (id) { Detail.department(id); return 'dept:' + id; }],
+    [/^#\/coverage$/, 'departments', function () { Detail.departments(); }],
     [/^#\/department\/(.+)$/, 'departments', function (id) { Detail.department(id); return 'dept:' + id; }],
     [/^#\/departments$/, 'departments', function () { Detail.departments(); }]
   ];
