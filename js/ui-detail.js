@@ -281,28 +281,10 @@
     // -- rules
     if (act === 'add-rule') {
       id = Rules.add({
-        name: 'New rule', kind: 'text', match: { mode: 'phrase', value: '' },
+        name: 'New rule', match: { mode: 'phrase', value: '', wholeWord: true }, suggest: '',
         scope: ['process', 'step', 'factsheet', 'faq'], severity: 'medium', message: ''
       });
       onNavigate('#/rule/' + id);
-      return;
-    }
-    if (act === 'seed-rules') {
-      Rules.defaults().forEach(function (r) { if (!Rules.get(r.id)) Rules.add(r); });
-      refresh();
-      return;
-    }
-    if (act === 'add-writing-rule') {
-      id = Rules.add({
-        name: 'New writing rule', kind: 'avoid', match: { mode: 'phrase', value: '', wholeWord: true },
-        suggest: '', scope: ['faq', 'factsheet'], severity: 'low', message: ''
-      });
-      onNavigate('#/rule/' + id);
-      return;
-    }
-    if (act === 'seed-writing-rules') {
-      Rules.writingDefaults().forEach(function (r) { if (!Rules.get(r.id)) Rules.add(r); });
-      refresh();
       return;
     }
     if (act === 'toggle-rule') { Rules.toggle(d.rule); refresh(); return; }
@@ -339,6 +321,19 @@
 
   /** The "+ route to…" menus on each step, and the other in-page selects. */
   function handleChange(event) {
+    var setting = event.target.closest('select[data-rule-setting]');
+    if (setting) {
+      var bits = setting.dataset.ruleSetting.split(':');
+      Edit.set('rule:' + bits[0] + ':' + bits[1], Number(setting.value));
+      refresh();
+      return;
+    }
+    var filter = event.target.closest('select[data-rule-filter]');
+    if (filter) {
+      ruleFilters[filter.dataset.ruleFilter] = filter.value;
+      refresh();
+      return;
+    }
     var decide = event.target.closest('select[data-decide]');
     if (decide) {
       var who = decide.dataset.decide.split(':');
@@ -1745,8 +1740,8 @@
 
     var results = Rules.run().filter(function (r) { return !r.skipped; });
     if (!results.length) {
-      html += '<p class="empty">No rules yet. ' +
-        '<button class="btn tiny" data-act="seed-rules">Add a starting set</button></p>';
+      html += '<p class="empty">No rules yet. Add text that should no longer appear on the ' +
+        '<a href="#/rules">Rules tab</a>.</p>';
     } else {
       html += results.map(renderRuleFindings).join('');
     }
@@ -1843,117 +1838,31 @@
     return head + skipped + body + '</div>';
   }
 
-  // ---- rules manager -------------------------------------------------------
+  // ---- rules ---------------------------------------------------------------
 
-  var RULE_KINDS = [
-    { value: 'text', label: 'Text that should no longer appear' },
-    { value: 'empty', label: 'A field that should be filled in' },
-    { value: 'stale', label: 'A date not touched for a while' },
-    { value: 'unused', label: 'Content nothing references' }
+  // What a built-in rule's results are narrowed to. Kept while you move
+  // between rules, so a department you are working through stays chosen.
+  var ruleFilters = { type: '', dept: '' };
+
+  var MATCH_MODES = [
+    { value: 'phrase', label: 'This exact wording' },
+    { value: 'regex', label: 'A pattern (regular expression)' }
   ];
 
-  // Writing rules: how public wording reads. Checked as you type in the FAQ
-  // and fact sheet editors, and listed on the Rules tab apart from the rest.
-  // The passive check is built in (rules.js) and cannot be made again, so it
-  // is not offered as a kind to choose.
-  var WRITING_KINDS = [
-    { value: 'avoid', label: 'A word or phrase to avoid' },
-    { value: 'long', label: 'A sentence that runs long' },
-    { value: 'nextstep', label: 'An FAQ answer with no next step' }
-  ];
-  var PASSIVE_KIND = { value: 'passive', label: 'Says what must be done, not who does it' };
-
-  function kindLabel(kind) {
-    var found = RULE_KINDS.concat(WRITING_KINDS, [PASSIVE_KIND])
-      .find(function (k) { return k.value === kind; });
-    return found ? found.label : kind;
-  }
-
-  /**
-   * A built-in rule: everything shown, nothing editable but its exceptions,
-   * and it can be switched off but not deleted.
-   */
-  function builtInCard(rule, found) {
-    var spec = 'rule:' + rule.id + ':';
-    var off = rule.enabled === false;
-    return '<div class="rule-card builtin' + (off ? ' off' : '') + '" id="rule-' + e(rule.id) + '">' +
-      '<div class="rule-card-head">' +
-      '<span class="rule-name">' + e(rule.name) + ' <span class="builtin-tag">Built in</span></span>' +
-      '<span class="rule-count' + (found ? '' : ' clear') + '">' +
-      (off ? 'disabled' : found + ' found') + '</span>' +
-      btn('toggle-rule', { rule: rule.id }, off ? 'Enable' : 'Disable', 'tiny') +
-      '</div>' +
-      '<div class="rule-grid">' +
-      field('Check', '<span class="fixed">' + e(kindLabel(rule.kind)) + '</span>') +
-      field('Severity', '<span class="fixed">' + e(rule.severity) + '</span>') +
-      field('Applies to', '<span class="fixed">' + e((rule.scope || []).map(function (sc) {
-        return { faq: 'FAQ answers', factsheet: 'fact sheets' }[sc] || sc;
-      }).join(', ')) + '</span>') +
-      '</div>' +
-      field('Never flag these', f(spec + 'allow',
-        { placeholder: 'words or phrases, separated by commas — e.g. required, must be approved' })) +
-      field('Tip shown with the flag', '<p class="fixed">' + e(rule.message) + '</p>') +
-      '<p class="hint-block">Built into Process Hub. It can be switched off, and told what never ' +
-      'to flag, but not changed, copied or deleted — its word lists are tuned against Council\'s ' +
-      'own content, and changing them is a change to the app.</p>' +
-      '</div>';
-  }
-
-  var FIELD_HINTS = {
-    empty: 'owner · responsibleRole · escalationPoint · timeframe · sop · ownerId',
-    stale: 'lastReviewed · lastVerified'
+  var SCOPE_LABEL = {
+    process: 'processes', step: 'process steps', factsheet: 'fact sheets',
+    faq: 'FAQ answers', variable: 'variables'
   };
 
+  function scopeWords(rule) {
+    var scope = rule.scope && rule.scope.length ? rule.scope : Rules.SCOPES;
+    return scope.map(function (s) { return SCOPE_LABEL[s] || s; }).join(', ');
+  }
+
+  /** The editor for a text rule — the one kind of rule people add. */
   function ruleCard(rule, found) {
-    if (Rules.isBuiltIn(rule)) return builtInCard(rule, found);
     var spec = 'rule:' + rule.id + ':';
     var off = rule.enabled === false;
-    var writing = Writing.isWriting(rule);
-    // A passive rule made before the check was built in keeps its kind on
-    // show, so the select is not blank, but it no longer does anything.
-    var writingKinds = rule.kind === 'passive'
-      ? WRITING_KINDS.concat([{ value: 'passive', label: PASSIVE_KIND.label + ' (built in only)' }])
-      : WRITING_KINDS;
-
-    var body = '';
-    if (rule.kind === 'avoid') {
-      body += field('Avoid', f(spec + 'match:value', { placeholder: 'e.g. rates team' })) +
-        field('Use instead', f(spec + 'suggest', { placeholder: 'e.g. revenue team' })) +
-        field('Whole words only', f(spec + 'match:wholeWord',
-          { type: 'select', options: YES_NO, placeholder: 'No' })) +
-        field('Match capitals exactly', f(spec + 'match:caseSensitive',
-          { type: 'select', options: YES_NO, placeholder: 'No' }));
-    }
-    if (rule.kind === 'long') {
-      body += field('Longest sentence (words)', f(spec + 'words', { placeholder: '25' }));
-    }
-    if (rule.kind === 'text') {
-      body += field('Look for', f(spec + 'match:value',
-        { placeholder: 'e.g. Merit' })) +
-        field('Matching', f(spec + 'match:mode', { type: 'select', options: [
-          { value: 'phrase', label: 'This exact wording' },
-          { value: 'regex', label: 'A pattern (regular expression)' }] })) +
-        field('Whole words only', f(spec + 'match:wholeWord',
-          { type: 'select', options: YES_NO, placeholder: 'No' })) +
-        field('Match capitals exactly', f(spec + 'match:caseSensitive',
-          { type: 'select', options: YES_NO, placeholder: 'No' }));
-    }
-    if (rule.kind === 'empty' || rule.kind === 'stale') {
-      body += field('Field', f(spec + 'field',
-        { placeholder: FIELD_HINTS[rule.kind] }));
-    }
-    if (rule.kind === 'stale') {
-      body += field('Older than (months)', f(spec + 'months', { placeholder: '12' }));
-    }
-    if (rule.kind === 'text') {
-      body += field('Flag while writing', f(spec + 'live',
-        { type: 'select', options: YES_NO, placeholder: 'No' }));
-    }
-    if (!writing) {
-      body += field('Leave drafts alone', f(spec + 'ignoreDraft',
-        { type: 'select', options: YES_NO, placeholder: 'No' }));
-    }
-
     return '<div class="rule-card' + (off ? ' off' : '') + '" id="rule-' + e(rule.id) + '">' +
       '<div class="rule-card-head">' +
       '<span class="rule-name">' + f(spec + 'name') + '</span>' +
@@ -1963,100 +1872,89 @@
       btn('del-rule', { rule: rule.id }, '×', 'tiny danger', 'Delete rule') +
       '</div>' +
       '<div class="rule-grid">' +
-      field('Check', f(spec + 'kind', { type: 'select', options: writing ? writingKinds : RULE_KINDS })) +
+      field('Look for', f(spec + 'match:value', { placeholder: 'e.g. Merit' })) +
+      field('Say instead (optional)', f(spec + 'suggest', { placeholder: 'e.g. the CRM' })) +
+      field('Matching', f(spec + 'match:mode', { type: 'select', options: MATCH_MODES })) +
+      field('Whole words only', f(spec + 'match:wholeWord',
+        { type: 'select', options: YES_NO, placeholder: 'No' })) +
+      field('Match capitals exactly', f(spec + 'match:caseSensitive',
+        { type: 'select', options: YES_NO, placeholder: 'No' })) +
       field('Severity', f(spec + 'severity', { type: 'select',
         options: options(['high', 'medium', 'low']) })) +
-      body +
+      field('Leave drafts alone', f(spec + 'ignoreDraft',
+        { type: 'select', options: YES_NO, placeholder: 'No' })) +
       field('Applies to', scopeEditor(rule)) +
       '</div>' +
-      field(writing ? 'Tip shown with the flag' : 'What to tell the reader', f(spec + 'message',
-        { type: 'multiline', placeholder: writing
-          ? 'What to do instead — shown under each flag in the editor'
-          : 'Why this matters and what to do about it' })) +
+      field('What to tell the reader', f(spec + 'message',
+        { type: 'multiline', placeholder: 'Why this matters and what to do about it' })) +
+      '<p class="hint-block">Found everywhere it applies, and listed in the issues register. ' +
+      'Where it applies to FAQ answers or fact sheets, the editors also flag it as you type, ' +
+      'with what to say instead.</p>' +
       '</div>';
   }
 
-  function ruleTable(list, results) {
-    return '<div class="cov-table dash-table rules-dash" role="table">' +
-      '<div class="cov-row cov-headrow" role="row"><span>Rule</span><span>Check</span>' +
-      '<span>Severity</span><span>Found</span></div>' +
-      list.map(function (rule) {
-        var r = results[rule.id];
-        var off = rule.enabled === false;
-        return '<button class="cov-row cov-link' + (off ? ' off' : '') + '" role="row" data-route="#/rule/' +
-          e(rule.id) + '"><span class="cov-name">' + e(rule.name) + '</span>' +
-          '<span class="when">' + e(kindLabel(rule.kind)) + '</span>' +
-          '<span class="when">' + e(rule.severity || 'medium') + '</span>' +
-          '<span class="num">' + (off ? 'off' : (r ? r.findings.length : 0)) + '</span></button>';
-      }).join('') + '</div>';
-  }
-
   function renderRules() {
-    var all = Rules.list();
-    var content = all.filter(function (r) { return !Writing.isWriting(r); });
-    var writing = all.filter(function (r) { return Writing.isWriting(r); });
+    var builtIns = Rules.list().filter(Rules.isBuiltIn);
+    var mine = Rules.textRules();
     var results = {};
-    Rules.runAll().forEach(function (r) { results[r.rule.id] = r; });
-    var totals = Rules.totals();
-    var writingTotals = Rules.totals(Rules.runWriting());
-    var enabled = content.filter(function (r) { return r.enabled !== false; }).length;
-    var writingOn = writing.filter(function (r) { return r.enabled !== false; }).length;
+    Rules.run().forEach(function (r) { results[r.rule.id] = r; });
 
-    var html = '<div class="row-actions">' +
-      btn('add-rule', {}, '+ New rule') +
-      btn('add-writing-rule', {}, '+ New writing rule') +
+    var html = '<h2 class="group">Built-in checks</h2>' +
+      '<p class="hint-block">Each one goes through all of Process Hub at once. Open one to ' +
+      'see what it finds, by type and department. They can be switched off, not changed.</p>' +
+      '<div class="chk-cards">' + builtIns.map(function (rule) {
+        var off = rule.enabled === false;
+        var head = off ? null : Checks.headline(rule);
+        return '<button class="chk-card' + (off ? ' off' : '') + '" data-route="#/rule/' + e(rule.id) + '">' +
+          '<span class="chk-card-name">' + e(rule.name) + '</span>' +
+          '<span class="chk-card-n">' + (off ? 'Off' : head.count) + '</span>' +
+          '<span class="chk-card-words">' + (off ? 'Switched off' : e(head.words)) + '</span>' +
+          '</button>';
+      }).join('') + '</div>';
+
+    html += '<h2 class="group">Your rules</h2>' +
+      '<div class="row-actions">' +
+      btn('add-rule', {}, '+ Text that should no longer appear') +
       '<span class="spacer"></span>' +
       '<button class="btn small" data-route="#/issues">Issues register →</button>' +
-      '</div>' +
-      '<section class="tiles">' +
-      tile(content.length, 'content rules', enabled + ' switched on', '') +
-      tile(totals.findings, 'findings', 'across the whole corpus', '#/issues') +
-      tile(totals.high || 0, 'high severity', '', '') +
-      tile(writing.length, 'writing rules', writingOn + ' switched on', '') +
-      tile(writingTotals.findings, 'flagged for wording', 'FAQ answers and fact sheets', '') +
-      '</section>';
-
-    html += '<h2 class="group">Content rules</h2>';
-    if (!content.length) {
-      html += '<p class="empty">No content rules yet. A rule is a standing check across ' +
-        'every process, fact sheet and FAQ — add one whenever something in the ' +
-        'organisation changes. ' + btn('seed-rules', {}, 'Add a starting set', 'tiny') + '</p>';
+      '</div>';
+    if (!mine.length) {
+      html += '<p class="empty">No rules yet. Add one whenever something changes — a system ' +
+        'renamed, a form retired, a team now called something else.</p>';
     } else {
-      html += ruleTable(content, results);
+      html += '<div class="cov-table dash-table rules-dash" role="table">' +
+        '<div class="cov-row cov-headrow" role="row"><span>Rule</span><span>Looks for</span>' +
+        '<span>Severity</span><span>Found</span></div>' +
+        mine.map(function (rule) {
+          var r = results[rule.id];
+          var off = rule.enabled === false;
+          var look = (rule.match && rule.match.value) || '—';
+          return '<button class="cov-row cov-link' + (off ? ' off' : '') + '" role="row" data-route="#/rule/' +
+            e(rule.id) + '"><span class="cov-name">' + e(rule.name) + '</span>' +
+            '<span class="when">“' + e(look) + '”' + (rule.suggest ? ' → “' + e(rule.suggest) + '”' : '') + '</span>' +
+            '<span class="when">' + e(rule.severity || 'medium') + '</span>' +
+            '<span class="num">' + (off ? 'off' : (r ? r.findings.length : 0)) + '</span></button>';
+        }).join('') + '</div>';
     }
-    html += '<p class="hint-block">A content rule is a standing check. When something in the organisation ' +
-      'changes — a system renamed, a form retired — add a rule and everything now wrong shows up ' +
-      'in the issues register. Findings disappear by themselves once the content is fixed.</p>';
-
-    html += '<h2 class="group">Writing rules</h2>';
-    if (writing.length) html += ruleTable(writing, results);
-    // The built-in rule is always there, so offer the rest of the starting
-    // set whenever it is on its own.
-    if (!writing.filter(function (r) { return !Rules.isBuiltIn(r); }).length) {
-      html += '<p class="empty">No other writing rules yet. ' +
-        btn('seed-writing-rules', {}, 'Add a starting set', 'tiny') + '</p>';
-    }
-    html += '<p class="hint-block">Writing rules are how Council wants public wording to read. ' +
-      'They are checked as you type, in the <strong>Writing check</strong> under the FAQ and fact ' +
-      'sheet editors, and they only ever flag — nothing is changed for you. Add a word to avoid, ' +
-      'change the sentence length, or switch a rule off here, and the editors follow. ' +
-      'They are kept out of the issues register: they are about how something reads, not ' +
-      'whether it is right.</p>';
+    html += '<p class="hint-block">A rule is text that should no longer appear. Everything it ' +
+      'finds is listed in the issues register, and it disappears by itself once the wording is ' +
+      'fixed. Where a rule applies to FAQ answers or fact sheets, the editors flag it as you type.</p>';
 
     paint(listPane('Rules',
-      plural(content.length, 'content rule') + ' · ' + plural(writing.length, 'writing rule'), html));
+      plural(builtIns.length, 'built-in check') + ' · ' + plural(mine.length, 'rule'), html));
   }
 
-  function renderRule(id) {
+  function renderRule(arg) {
+    var parts = String(arg || '').split('/');
+    var id = parts[0];
     var rule = Rules.get(id);
     if (!rule) return paint(notFound('rule', id));
-    var result = Rules.runAll().find(function (r) { return r.rule.id === id; }) || { findings: [] };
-    expanded[id] = true;
-    opened[id] = true;
+    if (Rules.isBuiltIn(rule)) return renderBuiltIn(rule, parts.slice(1).join('/'));
 
+    var result = Rules.run().find(function (r) { return r.rule.id === id; }) || { findings: [] };
     paint('<article class="pane">' +
-      '<header class="pane-head"><div class="crumbs"><a href="#/rules">Rules</a> · ' +
-      (Writing.isWriting(rule) ? 'writing rule' : 'content rule') + '</div>' +
+      '<header class="pane-head"><div class="crumbs"><a href="#/rules">Rules</a> · text that ' +
+      'should no longer appear</div>' +
       '<h1>' + e(rule.name) + '</h1>' +
       '<p class="lede">' + (rule.enabled === false ? 'Switched off.' :
         plural(result.findings.length, 'finding') + ' at the moment.') + '</p></header>' +
@@ -2076,22 +1974,221 @@
       '</section></article>');
   }
 
+  // ---- a built-in rule's page ------------------------------------------------
+
+  var WORD_LIMITS = [12, 15, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 30, 35, 40];
+
+  /** How "Who does this?" decides, in plain words. */
+  function passiveHowItWorks() {
+    return '<details class="how-it-works" open><summary>How it works</summary>' +
+      '<p>It reads each sentence a reader sees and looks for one pattern:</p>' +
+      '<ol>' +
+      '<li>a word that says something has to happen — <em>must</em>, <em>should</em>, ' +
+      '<em>needs to</em>, <em>has to</em>, <em>is to</em> or <em>are to</em>;</li>' +
+      '<li>then <em>be</em>;</li>' +
+      '<li>then a verb like <em>completed</em>, <em>approved</em>, <em>paid</em> or <em>sent</em>.</li>' +
+      '</ol>' +
+      '<p>So it flags “The bond form <mark>must be completed</mark> in full” — completed by whom? ' +
+      'It leaves alone:</p>' +
+      '<ul>' +
+      '<li>a sentence that says who, with “by”: “must be approved <strong>by Council</strong>”;</li>' +
+      '<li>passives that ask nobody to do anything: “bins are collected weekly”;</li>' +
+      '<li>“can be”, “may be” and “will be”, which are mostly fine;</li>' +
+      '<li>anything in <strong>Never flag these</strong>, below.</li>' +
+      '</ul>' +
+      '<p>The fix is usually to start with the action — “Complete the bond form in full” — or ' +
+      'to name who does it. It only ever flags; the call is yours.</p></details>';
+  }
+
+  function filterSelect(key, choices, allLabel) {
+    var current = ruleFilters[key] || '';
+    return '<label class="chk-filter"><span>' + e(key === 'type' ? 'Show' : 'Department') + '</span>' +
+      '<select data-rule-filter="' + key + '">' +
+      '<option value="">' + e(allLabel) + '</option>' +
+      choices.map(function (c) {
+        return '<option value="' + e(c.value) + '"' + (c.value === current ? ' selected' : '') + '>' +
+          e(c.label) + '</option>';
+      }).join('') + '</select></label>';
+  }
+
+  /** A built-in rule's one setting, as a dropdown that saves as soon as it changes. */
+  function settingSelect(rule, key, label, choices, fallback) {
+    var current = Number(rule[key]) || fallback;
+    return '<label class="chk-filter"><span>' + e(label) + '</span>' +
+      '<select data-rule-setting="' + e(rule.id + ':' + key) + '">' +
+      choices.map(function (c) {
+        return '<option value="' + c.value + '"' + (c.value === current ? ' selected' : '') + '>' +
+          e(c.label) + '</option>';
+      }).join('') + '</select></label>';
+  }
+
+  function typeChoices(types) {
+    return Checks.TYPES.filter(function (t) { return !types || types.indexOf(t.value) !== -1; });
+  }
+
+  function deptChoices() {
+    return Checks.departments().map(function (d) { return { value: d.id, label: d.name }; })
+      .concat([{ value: '~none', label: 'No department' }]);
+  }
+
+  /** The filters as Checks.group takes them. */
+  function activeFilters(types) {
+    var type = ruleFilters.type;
+    if (types && types.indexOf(type) === -1) type = '';
+    return { type: type, dept: ruleFilters.dept === '~none' ? '' : ruleFilters.dept,
+      noDept: ruleFilters.dept === '~none' };
+  }
+
+  function narrow(items, filters) {
+    return items.filter(function (it) {
+      if (filters.type && it.type !== filters.type) return false;
+      if (filters.noDept) return !it.dept.id;
+      return !filters.dept || it.dept.id === filters.dept;
+    });
+  }
+
+  /** A list of items, by type in the standard order, then by department. */
+  function resultsList(items, filters, key) {
+    var list = narrow(items, filters);
+    if (!list.length) return '<p class="empty">Nothing found' +
+      (items.length ? ' with these filters.' : '.') + '</p>';
+    return Checks.group(list, {}).map(function (g) {
+      return '<section class="chk-group"><h3>' + e(g.label) + ' <span>' + g.count + '</span></h3>' +
+        g.depts.map(function (d) {
+          var groupKey = key + ':' + g.type + ':' + (d.dept.id || '~');
+          var all = expanded[groupKey];
+          var shown = all ? d.items : d.items.slice(0, 25);
+          return '<div class="chk-dept"><div class="chk-dept-name">' + e(d.dept.name) +
+            ' <span>' + d.items.length + '</span></div>' +
+            shown.map(function (it) {
+              return '<button class="list-row finding" data-route="' + e(it.route) + '">' +
+                '<span class="list-title">' + e(it.label) + '</span>' +
+                '<span class="list-sub">' + e(it.sub || '') +
+                (it.detail ? ' — ' + e(it.detail) : '') + '</span></button>';
+            }).join('') +
+            (d.items.length > shown.length || all
+              ? btn('show-all', { rule: groupKey }, all ? 'Show fewer' : 'Show all ' + d.items.length, 'tiny')
+              : '') +
+            '</div>';
+        }).join('') + '</section>';
+    }).join('');
+  }
+
+  /**
+   * The table of fields (or dates, or kinds of unused content) a built-in
+   * rule counts, each row opening its list below.
+   */
+  function countTable(rule, rows, columns, picked, filters) {
+    return '<div class="cov-table dash-table chk-dash" role="table">' +
+      '<div class="cov-row cov-headrow" role="row">' +
+      columns.map(function (c) { return '<span>' + e(c.label) + '</span>'; }).join('') + '</div>' +
+      rows.map(function (row) {
+        var shown = narrow(row.items, { dept: filters.dept, noDept: filters.noDept });
+        return '<button class="cov-row cov-link' + (row.id === picked ? ' picked' : '') +
+          (shown.length ? '' : ' clear') + '" role="row" data-route="#/rule/' + e(rule.id) + '/' +
+          e(row.id) + '">' + columns.map(function (c) { return c.cell(row, shown); }).join('') +
+          '</button>';
+      }).join('') + '</div>';
+  }
+
+  function renderBuiltIn(rule, picked) {
+    var spec = 'rule:' + rule.id + ':';
+    var off = rule.enabled === false;
+    var writing = Writing.isWriting(rule);
+    var types = writing ? (rule.kind === 'nextstep' ? ['faq'] : ['faq', 'factsheet']) : null;
+    var filters = activeFilters(types);
+
+    // Settings this rule has, and the filters for its results.
+    var controls = '';
+    if (rule.kind === 'stale') {
+      controls += settingSelect(rule, 'months', 'Older than', Checks.PERIODS.map(function (n) {
+        return { value: n, label: n + (n === 1 ? ' month' : ' months') };
+      }), 12);
+    }
+    if (rule.kind === 'long') {
+      controls += settingSelect(rule, 'words', 'Longer than', WORD_LIMITS.map(function (n) {
+        return { value: n, label: n + ' words' };
+      }), 25);
+    }
+    if (!(types && types.length === 1) && rule.kind !== 'unused' && rule.kind !== 'empty' && rule.kind !== 'stale') {
+      controls += filterSelect('type', typeChoices(types), types ? 'FAQ answers and fact sheets' : 'Everything');
+    }
+    if (rule.kind === 'empty' || rule.kind === 'stale' || rule.kind === 'unused') {
+      controls += filterSelect('type', typeChoices(), 'Everything');
+    }
+    controls += filterSelect('dept', deptChoices(), 'All departments');
+
+    var body = '';
+    if (off) {
+      body = '<p class="empty">Switched off — nothing is checked. Switch it on to see what it finds.</p>';
+    } else if (rule.kind === 'empty' || rule.kind === 'stale' || rule.kind === 'unused') {
+      var rows = rule.kind === 'empty' ? Checks.emptyFields()
+        : rule.kind === 'stale' ? Checks.staleDates(rule.months) : Checks.unused();
+      rows = rows.filter(function (r) { return !filters.type || r.type === filters.type; });
+      var columns = [
+        { label: 'Content', cell: function (row) { return '<span class="when">' + e(row.what) + '</span>'; } },
+        { label: rule.kind === 'stale' ? 'Date' : rule.kind === 'unused' ? 'Not used' : 'Field',
+          cell: function (row) {
+            // On a phone the Content column goes, so the field says what it belongs to.
+            return '<span class="cov-name"><span class="chk-what">' + e(row.what) + ' · </span>' +
+              e(row.label) + '</span>';
+          } },
+        { label: rule.kind === 'stale' ? 'Older' : rule.kind === 'unused' ? 'Found' : 'Empty',
+          cell: function (row, shown) {
+            return '<span class="num count' + (shown.length ? ' warn' : '') + '">' + shown.length + '</span>';
+          } },
+        { label: 'Out of', cell: function (row) { return '<span class="num">' + row.total + '</span>'; } }
+      ];
+      body += countTable(rule, rows, columns, picked, filters);
+      var row = rows.find(function (r) { return r.id === picked; });
+      if (row) {
+        body += '<section class="block"><h2>' + e(row.what) + ' — ' + e(row.label) +
+          (rule.kind === 'empty' ? ' is empty' : rule.kind === 'stale'
+            ? ', older than ' + plural(Number(rule.months) || 12, 'month') : '') + '</h2>' +
+          resultsList(row.items, { dept: filters.dept, noDept: filters.noDept }, rule.id + ':' + row.id) +
+          '</section>';
+      } else {
+        body += '<p class="hint-block">Pick a row to list everything in it, by department.</p>';
+      }
+    } else {
+      body += '<section class="block"><h2>What it finds</h2>' +
+        resultsList(Checks.writing(rule), filters, rule.id) + '</section>';
+    }
+
+    var head = off ? null : Checks.headline(rule);
+    paint('<article class="pane">' +
+      '<header class="pane-head"><div class="crumbs"><a href="#/rules">Rules</a> · built-in check</div>' +
+      '<h1>' + e(rule.name) + ' <span class="builtin-tag">Built in</span></h1>' +
+      '<p class="lede">' + e(Rules.builtInSummary(rule)) + '</p></header>' +
+      '<div class="chk-bar">' +
+      '<span class="chk-headline">' + (off ? 'Switched off' : '<strong>' + head.count + '</strong> ' + e(head.words)) + '</span>' +
+      '<span class="spacer"></span>' +
+      btn('toggle-rule', { rule: rule.id }, off ? 'Switch on' : 'Switch off', 'small') +
+      '</div>' +
+      (rule.kind === 'passive' ? passiveHowItWorks() +
+        '<div class="rule-field chk-allow"><label>Never flag these</label>' +
+        f(spec + 'allow', { placeholder: 'words or phrases, separated by commas — e.g. required, must be approved' }) +
+        '</div>' : '') +
+      (writing && rule.message ? '<p class="hint-block">Shown with each flag in the editor: ' +
+        '<em>' + e(rule.message) + '</em></p>' : '') +
+      '<div class="chk-controls">' + controls + '</div>' +
+      body + '</article>');
+  }
+
   function field(label, control) {
     return '<div class="rule-field"><label>' + e(label) + '</label>' + control + '</div>';
   }
 
   function scopeEditor(rule) {
     var chosen = rule.scope || [];
-    var scopes = Writing.isWriting(rule)
-      ? (rule.kind === 'nextstep' ? ['faq'] : Writing.SCOPES)
-      : Rules.SCOPES;
-    return '<div class="scope-row">' + scopes.map(function (scope) {
+    return '<div class="scope-row">' + Rules.SCOPES.map(function (scope) {
       var on = chosen.indexOf(scope) !== -1;
       return '<button class="scope-chip' + (on ? ' on' : '') +
         '" data-act="scope" data-rule="' + e(rule.id) + '" data-scope="' + e(scope) +
-        '">' + e(scope) + '</button>';
+        '">' + e(SCOPE_LABEL[scope] || scope) + '</button>';
     }).join('') + '</div>';
   }
+
 
   // ---- coverage ------------------------------------------------------------
 

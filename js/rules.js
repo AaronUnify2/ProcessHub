@@ -1,41 +1,39 @@
 /* ===========================================================================
-   rules.js — content rules.
+   rules.js — rules.
 
-   A rule is a standing check across the whole corpus. When the organisation
-   changes — a system renamed, a form retired, a team restructured — you add a
-   rule rather than hunt through 112 processes, and everything that is now
-   wrong shows up in the issues register.
+   Two sorts of rule share one list.
 
-   Findings are computed on every load, never stored. Fix the content and the
-   finding disappears by itself, which is the whole point: a recorded issue has
-   to be ticked off by hand, a rule finding cannot lie about being fixed.
+   Built-in rules are defined here, in code. Each is a quick way through the
+   whole of the content (checks.js does the working out):
 
-   Rule kinds:
-     text     a phrase or pattern that should no longer appear
-     empty    a field that ought to be filled in
-     stale    a date that has not been touched for N months
-     unused   library content nothing references
+     Empty fields        every field in the app, and how many leave it empty
+     Not touched         every date field older than 1, 3, 6 or 12 months
+     Nothing uses it     variables, FAQ answers and fact sheets nothing uses
+     Who does this?      instructions that hide who has to act  (writing.js)
+     Long sentence       sentences over a set number of words   (writing.js)
+     No next step        FAQ answers that never say what to do  (writing.js)
 
-   Writing rules (writing.js) live in the same list: avoid, passive, long and
-   nextstep. They are about how public wording reads rather than whether it
-   is right, so they are counted apart — run() and totals() are the content
-   rules only, and the issues register is not buried under style notes.
-   runWriting() has their findings for the Rules tab, and the editors check
-   them as you type.
+   They cannot be changed, copied or deleted — only switched off, and given
+   the one or two settings each has (how many months, how many words, what
+   never to flag). applyBuiltIns() puts any that are missing back, with their
+   fixed settings, every time the content loads.
 
-   Built-in rules are defined here, in code, and cannot be changed, copied or
-   deleted — only switched off. "Who does this?" is one: its word lists are
-   tuned against the real content, and a second, slightly different copy
-   would drift. The one thing left open is its "Never flag these" list.
-   applyBuiltIns() puts each built-in rule back if it is ever missing and
-   restores its fixed settings, every time the content loads.
+   Text rules are the one kind people add: text that should no longer
+   appear — a system renamed, a form retired, a team that is now called
+   something else. A text rule checks everything it applies to and lists
+   what it finds in the issues register; where it applies to FAQ answers or
+   fact sheets, the editors also flag it as you type.
 
-   Two options narrow what a rule looks at:
-     match.caseSensitive / match.wholeWord  (text rules) — so "Merit" the
-       retired system is caught but "sufficient merit" is not
-     ignoreDraft  skip anything still in draft (or a variable still pending).
-       Imported content is all draft, and "never reviewed" is true of every
-       item of it — which buries the findings that actually need action.
+   Findings are computed, never stored. Fix the content and the finding
+   disappears by itself: a recorded issue has to be ticked off by hand, a
+   rule finding cannot lie about being fixed.
+
+   Text rule options:
+     match.mode            'phrase' (exact wording) or 'regex' (a pattern)
+     match.caseSensitive / match.wholeWord — so "Merit" the retired system is
+                           caught but "sufficient merit" is not
+     suggest               what to say instead, shown with the flag
+     ignoreDraft           skip anything still in draft
    =========================================================================== */
 
 (function (global) {
@@ -47,7 +45,111 @@
     return (Data.state.processes && Data.state.processes.rules) || [];
   }
 
-  // ---- what a rule can look at ---------------------------------------------
+  // ---- built-in rules ------------------------------------------------------
+
+  // The settings that are fixed. Anything else on a built-in rule — whether
+  // it is switched on, its months, words or "never flag" list, when it was
+  // added — stays with the content.
+  var BUILT_IN = {
+    rule_b_empty: {
+      name: 'Empty fields',
+      kind: 'empty',
+      summary: 'Every field in Process Hub, and how many variables, FAQ answers, fact sheets, ' +
+        'processes and steps leave it empty. Pick a field to see them.'
+    },
+    rule_b_stale: {
+      name: 'Not touched',
+      kind: 'stale',
+      defaults: { months: 12 },
+      summary: 'Every date that says when something was last reviewed, verified or edited, ' +
+        'and how many are older than the period you choose. Anything with no date, or one ' +
+        'that can\'t be read, counts as never touched.'
+    },
+    rule_b_unused: {
+      name: 'Nothing uses it',
+      kind: 'unused',
+      summary: 'Variables no process, FAQ answer or fact sheet uses, and FAQ answers and fact ' +
+        'sheets no process step attaches. Some are fine — an answer can stand on its own — ' +
+        'but each is worth a look.'
+    },
+    rule_w_passive: {
+      name: 'Who does this?',
+      kind: 'passive',
+      scope: ['faq', 'factsheet'],
+      severity: 'low',
+      defaults: { allow: '' },
+      message: 'This says something must be done without saying who does it. If it is the ' +
+        'reader, start with the action: “Complete the form…” rather than “The form must be completed…”.',
+      summary: 'Finds instructions that say something must happen without saying who does it — ' +
+        '“The form must be completed”. Is that the reader? Council? Their builder?'
+    },
+    rule_w_long: {
+      name: 'Long sentence',
+      kind: 'long',
+      scope: ['faq', 'factsheet'],
+      severity: 'low',
+      defaults: { words: 25 },
+      message: 'A long sentence. Can it be two sentences, or a list?',
+      summary: 'Sentences in FAQ answers and fact sheets longer than the number of words you ' +
+        'choose. Each list item, table cell and heading counts on its own.'
+    },
+    rule_w_nextstep: {
+      name: 'No next step',
+      kind: 'nextstep',
+      scope: ['faq'],
+      severity: 'medium',
+      message: 'Every answer ends with what the reader does now — a link, a number to call ' +
+        'and who to ask for, an email address, or another answer to read.',
+      summary: 'FAQ answers that never tell the reader what to do next: no link, no phone ' +
+        'number or email address, and no “see <another answer>”.'
+    }
+  };
+  var BUILT_IN_ORDER = ['rule_b_empty', 'rule_b_stale', 'rule_b_unused',
+    'rule_w_passive', 'rule_w_long', 'rule_w_nextstep'];
+  var FIXED = ['name', 'kind', 'scope', 'severity', 'message'];
+
+  function isBuiltIn(rule) { return !!(rule && BUILT_IN[rule.id]); }
+
+  function builtInSummary(rule) { return (BUILT_IN[rule.id] || {}).summary || ''; }
+
+  /**
+   * Bring the content's rules into line, on every load:
+   *  - each built-in rule is there, with its fixed settings;
+   *  - "word or phrase to avoid" rules become text rules (they were the
+   *    same thing);
+   *  - rules of any other kind are dropped — the built-in checks replace
+   *    them ("no owner", "not reviewed in 12 months" and the like).
+   */
+  function applyBuiltIns(file) {
+    if (!file) return;
+    if (!Array.isArray(file.rules)) file.rules = [];
+
+    file.rules = file.rules.filter(function (r) {
+      if (BUILT_IN[r.id]) return true;
+      if (r.kind === 'avoid') r.kind = 'text';
+      if (r.kind !== 'text') return false;
+      delete r.live;
+      return true;
+    });
+
+    BUILT_IN_ORDER.forEach(function (id) {
+      var def = BUILT_IN[id];
+      var rule = file.rules.find(function (r) { return r.id === id; });
+      if (!rule) {
+        rule = { id: id, enabled: true, created: new Date().toISOString().slice(0, 10) };
+        file.rules.push(rule);
+      }
+      FIXED.forEach(function (key) {
+        if (def[key] === undefined) { delete rule[key]; return; }
+        rule[key] = Array.isArray(def[key]) ? def[key].slice() : def[key];
+      });
+      Object.keys(def.defaults || {}).forEach(function (key) {
+        if (rule[key] === undefined) rule[key] = def.defaults[key];
+      });
+    });
+  }
+
+  // ---- what a text rule can look at -----------------------------------------
 
   /** Every entity a rule may be scoped to, with the text a reader would see. */
   function entities(scope) {
@@ -80,8 +182,7 @@
         out.push({
           kind: 'factsheet', obj: s, id: s.id, label: s.title,
           where: 'Fact sheet', route: '#/factsheet/' + s.id,
-          text: [s.title, s.summary, stripTags(s.body)].join('\n'),
-          html: s.body
+          text: [s.title, s.summary, stripTags(s.body)].join('\n')
         });
       });
     }
@@ -92,8 +193,7 @@
           kind: 'faq', obj: f, id: f.id, label: f.q,
           where: 'FAQ · ' + ((f.publish && f.publish.tabId) || ''),
           route: '#/faq/' + f.id,
-          text: [f.q, stripTags(f.a)].join('\n'),
-          html: f.a
+          text: [f.q, stripTags(f.a)].join('\n')
         });
       });
     }
@@ -115,7 +215,7 @@
     return String(html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   }
 
-  // ---- evaluation ----------------------------------------------------------
+  // ---- evaluating text rules ------------------------------------------------
 
   function buildMatcher(rule) {
     var match = rule.match || {};
@@ -130,10 +230,13 @@
     }
   }
 
+  /** The rule's text pattern as a RegExp, for the writing check too. */
+  function matcherFor(rule) { return buildMatcher(rule); }
+
   /** Options arrive from selects as strings as well as booleans. */
   function isOn(value) { return value === true || value === 'true'; }
 
-  /** Still being drafted, so a "not reviewed" style finding says nothing new. */
+  /** Still being drafted. */
   function isDraft(entity) {
     var obj = entity.kind === 'step' ? entity.process : entity.obj;
     return obj.status === 'draft' || obj.status === 'pending';
@@ -143,21 +246,9 @@
     return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  function monthsSince(dateText) {
-    if (!dateText) return Infinity;
-    // Accepts YYYY-MM-DD, YYYY-MM, and the "August 2026" stamps in the
-    // imported FAQ content.
-    var parsed = Date.parse(/^\d{4}-\d{2}$/.test(dateText) ? dateText + '-01' : dateText);
-    if (isNaN(parsed)) return Infinity;
-    return (Date.now() - parsed) / (1000 * 60 * 60 * 24 * 30.44);
-  }
-
   function evaluate(rule) {
     if (rule.enabled === false) return { rule: rule, findings: [], skipped: true };
-    if (isRetiredCopy(rule)) {
-      return { rule: rule, findings: [], error: 'Only the built-in “' + BUILT_IN.rule_w_passive.name +
-        '” rule checks this now. This copy does nothing — delete it.' };
-    }
+    if (rule.kind !== 'text') return { rule: rule, findings: [] };
 
     var findings = [];
     var scopes = (rule.scope && rule.scope.length ? rule.scope : SCOPES)
@@ -165,73 +256,21 @@
     var skipDraft = isOn(rule.ignoreDraft);
     var skipped = 0;
 
-    // Every entity in the rule's scopes, less any still in draft when the
-    // rule says to leave those alone.
-    function each(scope, fn) {
+    var matcher = buildMatcher(rule);
+    if (!matcher) return { rule: rule, findings: [], error: 'No phrase or pattern set.' };
+    if (matcher.invalid) {
+      return { rule: rule, findings: [], error: 'Invalid pattern: ' + matcher.message };
+    }
+    scopes.forEach(function (scope) {
       entities(scope).forEach(function (entity) {
         if (skipDraft && isDraft(entity)) { skipped++; return; }
-        fn(entity);
+        // Search what a reader would see, so a value held in a variable is
+        // still caught.
+        var seen = Data.freeze(entity.text);
+        var hit = seen.match(matcher);
+        if (hit) findings.push(finding(rule, entity, snippet(seen, hit.index, hit[0].length)));
       });
-    }
-
-    if (rule.kind === 'text') {
-      var matcher = buildMatcher(rule);
-      if (!matcher) return { rule: rule, findings: [], error: 'No phrase or pattern set.' };
-      if (matcher.invalid) {
-        return { rule: rule, findings: [], error: 'Invalid pattern: ' + matcher.message };
-      }
-      scopes.forEach(function (scope) {
-        each(scope, function (entity) {
-          // Search what a reader would see, so a value held in a variable is
-          // still caught.
-          var seen = Data.freeze(entity.text);
-          var hit = seen.match(matcher);
-          if (hit) findings.push(finding(rule, entity, snippet(seen, hit.index, hit[0].length)));
-        });
-      });
-    }
-
-    if (rule.kind === 'empty') {
-      scopes.forEach(function (scope) {
-        each(scope, function (entity) {
-          var value = entity.obj[rule.field];
-          var blank = value == null || String(value).trim() === '' ||
-            (Array.isArray(value) && !value.length);
-          if (blank) findings.push(finding(rule, entity, ''));
-        });
-      });
-    }
-
-    if (rule.kind === 'stale') {
-      var limit = Number(rule.months) || 12;
-      scopes.forEach(function (scope) {
-        each(scope, function (entity) {
-          var age = monthsSince(entity.obj[rule.field]);
-          if (age >= limit) {
-            findings.push(finding(rule, entity,
-              entity.obj[rule.field] ? 'last set ' + entity.obj[rule.field] : 'never set'));
-          }
-        });
-      });
-    }
-
-    if (global.Writing && Writing.isWriting(rule)) {
-      scopes.filter(function (s) { return Writing.SCOPES.indexOf(s) !== -1; }).forEach(function (scope) {
-        each(scope, function (entity) {
-          var found = Writing.findingFor(rule, scope, entity.html);
-          if (found) findings.push(finding(rule, entity, found.detail));
-        });
-      });
-    }
-
-    if (rule.kind === 'unused') {
-      scopes.forEach(function (scope) {
-        each(scope, function (entity) {
-          var usage = Data.state.index.usage[entity.id];
-          if (!usage || !usage.processes.length) findings.push(finding(rule, entity, ''));
-        });
-      });
-    }
+    });
 
     return { rule: rule, findings: findings, draftsSkipped: skipped };
   }
@@ -256,34 +295,24 @@
     return (start > 0 ? '…' : '') + text.slice(start, end).trim() + (end < text.length ? '…' : '');
   }
 
-  /** The rule's text pattern as a RegExp — for text and avoid rules alike. */
-  function matcherFor(rule) { return buildMatcher(rule); }
-
-  function isWritingRule(rule) { return !!(global.Writing && Writing.isWriting(rule)); }
-
   // Results are kept until the content next changes. Every edit rebuilds
   // the index, so a new index object means the cache is stale.
   var cache = { index: null, results: null };
 
-  /** Every enabled rule, evaluated, worst severity first. */
-  function runAll() {
+  /**
+   * Every enabled text rule, evaluated, worst severity first. These are what
+   * the issues register, the coverage report and the exports count — the
+   * built-in rules have pages of their own on the Rules tab.
+   */
+  function run() {
     if (cache.index === Data.state.index && cache.results) return cache.results;
     var weight = { high: 0, medium: 1, low: 2 };
-    var results = rules().map(evaluate).sort(function (a, b) {
-      return (weight[a.rule.severity] || 1) - (weight[b.rule.severity] || 1);
-    });
+    var results = rules().filter(function (r) { return !isBuiltIn(r); }).map(evaluate)
+      .sort(function (a, b) {
+        return (weight[a.rule.severity] || 1) - (weight[b.rule.severity] || 1);
+      });
     cache = { index: Data.state.index, results: results };
     return results;
-  }
-
-  /** The content rules — what is wrong, as opposed to how it reads. */
-  function run() {
-    return runAll().filter(function (r) { return !isWritingRule(r.rule); });
-  }
-
-  /** The writing rules, for the Rules tab. */
-  function runWriting() {
-    return runAll().filter(function (r) { return isWritingRule(r.rule); });
   }
 
   /** Findings per process, for the coverage report and the tree. */
@@ -299,9 +328,9 @@
     return out;
   }
 
-  function totals(results) {
+  function totals() {
     var out = { rules: 0, findings: 0, high: 0, medium: 0, low: 0 };
-    (results || run()).forEach(function (result) {
+    run().forEach(function (result) {
       if (result.skipped) return;
       out.rules++;
       result.findings.forEach(function (f) {
@@ -312,22 +341,39 @@
     return out;
   }
 
+  /** How many a rule finds at the moment, built in or not. */
+  function count(rule) {
+    if (rule.enabled === false) return 0;
+    if (isBuiltIn(rule)) return global.Checks ? Checks.headline(rule).count : 0;
+    var result = run().find(function (r) { return r.rule.id === rule.id; });
+    return result ? result.findings.length : 0;
+  }
+
   // ---- managing rules ------------------------------------------------------
 
-  /** Built-in rules first, then the rest in the order they were added. */
+  /** Built-in rules first, in their set order, then text rules as added. */
   function list() {
     var all = rules();
-    return all.filter(isBuiltIn).concat(all.filter(function (r) { return !isBuiltIn(r); }));
+    var builtIn = BUILT_IN_ORDER.map(function (id) {
+      return all.find(function (r) { return r.id === id; });
+    }).filter(Boolean);
+    return builtIn.concat(all.filter(function (r) { return !isBuiltIn(r); }));
+  }
+
+  function textRules() {
+    return rules().filter(function (r) { return !isBuiltIn(r); });
   }
 
   function get(id) {
     return rules().find(function (r) { return r.id === id; }) || null;
   }
 
+  /** A new text rule. */
   function add(rule) {
     var file = Data.state.processes;
     if (!Array.isArray(file.rules)) file.rules = [];
     rule.id = rule.id || 'rule_' + Math.random().toString(36).slice(2, 9);
+    rule.kind = 'text';
     rule.created = rule.created || new Date().toISOString().slice(0, 10);
     if (rule.enabled === undefined) rule.enabled = true;
     file.rules.push(rule);
@@ -349,174 +395,23 @@
     Edit.touch();
   }
 
-  /** A starting set, offered when a corpus has no rules yet. */
-  function defaults() {
-    return [
-      {
-        id: 'rule_retired_merit',
-        name: 'Merit has been replaced by the CRM',
-        kind: 'text',
-        match: { mode: 'phrase', value: 'Merit', caseSensitive: true, wholeWord: true },
-        scope: ['process', 'step', 'factsheet', 'faq'],
-        severity: 'high',
-        message: 'Still refers to Merit. The CRM replaced it — the request ID now goes ' +
-          'to the customer by SMS, so the wording needs rewriting, not just renaming.',
-        enabled: true
-      },
-      {
-        id: 'rule_no_owner',
-        name: 'Process has no owner',
-        kind: 'empty',
-        field: 'owner',
-        scope: ['process'],
-        severity: 'low',
-        message: 'No manager is recorded as accountable for this process.',
-        enabled: true
-      },
-      {
-        id: 'rule_unreviewed',
-        name: 'Process not reviewed in 12 months',
-        kind: 'stale',
-        field: 'lastReviewed',
-        months: 12,
-        scope: ['process'],
-        ignoreDraft: true,
-        severity: 'medium',
-        message: 'This process has not been reviewed within the last 12 months.',
-        enabled: true
-      },
-      {
-        id: 'rule_unverified_variable',
-        name: 'Variable not verified in 12 months',
-        kind: 'stale',
-        field: 'lastVerified',
-        months: 12,
-        scope: ['variable'],
-        ignoreDraft: true,
-        severity: 'medium',
-        message: 'This value has not been confirmed by its owning department ' +
-          'within the last 12 months.',
-        enabled: true
-      }
-    ];
-  }
-
-  // ---- built-in rules ------------------------------------------------------
-
-  // The settings that are fixed. Everything else on a built-in rule (whether
-  // it is switched on, its "Never flag these" list, when it was added) stays
-  // with the content.
-  var BUILT_IN = {
-    rule_w_passive: {
-      id: 'rule_w_passive',
-      name: 'Who does this?',
-      kind: 'passive',
-      scope: ['faq', 'factsheet'],
-      severity: 'low',
-      message: 'This says something must be done without saying who does it. If it is the ' +
-        'reader, start with the action: “Complete the form…” rather than “The form must be completed…”.'
-    }
-  };
-  var BUILT_IN_ORDER = ['rule_w_passive'];
-  var FIXED = ['name', 'kind', 'scope', 'severity', 'message'];
-
-  function isBuiltIn(rule) { return !!(rule && BUILT_IN[rule.id]); }
-
-  /** A passive rule that is not the built-in one — made before it was locked. */
-  function isRetiredCopy(rule) { return rule.kind === 'passive' && !isBuiltIn(rule); }
-
-  /**
-   * Make sure every built-in rule is in the content, at the top, with its
-   * fixed settings. Called on every load, so a built-in rule removed by a
-   * merge or by hand comes back, and its settings cannot drift.
-   */
-  function applyBuiltIns(file) {
-    if (!file) return;
-    if (!Array.isArray(file.rules)) file.rules = [];
-    BUILT_IN_ORDER.slice().reverse().forEach(function (id) {
-      var def = BUILT_IN[id];
-      var rule = file.rules.find(function (r) { return r.id === id; });
-      if (!rule) {
-        rule = { id: id, allow: '', enabled: true, created: new Date().toISOString().slice(0, 10) };
-        file.rules.unshift(rule);
-      }
-      FIXED.forEach(function (key) {
-        rule[key] = Array.isArray(def[key]) ? def[key].slice() : def[key];
-      });
-    });
-  }
-
-  /**
-   * A starting set of writing rules, offered when there are none. Each one
-   * is only a starting point: they can be changed on the Rules tab. The
-   * built-in rules are not in it — they are always there already.
-   */
-  function writingDefaults() {
-    return [
-      {
-        id: 'rule_w_long',
-        name: 'Long sentence',
-        kind: 'long',
-        words: 25,
-        scope: ['faq', 'factsheet'],
-        severity: 'low',
-        message: 'Over 25 words. Can it be two sentences, or a list?',
-        enabled: true
-      },
-      {
-        id: 'rule_w_nextstep',
-        name: 'No next step',
-        kind: 'nextstep',
-        scope: ['faq'],
-        severity: 'medium',
-        message: 'Every answer ends with what the reader does now — a link, a number to call ' +
-          'and who to ask for, an email address, or another answer to read.',
-        enabled: true
-      },
-      {
-        id: 'rule_w_revenue_team',
-        name: 'Revenue team, not rates team',
-        kind: 'avoid',
-        match: { mode: 'phrase', value: 'rates team', wholeWord: true },
-        suggest: 'revenue team',
-        scope: ['faq', 'factsheet'],
-        severity: 'low',
-        message: 'Council calls it the revenue team.',
-        enabled: true
-      },
-      {
-        id: 'rule_w_private_certifier',
-        name: 'private certifier, lower case',
-        kind: 'avoid',
-        match: { mode: 'phrase', value: 'Private Certifier', caseSensitive: true, wholeWord: true },
-        suggest: 'private certifier',
-        scope: ['faq', 'factsheet'],
-        severity: 'low',
-        message: 'It is a job, not a title, so it takes lower case.',
-        enabled: true
-      }
-    ];
-  }
-
   global.Rules = {
     SCOPES: SCOPES,
     list: list,
+    textRules: textRules,
     get: get,
     add: add,
     remove: remove,
     toggle: toggle,
     run: run,
-    runWriting: runWriting,
-    runAll: runAll,
     evaluate: evaluate,
     totals: totals,
+    count: count,
     byProcess: byProcess,
     isOn: isOn,
     matcherFor: matcherFor,
     isBuiltIn: isBuiltIn,
-    isRetiredCopy: isRetiredCopy,
-    applyBuiltIns: applyBuiltIns,
-    defaults: defaults,
-    writingDefaults: writingDefaults
+    builtInSummary: builtInSummary,
+    applyBuiltIns: applyBuiltIns
   };
 }(window));

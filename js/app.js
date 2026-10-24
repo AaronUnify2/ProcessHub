@@ -31,7 +31,7 @@
       Detail.issue(pid, iid); return 'issue:' + pid + ':' + iid;
     }],
     [/^#\/issues$/, 'issues', function () { Detail.issues(); }],
-    [/^#\/rule\/(.+)$/, 'rules', function (id) { Detail.rule(id); return 'rule:' + id; }],
+    [/^#\/rule\/(.+)$/, 'rules', function (id) { Detail.rule(id); return 'rule:' + id.split('/')[0]; }],
     [/^#\/rules$/, 'rules', function () { Detail.rules(); }],
     [/^#\/coverage\/(.+)$/, 'coverage', function (id) { Detail.coverageDept(id); return 'cov:' + id; }],
     [/^#\/coverage$/, 'coverage', function () { Detail.coverage(); }],

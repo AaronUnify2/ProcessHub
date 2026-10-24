@@ -1955,8 +1955,7 @@ button.cov-row.cov-link:hover { background: var(--bg); }
   .wc-show { padding: 0.5rem 0.6rem; }
 }
 
-/* A built-in rule: shown in full, but only its exceptions can be edited. */
-.rule-card.builtin { border-color: var(--accent-soft); }
+/* A built-in rule's tag, beside its name. */
 .builtin-tag {
   display: inline-block;
   vertical-align: middle;
@@ -1964,6 +1963,112 @@ button.cov-row.cov-link:hover { background: var(--bg); }
   padding: 1px 7px; border-radius: 999px;
   background: var(--accent-soft); color: var(--accent);
 }
-.rule-card .fixed { display: block; font-size: 0.86rem; color: var(--text); margin: 0.15rem 0 0; }
-p.fixed { color: var(--text-soft); }
-.rule-card.builtin > .rule-field { margin-bottom: 0.7rem; }
+
+/* ===========================================================================
+   Rules tab — built-in checks
+   =========================================================================== */
+
+.chk-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.4rem;
+}
+.chk-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.15rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+}
+.chk-card:hover { border-color: var(--accent); }
+.chk-card.off { opacity: 0.55; }
+.chk-card-name { font-size: 0.86rem; font-weight: 650; }
+.chk-card-n { font-size: 1.6rem; font-weight: 700; letter-spacing: -1px; line-height: 1.2; }
+.chk-card-words { font-size: 0.74rem; color: var(--text-soft); }
+
+.side-sev.builtin { background: var(--accent-soft); color: var(--accent); }
+.side-label {
+  font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-soft); padding: 0.6rem 0.6rem 0.2rem;
+}
+
+.chk-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  margin-bottom: 0.8rem;
+}
+.chk-bar .spacer { flex: 1; }
+.chk-headline { font-size: 0.88rem; color: var(--text-soft); }
+.chk-headline strong { font-size: 1.15rem; color: var(--text); }
+
+.chk-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+  align-items: flex-end;
+  margin: 0.4rem 0 0.9rem;
+}
+.chk-filter { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.chk-filter > span {
+  font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-soft);
+}
+.chk-filter select {
+  font: inherit; font-size: 0.86rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  max-width: 100%;
+}
+.chk-allow { margin: 0 0 0.8rem; }
+
+.cov-table.chk-dash .cov-row { grid-template-columns: minmax(6rem, 1fr) minmax(8rem, 2fr) 4.5rem 4.5rem; }
+.cov-table.chk-dash .cov-row.picked { background: var(--accent-soft); }
+.cov-table.chk-dash .cov-row.clear .num.count { color: var(--good); }
+.chk-what { display: none; color: var(--text-soft); font-size: 0.8em; }
+
+.chk-group h3 { font-size: 0.95rem; margin: 1rem 0 0.4rem; }
+.chk-group h3 span, .chk-dept-name span { color: var(--text-soft); font-weight: 500; }
+.chk-dept { margin: 0 0 0.7rem; }
+.chk-dept-name {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-soft); margin: 0.5rem 0 0.3rem;
+}
+
+.how-it-works {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.88rem;
+}
+.how-it-works summary { font-weight: 650; cursor: pointer; }
+.how-it-works p, .how-it-works ol, .how-it-works ul { margin: 0.45rem 0; }
+.how-it-works ol, .how-it-works ul { padding-left: 1.3rem; }
+.how-it-works mark { background: var(--warn-soft); border-bottom: 2px solid var(--warn); color: inherit; }
+
+@media (max-width: 560px) {
+  .cov-table.chk-dash .cov-row { grid-template-columns: minmax(0, 1fr) 3.4rem 3.4rem; }
+  .cov-table.chk-dash .cov-row > :nth-child(1) { display: none; }
+  .cov-table.chk-dash .cov-row > :nth-child(n+2) { display: block; }
+  .chk-what { display: inline; }
+  .chk-filter { flex: 1 1 100%; }
+}
