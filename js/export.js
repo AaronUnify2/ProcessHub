@@ -615,8 +615,14 @@
     }).join('') + '</div>';
   }
 
+  /**
+   * The Departments tab as a page to hand on: for each department and
+   * everything under it, processes by status and the FAQ answers, fact
+   * sheets and variables it owns, with how many are published, approved or
+   * verified.
+   */
   function coverageHtml() {
-    var cov = Data.coverage(Rules.byProcess());
+    var cov = Data.coverage();
     var statuses = cov.statuses;
     var t = cov.total;
     var done = (t.byStatus.reviewed || 0) + (t.byStatus.published || 0);
@@ -626,47 +632,38 @@
         e(s.replace('_', ' ')) + '</span>';
     }).join('') + '</p>';
 
-    var rows = cov.rows.filter(function (r) { return r.processes; }).map(function (r) {
+    function pair(n, sub) {
+      return '<td class="num">' + n + (n ? '<div class="note">' + e(sub) + '</div>' : '') + '</td>';
+    }
+
+    var rows = cov.rows.filter(function (r) {
+      return r.processes || r.faq.total || r.sheets.total || r.vars.total || r.issues;
+    }).map(function (r) {
       return '<tr class="depth-' + r.depth + '"><td>' + e(r.node.name) + '</td>' +
         '<td class="num">' + r.processes + '</td>' +
         '<td class="barcell">' + statusBar(r, statuses) + '</td>' +
         '<td class="num">' + ((r.byStatus.reviewed || 0) + (r.byStatus.published || 0)) + '</td>' +
         '<td class="num">' + r.handoffs + '</td>' +
-        '<td class="num">' + r.issues + (r.high ? ' <span class="hi">(' + r.high + ' high)</span>' : '') + '</td>' +
-        '<td class="num">' + r.findings + '</td></tr>';
+        pair(r.faq.total, r.faq.published + ' public') +
+        pair(r.sheets.total, r.sheets.approved + ' approved') +
+        pair(r.vars.total, (r.vars.current || 0) + ' verified') +
+        '<td class="num">' + r.issues + (r.high ? ' <span class="hi">(' + r.high + ' high)</span>' : '') + '</td></tr>';
     }).join('');
 
-    var vars = cov.variables.map(function (v) {
-      return '<tr><td>' + e(v.ownerId ? Data.taxonomyName(v.ownerId) : 'Unassigned') + '</td>' +
-        '<td class="num">' + v.total + '</td><td class="num">' + (v.current || 0) + '</td>' +
-        '<td class="num">' + (v.pending || 0) + '</td><td class="num">' + (v.stale || 0) + '</td></tr>';
-    }).join('');
-
-    var faqRows = cov.rows.filter(function (r) { return r.faq.total; }).map(function (r) {
-      return '<tr class="depth-' + r.depth + '"><td>' + e(r.node.name) + '</td>' +
-        '<td class="num">' + r.faq.total + '</td><td class="num">' + r.faq.published + '</td>' +
-        '<td class="num">' + r.faq.notReady + '</td><td class="num">' + r.faq.linked + '</td>' +
-        '<td class="num">' + r.faq.unconfirmed + '</td></tr>';
-    }).join('');
-
-    download('process-coverage.html', page('Process coverage',
-      '<h1>Process coverage</h1>' +
-      '<p class="lede">' + t.processes + ' processes identified, ' + done +
-      ' reviewed or published. ' + t.handoffs + ' handoffs between departments, ' +
-      t.issues + ' open issues. Generated ' + e(new Date().toLocaleDateString('en-AU')) + '.</p>' +
+    download('departments.html', page('Departments',
+      '<h1>Departments</h1>' +
+      '<p class="lede">' + t.processes + ' processes identified, ' + done + ' reviewed or published. ' +
+      t.faq.total + ' FAQ answers, ' + t.faq.published + ' on the public page. ' +
+      t.sheets.total + ' fact sheets, ' + t.sheets.approved + ' approved. ' +
+      t.vars.total + ' variables, ' + (t.vars.current || 0) + ' verified. ' +
+      t.handoffs + ' handoffs between departments, ' + t.issues + ' open issues. Generated ' +
+      e(new Date().toLocaleDateString('en-AU')) + '.</p>' +
       legend +
       '<table><thead><tr><th>Department</th><th>Processes</th><th>Status</th>' +
-      '<th>Reviewed</th><th>Handoffs</th><th>Open issues</th><th>Rule findings</th>' +
-      '</tr></thead><tbody>' + rows + '</tbody></table>' +
-      '<h2>FAQ questions by owning department</h2>' +
-      '<p class="lede">' + t.faq.total + ' questions, ' + t.faq.published + ' on the public page, ' +
-      t.faq.notReady + ' not yet approved, ' + t.faq.linked + ' linked to a process step.</p>' +
-      '<table><thead><tr><th>Department</th><th>Questions</th><th>On the page</th>' +
-      '<th>Not approved</th><th>Linked to a step</th><th>Unconfirmed values</th></tr></thead><tbody>' +
-      faqRows + '</tbody></table>' +
-      '<h2>Variables by owning department</h2>' +
-      '<table><thead><tr><th>Department</th><th>Total</th><th>Current</th>' +
-      '<th>Pending</th><th>Stale</th></tr></thead><tbody>' + vars + '</tbody></table>'),
+      '<th>Reviewed</th><th>Handoffs</th><th>FAQ answers</th><th>Fact sheets</th>' +
+      '<th>Variables</th><th>Open issues</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<p class="lede">Each row counts the department and everything under it. FAQ answers, fact ' +
+      'sheets and variables are counted by their owning department.</p>'),
       'text/html');
   }
 

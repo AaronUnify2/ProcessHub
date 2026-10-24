@@ -787,6 +787,23 @@
     return out;
   }
 
+  /** Fact sheet figures: how many, and how many are approved or live. */
+  function tallySheets(list) {
+    var out = { total: list.length, approved: 0, signoff: 0 };
+    list.forEach(function (sh) {
+      if (sh.status === 'approved' || sh.status === 'live') out.approved++;
+      if (sh.status === 'signoff') out.signoff++;
+    });
+    return out;
+  }
+
+  /** Variable figures: how many, and how many are verified (current), pending or stale. */
+  function tallyVariables(list) {
+    var out = { total: list.length, current: 0, pending: 0, stale: 0 };
+    list.forEach(function (v) { out[v.status] = (out[v.status] || 0) + 1; });
+    return out;
+  }
+
   /** FAQ figures for a set of questions. */
   function tallyFaqs(list) {
     var out = { total: list.length, published: 0, notReady: 0, linked: 0, unconfirmed: 0 };
@@ -801,8 +818,11 @@
   }
 
   /**
-   * How far the mapping has got, department by department. Each row counts
-   * the processes filed under that department and everything beneath it.
+   * How far things have got, department by department. Each row counts the
+   * processes filed under that department and everything beneath it, and the
+   * FAQ answers, fact sheets and variables it (or a sub-department) owns —
+   * with how many are published, approved or verified, the figures that show
+   * progress. Open issues count every issue on any of those.
    * findingsByProcess, if given, maps a process id to its rule findings.
    */
   function coverage(findingsByProcess) {
@@ -840,22 +860,33 @@
       return ids;
     }
 
+    /** Owned content: FAQ answers, fact sheets and variables, and their open issues. */
+    function owned(row, test) {
+      row.faq = tallyFaqs(state.library.faqs.filter(test));
+      row.sheets = tallySheets(state.library.factSheets.filter(test));
+      row.vars = tallyVariables(state.variables.variables.filter(test));
+      state.library.faqs.concat(state.library.factSheets, state.variables.variables)
+        .filter(test).forEach(function (item) {
+          var open = openIssues(item);
+          row.issues += open.length;
+          row.high += open.filter(function (i) { return i.severity === 'high'; }).length;
+        });
+    }
+
     function walk(node, depth) {
       var list = beneath(node.id);
       var row = tally(list);
       row.node = node;
       row.depth = depth;
       var mine = subtree(node.id);
-      row.faq = tallyFaqs(state.library.faqs.filter(function (f) {
-        return mine.indexOf(f.ownerId) !== -1;
-      }));
+      owned(row, function (item) { return mine.indexOf(item.ownerId) !== -1; });
       rows.push(row);
       (index.children[node.id] || []).forEach(function (child) { walk(child, depth + 1); });
     }
     (index.children.__root__ || []).forEach(function (node) { walk(node, 0); });
 
     var total = tally(state.processes.processes);
-    total.faq = tallyFaqs(state.library.faqs);
+    owned(total, function () { return true; });
     total.faqUnowned = state.library.faqs.filter(function (f) {
       return !f.ownerId || !index.taxonomy[f.ownerId];
     }).length;
