@@ -676,7 +676,7 @@
   function renderRulesTree() {
     var rules = Rules.list();
     var results = {};
-    Rules.run().forEach(function (r) { results[r.rule.id] = r; });
+    Rules.runAll().forEach(function (r) { results[r.rule.id] = r; });
     var html = rules.map(function (rule) {
       var off = rule.enabled === false;
       var found = results[rule.id] ? results[rule.id].findings.length : 0;
@@ -687,7 +687,7 @@
     }).join('');
     el.tree.innerHTML = '<div class="side-rows flat">' + (html || '<p class="empty">No rules yet.</p>') + '</div>' +
       foot('<button class="btn tiny" data-side-act="new-rule">+ New rule</button>' +
-        (rules.length ? '' : '<button class="btn tiny" data-side-act="seed-rules">Add a starting set</button>'));
+        '<button class="btn tiny" data-route="#/rules">All rules →</button>');
     el.count.textContent = rules.length + ' rules · ' + Rules.totals().findings + ' findings';
   }
 

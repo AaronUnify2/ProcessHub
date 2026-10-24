@@ -34,7 +34,7 @@ content in those older public copies was judged acceptable to leave.
   live.html          the live call view
   css/app.css · css/live.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
-                     rules.js · export.js · factsheet-export.js · faq.js
+                     rules.js · writing.js · export.js · factsheet-export.js · faq.js
                      richtext.js · canvas.js
                      ui-sidebar.js · ui-detail.js · app.js · live.js
   exports/
@@ -72,7 +72,7 @@ a dashboard for the section as a whole.
 | Fact sheets | fact sheets by stage: draft, in sign-off, approved, live | counts by stage, who sign-off is waiting on, what needs attention, by owner |
 | Variables | variables by owning department, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
 | Issues | open issues by severity, then resolved | severity counts, issues by department, the full register and rule findings |
-| Rules | every content rule with its severity and finding count | findings by severity; each rule opens on its own page with everything it finds |
+| Rules | every content rule and writing rule with its severity and finding count | content rules and writing rules in two lists; each rule opens on its own page with everything it finds |
 | Coverage | the department tree with a status bar per department | status by department; each department opens on its processes |
 | Depts | the department tree | the tree editor; each department opens on everything filed under, done by or owned by it |
 
@@ -268,6 +268,31 @@ hand; a rule finding cannot lie about being fixed.
 Manage them at `#/rules`. They export with the issues report and CSV. In the
 register, recorded issues come first; each rule's findings sit collapsed under
 its name and count until you open them.
+
+**Writing rules and the writing check.** Writing rules say how Council wants
+public wording to read. They sit on the Rules tab under their own heading and
+are checked as you type, in a **Writing check** panel under the FAQ answer and
+fact sheet editors. Four kinds (`js/writing.js`):
+
+- *A word or phrase to avoid*, with what to say instead ("rates team" →
+  "revenue team").
+- *Says what must be done, not who does it*: "must / should / needs to / has
+  to … be" + a past participle, with no "by …" naming who. Flags "the form must
+  be completed", not every passive in the language. Words that should never be
+  flagged can be listed on the rule.
+- *A sentence that runs long*, over a set number of words (25 to start).
+- *An FAQ answer with no next step*: no link, phone number, email address or
+  "see *another answer*".
+
+The checks read what a reader sees, block by block, so a sentence never runs
+across a heading or a list item, and a variable counts as its value. Click a
+flag to select the words in the editor; × dismisses it until the page is next
+opened. Nothing is ever changed for you. A content rule of the text kind can
+also be set to *Flag while writing*.
+
+Writing findings are kept out of the issues register and its totals — they are
+about how something reads, not whether it is right. The Rules tab offers a
+starting set when there are none.
 
 **Coverage.** `#/coverage` shows each department's processes by status, its
 handoffs, open issues and rule findings, plus variable verification by owning

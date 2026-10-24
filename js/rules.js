@@ -16,6 +16,13 @@
      stale    a date that has not been touched for N months
      unused   library content nothing references
 
+   Writing rules (writing.js) live in the same list: avoid, passive, long and
+   nextstep. They are about how public wording reads rather than whether it
+   is right, so they are counted apart — run() and totals() are the content
+   rules only, and the issues register is not buried under style notes.
+   runWriting() has their findings for the Rules tab, and the editors check
+   them as you type.
+
    Two options narrow what a rule looks at:
      match.caseSensitive / match.wholeWord  (text rules) — so "Merit" the
        retired system is caught but "sufficient merit" is not
@@ -66,7 +73,8 @@
         out.push({
           kind: 'factsheet', obj: s, id: s.id, label: s.title,
           where: 'Fact sheet', route: '#/factsheet/' + s.id,
-          text: [s.title, s.summary, stripTags(s.body)].join('\n')
+          text: [s.title, s.summary, stripTags(s.body)].join('\n'),
+          html: s.body
         });
       });
     }
@@ -77,7 +85,8 @@
           kind: 'faq', obj: f, id: f.id, label: f.q,
           where: 'FAQ · ' + ((f.publish && f.publish.tabId) || ''),
           route: '#/faq/' + f.id,
-          text: [f.q, stripTags(f.a)].join('\n')
+          text: [f.q, stripTags(f.a)].join('\n'),
+          html: f.a
         });
       });
     }
@@ -195,6 +204,15 @@
       });
     }
 
+    if (global.Writing && Writing.isWriting(rule)) {
+      scopes.filter(function (s) { return Writing.SCOPES.indexOf(s) !== -1; }).forEach(function (scope) {
+        each(scope, function (entity) {
+          var found = Writing.findingFor(rule, scope, entity.html);
+          if (found) findings.push(finding(rule, entity, found.detail));
+        });
+      });
+    }
+
     if (rule.kind === 'unused') {
       scopes.forEach(function (scope) {
         each(scope, function (entity) {
@@ -227,12 +245,17 @@
     return (start > 0 ? '…' : '') + text.slice(start, end).trim() + (end < text.length ? '…' : '');
   }
 
+  /** The rule's text pattern as a RegExp — for text and avoid rules alike. */
+  function matcherFor(rule) { return buildMatcher(rule); }
+
+  function isWritingRule(rule) { return !!(global.Writing && Writing.isWriting(rule)); }
+
   // Results are kept until the content next changes. Every edit rebuilds
   // the index, so a new index object means the cache is stale.
   var cache = { index: null, results: null };
 
   /** Every enabled rule, evaluated, worst severity first. */
-  function run() {
+  function runAll() {
     if (cache.index === Data.state.index && cache.results) return cache.results;
     var weight = { high: 0, medium: 1, low: 2 };
     var results = rules().map(evaluate).sort(function (a, b) {
@@ -240,6 +263,16 @@
     });
     cache = { index: Data.state.index, results: results };
     return results;
+  }
+
+  /** The content rules — what is wrong, as opposed to how it reads. */
+  function run() {
+    return runAll().filter(function (r) { return !isWritingRule(r.rule); });
+  }
+
+  /** The writing rules, for the Rules tab. */
+  function runWriting() {
+    return runAll().filter(function (r) { return isWritingRule(r.rule); });
   }
 
   /** Findings per process, for the coverage report and the tree. */
@@ -255,9 +288,9 @@
     return out;
   }
 
-  function totals() {
+  function totals(results) {
     var out = { rules: 0, findings: 0, high: 0, medium: 0, low: 0 };
-    run().forEach(function (result) {
+    (results || run()).forEach(function (result) {
       if (result.skipped) return;
       out.rules++;
       result.findings.forEach(function (f) {
@@ -352,6 +385,68 @@
     ];
   }
 
+  /**
+   * A starting set of writing rules. Each one is only a starting point — the
+   * point is that they can be changed on the Rules tab.
+   */
+  function writingDefaults() {
+    return [
+      {
+        id: 'rule_w_passive',
+        name: 'Who does this?',
+        kind: 'passive',
+        allow: '',
+        scope: ['faq', 'factsheet'],
+        severity: 'low',
+        message: 'This says something must be done without saying who does it. If it is the ' +
+          'reader, start with the action: “Complete the form…” rather than “The form must be completed…”.',
+        enabled: true
+      },
+      {
+        id: 'rule_w_long',
+        name: 'Long sentence',
+        kind: 'long',
+        words: 25,
+        scope: ['faq', 'factsheet'],
+        severity: 'low',
+        message: 'Over 25 words. Can it be two sentences, or a list?',
+        enabled: true
+      },
+      {
+        id: 'rule_w_nextstep',
+        name: 'No next step',
+        kind: 'nextstep',
+        scope: ['faq'],
+        severity: 'medium',
+        message: 'Every answer ends with what the reader does now — a link, a number to call ' +
+          'and who to ask for, an email address, or another answer to read.',
+        enabled: true
+      },
+      {
+        id: 'rule_w_revenue_team',
+        name: 'Revenue team, not rates team',
+        kind: 'avoid',
+        match: { mode: 'phrase', value: 'rates team', wholeWord: true },
+        suggest: 'revenue team',
+        scope: ['faq', 'factsheet'],
+        severity: 'low',
+        message: 'Council calls it the revenue team.',
+        enabled: true
+      },
+      {
+        id: 'rule_w_private_certifier',
+        name: 'private certifier, lower case',
+        kind: 'avoid',
+        match: { mode: 'phrase', value: 'Private Certifier', caseSensitive: true, wholeWord: true },
+        suggest: 'private certifier',
+        scope: ['faq', 'factsheet'],
+        severity: 'low',
+        message: 'It is a job, not a title, so it takes lower case.',
+        enabled: true
+      }
+    ];
+  }
+
   global.Rules = {
     SCOPES: SCOPES,
     list: list,
@@ -360,10 +455,14 @@
     remove: remove,
     toggle: toggle,
     run: run,
+    runWriting: runWriting,
+    runAll: runAll,
     evaluate: evaluate,
     totals: totals,
     byProcess: byProcess,
     isOn: isOn,
-    defaults: defaults
+    matcherFor: matcherFor,
+    defaults: defaults,
+    writingDefaults: writingDefaults
   };
 }(window));

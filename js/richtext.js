@@ -41,6 +41,8 @@
    * opts.preview      false leaves the preview out altogether
    * opts.document     true adds what a longer document needs: headings and
    *                   a checklist (a list ticked off item by item)
+   * opts.check        'faq' or 'factsheet' puts the writing check under the
+   *                   editor, run with the writing rules for that kind
    */
   function mount(host, opts) {
     opts = opts || {};
@@ -228,6 +230,7 @@
         area.innerHTML = Data.editableHtml(source.value);
         sync();
       }
+      if (writingCheck) writingCheck.refresh();
     });
     toolbar.appendChild(srcToggle);
 
@@ -277,9 +280,12 @@
     // a change to something nobody touched, and publish it.
     var edited = false;
 
+    var writingCheck = null;
+
     function sync() {
       edited = true;
       updatePreview();
+      if (writingCheck) writingCheck.refresh();
       clearTimeout(timer);
       timer = setTimeout(commit, 500);
     }
@@ -300,6 +306,9 @@
     root.appendChild(area);
     root.appendChild(source);
     host.appendChild(root);
+    if (opts.check && global.Writing) {
+      writingCheck = Writing.panel(host, area, rawHtml, opts.check);
+    }
     if (opts.preview !== false) host.appendChild(previewWrap);
     updatePreview();
 
