@@ -71,7 +71,7 @@ a dashboard for the section as a whole.
 | FAQ | publish tabs, headings and questions — drag to reorder (below) | what needs attention, figures per tab |
 | Fact sheets | fact sheets by stage: draft, in sign-off, approved, live | counts by stage, who sign-off is waiting on, what needs attention, by owner |
 | Variables | variables by owning department, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
-| Issues | open issues by severity, then resolved | severity counts, issues by department, the full register and rule findings |
+| Issues | open issues by severity, then resolved | severity counts, issues by department, and the full register of what people have raised |
 | Rules | the built-in checks, then your rules, each with what it finds | the six built-in checks as cards, then your text rules; each opens on its own page |
 | Coverage | the department tree with a status bar per department | status by department; each department opens on its processes |
 | Depts | the department tree | the tree editor; each department opens on everything filed under, done by or owned by it |
@@ -280,8 +280,9 @@ whole words and exact capitals, so "sufficient merit" is not flagged.
 
 Findings are computed, never stored: fix the content and the finding
 disappears by itself. A recorded issue has to be ticked off by hand; a rule
-finding cannot lie about being fixed. Only text rules count in the issues
-register, the coverage report and the exports — the built-in checks have their
+finding cannot lie about being fixed. Only text rules count in the coverage
+report and the issues exports (the Issues tab itself lists only what people
+have raised) — the built-in checks have their
 own pages, where thousands of empty fields would not bury what needs action.
 
 **Writing check.** A panel under the FAQ answer and fact sheet editors, run a
