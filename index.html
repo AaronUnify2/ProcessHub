@@ -124,6 +124,11 @@
   <div class="modal-box">
     <h3>Raise an issue</h3>
     <p class="modal-sub" id="imProcess"></p>
+    <div class="fm-field" id="imPick" hidden>
+      <label for="imFind">What is it about?</label>
+      <input type="search" id="imFind" placeholder="Search processes, FAQ answers, fact sheets, variables" autocomplete="off">
+      <div class="im-find-list" id="imFindList"></div>
+    </div>
     <div class="fm-field">
       <label for="imNote">What is wrong or missing?</label>
       <textarea id="imNote" rows="3"></textarea>
@@ -142,8 +147,8 @@
         <input type="text" id="imBy" placeholder="Your name or team">
       </div>
     </div>
-    <div class="fm-field">
-      <label for="imStep">About</label>
+    <div class="fm-field" id="imStepField">
+      <label for="imStep">Which part of the process</label>
       <select id="imStep"></select>
     </div>
     <div class="modal-actions">

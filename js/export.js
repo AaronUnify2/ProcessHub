@@ -495,6 +495,13 @@
   }
   // ---- issues register -----------------------------------------------------
 
+  /** What an issue is about, and where that sits, for a report row. */
+  function aboutCells(entry) {
+    var owner = entry.owner;
+    return { what: Data.ISSUE_KINDS[owner.kind] + ': ' + Data.plainText(owner.label),
+      where: owner.taxonomyId ? Data.taxonomyPath(owner.taxonomyId) : '' };
+  }
+
   function issuesHtml() {
     var all = Data.allIssues();
 
@@ -517,8 +524,8 @@
     var rows = all.map(function (entry) {
       return '<tr class="' + e(entry.issue.severity) + '">' +
         '<td><span class="sev">' + e(entry.issue.severity) + '</span></td>' +
-        '<td>' + e(entry.process.name) + '<div class="note">' +
-        e(Data.taxonomyPath(entry.process.taxonomyId)) + '</div></td>' +
+        '<td>' + e(aboutCells(entry).what) + '<div class="note">' +
+        e(aboutCells(entry).where) + '</div></td>' +
         '<td>' + e(entry.issue.note) + '</td>' +
         '<td>' + e(entry.issue.raised) + '</td></tr>';
     }).join('');
@@ -529,27 +536,27 @@
     var resolved = Data.allIssues({ resolved: 'only' });
     var resolvedRows = resolved.map(function (entry) {
       return '<tr><td>' + e(entry.issue.resolved) + '</td>' +
-        '<td>' + e(entry.process.name) + '<div class="note">' +
-        e(Data.taxonomyPath(entry.process.taxonomyId)) + '</div></td>' +
+        '<td>' + e(aboutCells(entry).what) + '<div class="note">' +
+        e(aboutCells(entry).where) + '</div></td>' +
         '<td>' + e(entry.issue.note) +
         (entry.issue.resolution ? '<div class="note">Resolved: ' + e(entry.issue.resolution) + '</div>' : '') +
         '</td><td>' + e(entry.issue.raised) + '</td></tr>';
     }).join('');
 
     var ruleTotals = Rules.totals();
-    download('process-issues.html', page('Process issues register',
-      '<h1>Process issues register</h1>' +
+    download('issues.html', page('Issues register',
+      '<h1>Issues register</h1>' +
       '<p class="lede">' + ruleTotals.findings + ' flagged by ' + ruleTotals.rules +
-      ' content rules · ' + all.length + ' recorded by hand (' + counts.high +
+      ' rules · ' + all.length + ' raised by people (' + counts.high +
       ' high, ' + counts.medium + ' medium, ' + counts.low + ' low). Generated ' +
       e(new Date().toLocaleDateString('en-AU')) + '.</p>' +
       ruleBlocks +
       '<h2>Recorded issues <span class="count">' + all.length + '</span></h2>' +
-      '<table><thead><tr><th>Severity</th><th>Process</th><th>Issue</th>' +
+      '<table><thead><tr><th>Severity</th><th>About</th><th>Issue</th>' +
       '<th>Raised</th></tr></thead><tbody>' + rows + '</tbody></table>' +
       (resolved.length
         ? '<h2>Resolved <span class="count">' + resolved.length + '</span></h2>' +
-          '<table><thead><tr><th>Resolved</th><th>Process</th><th>Issue</th>' +
+          '<table><thead><tr><th>Resolved</th><th>About</th><th>Issue</th>' +
           '<th>Raised</th></tr></thead><tbody>' + resolvedRows + '</tbody></table>'
         : '')), 'text/html');
   }
@@ -562,7 +569,7 @@
       if (result.skipped) return;
       result.findings.forEach(function (f) {
         rows.push(['rule: ' + result.rule.name, f.severity, f.label, f.where,
-          f.message + (f.detail ? ' (' + f.detail + ')' : ''), '', 'Content rule', 'open', '', '']);
+          f.message + (f.detail ? ' (' + f.detail + ')' : ''), '', 'Rule', 'open', '', '']);
       });
     });
 
@@ -570,8 +577,8 @@
       rows.push([
         'recorded',
         entry.issue.severity,
-        entry.process.name,
-        Data.taxonomyPath(entry.process.taxonomyId),
+        aboutCells(entry).what,
+        aboutCells(entry).where,
         entry.issue.note,
         entry.issue.raised,
         entry.issue.raisedBy || '',
@@ -585,7 +592,7 @@
         return '"' + String(cell).replace(/"/g, '""') + '"';
       }).join(',');
     }).join('\n');
-    download('process-issues.csv', csv, 'text/csv');
+    download('issues.csv', csv, 'text/csv');
   }
 
   // ---- coverage report -----------------------------------------------------

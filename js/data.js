@@ -585,18 +585,68 @@
   function isOpen(issue) { return !issue.resolved; }
 
   /**
+   * Issues can be raised on a process (or one of its steps), an FAQ answer,
+   * a fact sheet or a variable. Each keeps its own issues, in an `issues`
+   * list on the item itself. An owner describes the item an issue is about,
+   * whatever kind it is.
+   */
+  var ISSUE_KINDS = {
+    process: 'Process', faq: 'FAQ answer', factsheet: 'Fact sheet', variable: 'Variable'
+  };
+
+  function ownerFrom(kind, obj) {
+    if (kind === 'process') {
+      return { kind: kind, id: obj.id, obj: obj, label: obj.name, taxonomyId: obj.taxonomyId,
+        route: '#/process/' + obj.id };
+    }
+    if (kind === 'faq') {
+      return { kind: kind, id: obj.id, obj: obj, label: plainText(obj.q), taxonomyId: obj.ownerId,
+        route: '#/faq/' + obj.id };
+    }
+    if (kind === 'factsheet') {
+      return { kind: kind, id: obj.id, obj: obj, label: obj.title, taxonomyId: obj.ownerId,
+        route: '#/factsheet/' + obj.id };
+    }
+    return { kind: 'variable', id: obj.id, obj: obj, label: obj.value, taxonomyId: obj.ownerId,
+      route: '#/variable/' + obj.id };
+  }
+
+  /** The process, FAQ answer, fact sheet or variable with this id, as an owner. */
+  function issueOwner(id) {
+    var idx = state.index;
+    if (idx.processes[id]) return ownerFrom('process', idx.processes[id]);
+    if (idx.faqs[id]) return ownerFrom('faq', idx.faqs[id]);
+    if (idx.factSheets[id]) return ownerFrom('factsheet', idx.factSheets[id]);
+    if (idx.variables[id]) return ownerFrom('variable', idx.variables[id]);
+    return null;
+  }
+
+  /** Everything that can have issues, as owners. */
+  function issueOwners() {
+    var out = [];
+    state.processes.processes.forEach(function (p) { out.push(ownerFrom('process', p)); });
+    state.library.faqs.forEach(function (f) { out.push(ownerFrom('faq', f)); });
+    state.library.factSheets.forEach(function (sh) { out.push(ownerFrom('factsheet', sh)); });
+    state.variables.variables.forEach(function (v) { out.push(ownerFrom('variable', v)); });
+    return out;
+  }
+
+  /**
    * Recorded issues, worst first. Open ones only, unless opts.resolved is
-   * 'include' (everything) or 'only' (the resolved history).
+   * 'include' (everything) or 'only' (the resolved history). Each entry is
+   * { issue, owner } — and `process` too, when it is about a process.
    */
   function allIssues(opts) {
     var mode = (opts && opts.resolved) || 'exclude';
     var out = [];
-    state.processes.processes.forEach(function (p) {
-      (p.issues || []).forEach(function (issue) {
+    issueOwners().forEach(function (owner) {
+      (owner.obj.issues || []).forEach(function (issue) {
         var open = isOpen(issue);
         if (mode === 'exclude' && !open) return;
         if (mode === 'only' && open) return;
-        out.push({ issue: issue, process: p });
+        var entry = { issue: issue, owner: owner };
+        if (owner.kind === 'process') entry.process = owner.obj;
+        out.push(entry);
       });
     });
     var weight = { high: 0, medium: 1, low: 2 };
@@ -607,6 +657,7 @@
     return out;
   }
 
+  /** The open issues on one item — a process, FAQ answer, fact sheet or variable. */
   function openIssues(p) {
     return (p.issues || []).filter(isOpen);
   }
@@ -896,6 +947,8 @@
     processCount: processCount,
     allIssues: allIssues,
     openIssues: openIssues,
+    issueOwner: issueOwner,
+    ISSUE_KINDS: ISSUE_KINDS,
     coverage: coverage,
     faqFacts: faqFacts,
     tallyFaqs: tallyFaqs,

@@ -113,14 +113,16 @@
     if (act === 'del-check') { Edit.deleteCheck(d.process, d.step, d.check); refresh(); }
 
     // -- issues
-    if (act === 'raise-issue') openIssueModal(d.process, d.step || '');
+    // An issue's owner is a process, FAQ answer, fact sheet or variable.
+    if (act === 'raise-issue') openIssueModal(d.owner || d.process || '', d.step || '');
     if (act === 'resolve-issue') {
       var how = ask('How was it resolved? (optional — leave blank to just close it)');
-      if (how !== null) { Edit.resolveIssue(d.process, d.issue, how); refresh(); }
+      if (how !== null) { Edit.resolveIssue(d.owner, d.issue, how); refresh(); }
     }
-    if (act === 'reopen-issue') { Edit.reopenIssue(d.process, d.issue); refresh(); }
+    if (act === 'reopen-issue') { Edit.reopenIssue(d.owner, d.issue); refresh(); }
     if (act === 'del-issue' && confirm('Delete this issue entirely? Resolving keeps a record; deleting does not.')) {
-      Edit.deleteIssue(d.process, d.issue); refresh();
+      Edit.deleteIssue(d.owner, d.issue);
+      if (/^#\/issue\//.test(location.hash)) onNavigate('#/issues'); else refresh();
     }
 
     // -- attachments
@@ -386,32 +388,75 @@
   }
 
   // ---- raising an issue ----------------------------------------------------
+  // From a page, the issue is about that page's process, FAQ answer, fact
+  // sheet or variable. From the Issues tab, you search for what it is about.
 
   var issueTarget = null;
 
-  function openIssueModal(processId, stepId) {
-    var p = Data.state.index.processes[processId];
-    if (!p) return;
-    issueTarget = processId;
+  function openIssueModal(ownerId, stepId) {
     var modal = document.getElementById('issueModal');
-    document.getElementById('imProcess').textContent = p.name;
+    var pick = document.getElementById('imPick');
+    var find = document.getElementById('imFind');
     document.getElementById('imNote').value = '';
     document.getElementById('imSeverity').value = 'medium';
-    var stepSelect = document.getElementById('imStep');
-    stepSelect.innerHTML = '<option value="">The process as a whole</option>' +
-      p.steps.map(function (s, i) {
-        return '<option value="' + e(s.id) + '"' + (s.id === stepId ? ' selected' : '') + '>' +
-          (i + 1) + '. ' + e(Data.freeze(s.title)) + '</option>';
-      }).join('');
+    find.value = '';
+    document.getElementById('imFindList').innerHTML = '';
+    pick.hidden = !!ownerId;
+    setIssueTarget(ownerId || null, stepId);
     modal.hidden = false;
-    document.getElementById('imNote').focus();
+    (ownerId ? document.getElementById('imNote') : find).focus();
+  }
+
+  /** Show what the issue is about, and the step list when it is a process. */
+  function setIssueTarget(ownerId, stepId) {
+    issueTarget = ownerId;
+    var owner = ownerId ? Data.issueOwner(ownerId) : null;
+    document.getElementById('imProcess').textContent = owner
+      ? Data.ISSUE_KINDS[owner.kind] + ' · ' + owner.label
+      : 'Search for the process, FAQ answer, fact sheet or variable it is about.';
+    var stepField = document.getElementById('imStepField');
+    var stepSelect = document.getElementById('imStep');
+    if (owner && owner.kind === 'process') {
+      stepSelect.innerHTML = '<option value="">The process as a whole</option>' +
+        owner.obj.steps.map(function (st, i) {
+          return '<option value="' + e(st.id) + '"' + (st.id === stepId ? ' selected' : '') + '>' +
+            (i + 1) + '. ' + e(Data.freeze(st.title)) + '</option>';
+        }).join('');
+      stepField.hidden = false;
+    } else {
+      stepSelect.innerHTML = '';
+      stepField.hidden = true;
+    }
   }
 
   function wireIssueModal() {
     var modal = document.getElementById('issueModal');
     if (!modal) return;
+    var find = document.getElementById('imFind');
+    var list = document.getElementById('imFindList');
+    find.addEventListener('input', function () {
+      var kinds = { process: 1, faq: 1, factsheet: 1, variable: 1 };
+      var hits = Data.search(find.value, 30).filter(function (h) { return kinds[h.kind]; }).slice(0, 12);
+      list.innerHTML = hits.map(function (h) {
+        return '<button type="button" class="pick-row" data-id="' + e(h.id) + '">' +
+          '<span class="pick-value">' + e(Data.plainText(h.title)) + '</span>' +
+          '<span class="pick-q">' + e(Data.ISSUE_KINDS[h.kind]) +
+          // Search subtitles can start with the kind again ("Fact sheet · Draft").
+          (h.subtitle ? ' · ' + e(String(h.subtitle).replace(/^(FAQ|Fact sheet) · /, '')) : '') +
+          '</span></button>';
+      }).join('') || (find.value.trim().length > 1 ? '<p class="empty">Nothing matches.</p>' : '');
+    });
+    list.addEventListener('click', function (ev) {
+      var row = ev.target.closest('.pick-row');
+      if (!row) return;
+      setIssueTarget(row.dataset.id, '');
+      list.innerHTML = '';
+      find.value = '';
+      document.getElementById('imNote').focus();
+    });
     document.getElementById('imCancel').addEventListener('click', function () { modal.hidden = true; });
     document.getElementById('imSave').addEventListener('click', function () {
+      if (!issueTarget) { find.focus(); return; }
       var note = document.getElementById('imNote').value.trim();
       if (!note) { document.getElementById('imNote').focus(); return; }
       Edit.raiseIssue(issueTarget, {
@@ -565,8 +610,6 @@
       '<button class="vt' + (processView === 'map' ? ' on' : '') +
       '" data-act="view" data-view="map">Map</button></div>';
 
-    html += renderIssues(p);
-
     if (processView === 'map') {
       html += '<section class="canvas-host" id="canvasHost"></section>';
     } else {
@@ -604,7 +647,7 @@
         { type: 'select', options: departmentOptions() }) + '</dd>' +
       '<dt>Departments involved</dt><dd>' +
       e(flow.departments.map(Data.taxonomyName).join(', ')) + '</dd>' +
-      '</dl></section></article>';
+      '</dl></section>' + issuesBlock(pid) + '</article>';
 
     paint(html);
 
@@ -751,28 +794,45 @@
       '</div>';
   }
 
-  function renderIssues(p) {
-    var open = Data.openIssues(p);
-    var resolved = (p.issues || []).filter(function (i) { return i.resolved; });
+  /** "FAQ answer", "fact sheet" — an issue owner's kind, inside a sentence. */
+  function kindInSentence(kind) {
+    return { process: 'process', faq: 'FAQ answer', factsheet: 'fact sheet', variable: 'variable' }[kind] || kind;
+  }
+
+  /**
+   * The issues raised on a process, FAQ answer, fact sheet or variable,
+   * at the foot of its page: open ones in full, resolved ones folded away.
+   */
+  function issuesBlock(ownerId) {
+    var owner = Data.issueOwner(ownerId);
+    if (!owner) return '';
+    var holder = owner.obj;
+    var open = Data.openIssues(holder);
+    var resolved = (holder.issues || []).filter(function (i) { return i.resolved; });
     var stepTitle = function (issue) {
-      var step = (p.steps || []).find(function (s) { return s.id === issue.stepId; });
+      if (owner.kind !== 'process') return '';
+      var step = (holder.steps || []).find(function (st) { return st.id === issue.stepId; });
       return step ? ' · step: ' + e(Data.freeze(step.title)) : '';
     };
+    var who = { owner: owner.id };
 
-    if (!open.length && !resolved.length) return '';
+    var html = '<section class="block issues" id="issues"><h2>Issues <span class="count">' +
+      (open.length ? open.length + ' open' : 'none open') + '</span>' +
+      btn('raise-issue', who, '⚑ Raise issue', 'tiny') + '</h2>';
 
-    var html = '<section class="block issues"><h2>Issues <span class="count">' +
-      open.length + ' open</span></h2>';
+    if (!open.length && !resolved.length) {
+      html += '<p class="empty">Nothing raised about this ' + kindInSentence(owner.kind) + '.</p>';
+    }
 
     html += open.map(function (issue) {
       return '<div class="issue-row sev-' + e(issue.severity) + '">' +
-        '<span class="sev">' + f('issue:' + p.id + ':' + issue.id + ':severity',
+        '<span class="sev">' + f('issue:' + owner.id + ':' + issue.id + ':severity',
           { type: 'select', options: options(['high', 'medium', 'low']) }) + '</span>' +
-        '<div class="issue-body">' + f('issue:' + p.id + ':' + issue.id + ':note',
+        '<div class="issue-body">' + f('issue:' + owner.id + ':' + issue.id + ':note',
           { type: 'multiline' }) +
         '<span class="issue-meta">' + e(issue.raisedBy || '—') + ' · ' + e(issue.raised) +
         stepTitle(issue) + '</span></div>' +
-        btn('resolve-issue', { process: p.id, issue: issue.id }, '✓ Resolve', 'tiny') +
+        btn('resolve-issue', { owner: owner.id, issue: issue.id }, '✓ Resolve', 'tiny') +
         '</div>';
     }).join('');
 
@@ -785,8 +845,8 @@
             '<span class="issue-meta">Resolved ' + e(issue.resolved) +
             (issue.resolution ? ' — ' + e(issue.resolution) : '') +
             ' · raised ' + e(issue.raised) + stepTitle(issue) + '</span></div>' +
-            btn('reopen-issue', { process: p.id, issue: issue.id }, 'Reopen', 'tiny') +
-            btn('del-issue', { process: p.id, issue: issue.id }, '×', 'tiny danger', 'Delete') +
+            btn('reopen-issue', { owner: owner.id, issue: issue.id }, 'Reopen', 'tiny') +
+            btn('del-issue', { owner: owner.id, issue: issue.id }, '×', 'tiny danger', 'Delete') +
             '</div>';
         }).join('') + '</details>';
     }
@@ -885,7 +945,7 @@
       renderSignoffs(sheet, facts) +
       valueSources(sheet.body, 'Each fee, time, number or link in this fact sheet, and the ' +
         'published document behind it') +
-      renderUsedIn(usage) + '</article>');
+      renderUsedIn(usage) + issuesBlock(id) + '</article>');
 
     RichText.mount(document.getElementById('fsBody'), {
       html: sheet.body,
@@ -1059,7 +1119,7 @@
       valueSources(q.a, 'Each fee, time, number or link in this answer, and the published ' +
         'document behind it') +
       sheetsExpanding(id) +
-      renderUsedIn(usage) + '</article>');
+      renderUsedIn(usage) + issuesBlock(id) + '</article>');
 
     RichText.mount(document.getElementById('richHost'), {
       html: q.a,
@@ -1558,7 +1618,7 @@
 
       '<section class="block"><h2>Used in ' + plural(usage.processes.length, 'place') + '</h2>' +
       (used || '<p class="empty">Not referenced anywhere yet.</p>') +
-      '</section></article>');
+      '</section>' + issuesBlock(id) + '</article>');
   }
 
   // ---- public sources ------------------------------------------------------
@@ -1651,7 +1711,12 @@
   var expanded = {};
 
   function issueRoute(entry) {
-    return '#/issue/' + entry.process.id + '/' + entry.issue.id;
+    return '#/issue/' + entry.owner.id + '/' + entry.issue.id;
+  }
+
+  /** "FAQ answer · …" — what an issue is about, for a list row. */
+  function aboutLine(entry) {
+    return Data.ISSUE_KINDS[entry.owner.kind] + ' · ' + entry.owner.label;
   }
 
   function renderIssueRegister() {
@@ -1660,16 +1725,17 @@
     var counts = { high: 0, medium: 0, low: 0 };
     recorded.forEach(function (x) { counts[x.issue.severity] = (counts[x.issue.severity] || 0) + 1; });
     var affected = {};
-    recorded.forEach(function (x) { affected[x.process.id] = true; });
+    recorded.forEach(function (x) { affected[x.owner.id] = true; });
 
     var html = '<div class="row-actions">' +
+      btn('raise-issue', {}, '⚑ Raise an issue', 'small primary') +
       btn('export-issues-html', {}, '⤓ Report (HTML)') +
       btn('export-issues-csv', {}, '⤓ CSV') +
       '<span class="spacer"></span>' +
       '<button class="btn small" data-route="#/rules">⚙ Rules</button>' +
       '</div>' +
       '<section class="tiles">' +
-      tile(recorded.length, 'open issues', Object.keys(affected).length + ' processes affected', '') +
+      tile(recorded.length, 'open issues', plural(Object.keys(affected).length, 'item') + ' affected', '') +
       tile(counts.high || 0, 'high severity', 'fix these first', '') +
       tile(counts.medium || 0, 'medium', '', '') +
       tile(counts.low || 0, 'low', '', '') +
@@ -1679,17 +1745,17 @@
     // --- by department
     var byDept = {};
     recorded.forEach(function (x) {
-      var top = Data.topDepartment(x.process.taxonomyId);
+      var top = x.owner.taxonomyId ? Data.topDepartment(x.owner.taxonomyId) : null;
       var key = top ? top.id : '';
       var row = byDept[key] = byDept[key] || { open: 0, high: 0, processes: {} };
       row.open++;
       if (x.issue.severity === 'high') row.high++;
-      row.processes[x.process.id] = true;
+      row.processes[x.owner.id] = true;
     });
     html += '<h2 class="group">By department</h2>' +
       '<div class="cov-table dash-table" role="table">' +
       '<div class="cov-row cov-headrow" role="row"><span>Department</span><span>Open</span>' +
-      '<span>High</span><span>Processes</span></div>' +
+      '<span>High</span><span>Items</span></div>' +
       Object.keys(byDept).sort(function (a, b) { return byDept[b].open - byDept[a].open; })
         .map(function (key) {
           var r = byDept[key];
@@ -1707,18 +1773,18 @@
             return '<button class="list-row issue-list sev-' + e(entry.issue.severity) + '"' +
               ' data-route="' + e(issueRoute(entry)) + '">' +
               '<span class="sev">' + e(entry.issue.severity) + '</span>' +
-              '<span class="list-title">' + e(entry.process.name) + '</span>' +
+              '<span class="list-title">' + e(aboutLine(entry)) + '</span>' +
               '<span class="list-sub">' + e(entry.issue.note) + '</span>' +
               '</button>';
           }).join('')
-        : '<p class="empty">Nothing open. Raise one from any process with ⚑.</p>');
+        : '<p class="empty">Nothing open.</p>');
 
     if (resolved.length) {
       html += '<details class="resolved"><summary>' + plural(resolved.length, 'resolved issue') +
         '</summary>' + resolved.map(function (entry) {
           return '<button class="list-row issue-list" data-route="' + e(issueRoute(entry)) + '">' +
             '<span class="sev">✓ ' + e(entry.issue.resolved) + '</span>' +
-            '<span class="list-title">' + e(entry.process.name) + '</span>' +
+            '<span class="list-title">' + e(aboutLine(entry)) + '</span>' +
             '<span class="list-sub">' + e(entry.issue.note) +
             (entry.issue.resolution ? ' — ' + e(entry.issue.resolution) : '') + '</span>' +
             '</button>';
@@ -1726,8 +1792,9 @@
     }
 
     // What the software finds is on the Rules tab; this page is what people raise.
-    html += '<p class="hint-block">Issues are what people raise — from a process with ⚑, or ' +
-      'from the live call view. What Process Hub finds by itself is on the ' +
+    html += '<p class="hint-block">Issues are what people raise — here, with ⚑ on any process, ' +
+      'step, FAQ answer, fact sheet or variable, or from the live call view. Each one is listed ' +
+      'at the foot of the page it is about. What Process Hub finds by itself is on the ' +
       '<a href="#/rules">Rules tab</a>.</p>';
 
     paint(listPane('Issues register',
@@ -1736,21 +1803,37 @@
 
   // ---- a single issue ------------------------------------------------------
 
-  function renderIssue(processId, issueId) {
-    var p = Data.state.index.processes[processId];
-    var issue = p && (p.issues || []).find(function (i) { return i.id === issueId; });
+  function renderIssue(ownerId, issueId) {
+    var owner = Data.issueOwner(ownerId);
+    var issue = owner && (owner.obj.issues || []).find(function (i) { return i.id === issueId; });
     if (!issue) return paint(notFound('issue', issueId));
-    var spec = 'issue:' + p.id + ':' + issue.id + ':';
-    var steps = [{ value: '', label: 'The process as a whole' }].concat(p.steps.map(function (st, i) {
-      return { value: st.id, label: (i + 1) + '. ' + Data.freeze(st.title) };
-    }));
+    var spec = 'issue:' + owner.id + ':' + issue.id + ':';
+    var kind = Data.ISSUE_KINDS[owner.kind];
+    var who = { owner: owner.id, issue: issue.id };
+
+    var details = '';
+    if (owner.kind === 'process') {
+      var p = owner.obj;
+      var steps = [{ value: '', label: 'The process as a whole' }].concat(p.steps.map(function (st, i) {
+        return { value: st.id, label: (i + 1) + '. ' + Data.freeze(st.title) };
+      }));
+      details = '<dt>About</dt><dd>' + f(spec + 'stepId', { type: 'select', options: steps,
+          placeholder: 'The process as a whole' }) + '</dd>' +
+        '<dt>Process sits under</dt><dd>' + e(Data.taxonomyPath(p.taxonomyId)) + '</dd>' +
+        '<dt>Process status</dt><dd>' + e(p.status) + '</dd>';
+    } else {
+      details = '<dt>About</dt><dd>' + e(kind) + '</dd>' +
+        '<dt>Owning department</dt><dd>' + e(owner.taxonomyId ? Data.taxonomyPath(owner.taxonomyId) : '—') + '</dd>' +
+        (owner.obj.status ? '<dt>Status</dt><dd>' + e(owner.obj.status) + '</dd>' : '');
+    }
 
     paint('<article class="pane">' +
       '<header class="pane-head">' +
       '<div class="crumbs"><a href="#/issues">Issues register</a> · ' +
       (issue.resolved ? 'resolved ' + e(issue.resolved) : e(issue.severity) + ' severity') + '</div>' +
-      '<h1>' + e(p.name) + '</h1>' +
+      '<h1>' + e(owner.label) + '</h1>' +
       '<div class="badges">' +
+      '<span class="badge quiet">' + e(kind) + '</span>' +
       (issue.resolved
         ? '<span class="badge status-published">✓ resolved</span>'
         : '<span class="badge sev-badge sev-' + e(issue.severity) + '">' + f(spec + 'severity',
@@ -1759,22 +1842,18 @@
       '<span class="badge quiet">By ' + f(spec + 'raisedBy', { placeholder: 'who raised it' }) + '</span>' +
       '</div>' +
       '<div class="row-actions">' +
-      '<button class="btn small" data-route="#/process/' + e(p.id) + '">Open the process →</button>' +
+      '<button class="btn small" data-route="' + e(owner.route) + '">Open the ' +
+      e(kindInSentence(owner.kind)) + ' →</button>' +
       '<span class="spacer"></span>' +
       (issue.resolved
-        ? btn('reopen-issue', { process: p.id, issue: issue.id }, 'Reopen') +
-          btn('del-issue', { process: p.id, issue: issue.id }, 'Delete', 'small danger')
-        : btn('resolve-issue', { process: p.id, issue: issue.id }, '✓ Resolve')) +
+        ? btn('reopen-issue', who, 'Reopen') + btn('del-issue', who, 'Delete', 'small danger')
+        : btn('resolve-issue', who, '✓ Resolve')) +
       '</div></header>' +
       '<section class="block"><h2>The issue</h2>' +
       '<div class="issue-note">' + f(spec + 'note', { type: 'multiline', placeholder: 'What is wrong or missing' }) + '</div>' +
       (issue.resolution ? '<p class="hint-block">Resolved: ' + e(issue.resolution) + '</p>' : '') +
       '</section>' +
-      '<section class="block meta"><h2>Details</h2><dl>' +
-      '<dt>About</dt><dd>' + f(spec + 'stepId', { type: 'select', options: steps, placeholder: 'The process as a whole' }) + '</dd>' +
-      '<dt>Process sits under</dt><dd>' + e(Data.taxonomyPath(p.taxonomyId)) + '</dd>' +
-      '<dt>Process status</dt><dd>' + e(p.status) + '</dd>' +
-      '</dl></section></article>');
+      '<section class="block meta"><h2>Details</h2><dl>' + details + '</dl></section></article>');
   }
 
   // ---- rules ---------------------------------------------------------------
