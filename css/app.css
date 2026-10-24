@@ -1954,3 +1954,16 @@ button.cov-row.cov-link:hover { background: var(--bg); }
   .wc-rules { margin-left: 0; flex-basis: 100%; }
   .wc-show { padding: 0.5rem 0.6rem; }
 }
+
+/* A built-in rule: shown in full, but only its exceptions can be edited. */
+.rule-card.builtin { border-color: var(--accent-soft); }
+.builtin-tag {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 1px 7px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.rule-card .fixed { display: block; font-size: 0.86rem; color: var(--text); margin: 0.15rem 0 0; }
+p.fixed { color: var(--text-soft); }
+.rule-card.builtin > .rule-field { margin-bottom: 0.7rem; }

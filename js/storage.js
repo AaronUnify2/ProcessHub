@@ -161,6 +161,8 @@
           else r.scope.splice(at, 1);
         });
       }
+      // Built-in rules are always present, with their fixed settings.
+      if (global.Rules) Rules.applyBuiltIns(file);
     }
     return data;
   }
