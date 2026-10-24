@@ -34,7 +34,7 @@ content in those older public copies was judged acceptable to leave.
   live.html          the live call view
   css/app.css · css/live.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
-                     rules.js · writing.js · export.js · factsheet-export.js · faq.js
+                     rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
                      richtext.js · canvas.js
                      ui-sidebar.js · ui-detail.js · app.js · live.js
   exports/
@@ -72,7 +72,7 @@ a dashboard for the section as a whole.
 | Fact sheets | fact sheets by stage: draft, in sign-off, approved, live | counts by stage, who sign-off is waiting on, what needs attention, by owner |
 | Variables | variables by owning department, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
 | Issues | open issues by severity, then resolved | severity counts, issues by department, the full register and rule findings |
-| Rules | every content rule and writing rule with its severity and finding count | content rules and writing rules in two lists; each rule opens on its own page with everything it finds |
+| Rules | the built-in checks, then your rules, each with what it finds | the six built-in checks as cards, then your text rules; each opens on its own page |
 | Coverage | the department tree with a status bar per department | status by department; each department opens on its processes |
 | Depts | the department tree | the tree editor; each department opens on everything filed under, done by or owned by it |
 
@@ -247,61 +247,49 @@ A chip is `contenteditable="false"`, so a reference can be deleted whole but
 never half-edited into nonsense. The link builder can point at a URL variable
 instead of a typed address, so a changed web address is still one edit.
 
-**Content rules.** A rule is a standing check across every process, fact sheet
-and FAQ. When something in the organisation changes — a system renamed, a form
-retired, a team restructured — add a rule rather than hunt through 112
-processes, and everything now wrong appears in the issues register.
+**Rules.** The Rules tab has two parts.
 
-Four kinds: text that should no longer appear, a field that ought to be filled
-in, a date untouched for N months, and library content nothing references.
-Each rule carries a severity, the scopes it applies to, and a message
-explaining what to do. Text rules can match whole words only and exact
-capitals — the Merit rule does both, so "sufficient merit" in a planning
-answer is not flagged. Any rule can leave drafts alone: "not reviewed in 12
-months" is true of every imported draft and says nothing new until a process
-is marked mapped or beyond.
+*Built-in checks* — six of them, defined in code (`js/rules.js`, worked out by
+`js/checks.js` and `js/writing.js`). Each goes through all of Process Hub at
+once and lists what it finds by type — variables, FAQ answers, fact sheets,
+processes — and then by department, with dropdowns to narrow the list:
 
-Findings are computed on every load and never stored, so fixing the content
-makes the finding disappear by itself. A recorded issue has to be ticked off by
-hand; a rule finding cannot lie about being fixed.
+| Check | What it shows | Setting |
+|---|---|---|
+| Empty fields | every field in the app, how many leave it empty; pick a row for the list | — |
+| Not touched | every review, verification and edit date older than the period chosen, or missing | 1, 3, 6 or 12 months |
+| Nothing uses it | variables nothing uses; FAQ answers and fact sheets no process attaches | — |
+| Who does this? | instructions that say something must be done without saying who | words never to flag |
+| Long sentence | sentences in FAQ answers and fact sheets over a word limit | the word limit |
+| No next step | FAQ answers with no link, phone, email or "see *another answer*" | — |
 
-Manage them at `#/rules`. They export with the issues report and CSV. In the
-register, recorded issues come first; each rule's findings sit collapsed under
-its name and count until you open them.
+They can be switched off, and given their one setting, but not changed, copied or
+deleted. `Rules.applyBuiltIns`, called from `Storage.upgrade` on every load,
+puts any that are missing back with their fixed settings. The last three are
+also checked as you type, in the **Writing check** panel under the FAQ and
+fact sheet editors.
 
-**Writing rules and the writing check.** Writing rules say how Council wants
-public wording to read. They sit on the Rules tab under their own heading and
-are checked as you type, in a **Writing check** panel under the FAQ answer and
-fact sheet editors. Four kinds (`js/writing.js`):
+*Your rules* — the one kind people add: **text that should no longer appear**
+(a system renamed, a form retired, a team that is now called something else).
+Each has the wording or a pattern, an optional "say instead", whole words
+only, match capitals, a severity, what it applies to, and a message. A text
+rule checks everything it applies to and lists what it finds in the issues
+register; where it applies to FAQ answers or fact sheets, the Writing check
+also flags it as you type, with what to say instead. The Merit rule matches
+whole words and exact capitals, so "sufficient merit" is not flagged.
 
-- *A word or phrase to avoid*, with what to say instead ("rates team" →
-  "revenue team").
-- *Says what must be done, not who does it*: "must / should / needs to / has
-  to … be" + a past participle, with no "by …" naming who. Flags "the form must
-  be completed", not every passive in the language. Words that should never be
-  flagged can be listed on the rule.
-- *A sentence that runs long*, over a set number of words (25 to start).
-- *An FAQ answer with no next step*: no link, phone number, email address or
-  "see *another answer*".
+Findings are computed, never stored: fix the content and the finding
+disappears by itself. A recorded issue has to be ticked off by hand; a rule
+finding cannot lie about being fixed. Only text rules count in the issues
+register, the coverage report and the exports — the built-in checks have their
+own pages, where thousands of empty fields would not bury what needs action.
 
-The checks read what a reader sees, block by block, so a sentence never runs
-across a heading or a list item, and a variable counts as its value. Click a
-flag to select the words in the editor; × dismisses it until the page is next
-opened. Nothing is ever changed for you. A content rule of the text kind can
-also be set to *Flag while writing*.
-
-Writing findings are kept out of the issues register and its totals — they are
-about how something reads, not whether it is right. The Rules tab offers a
-starting set when there are none.
-
-*Who does this?* — the passive check — is **built in**. Its word lists are
-tuned against the real content, so it is defined in `js/rules.js` and
-`js/writing.js`, sits at the top of the rules list, and can be switched off and
-given words never to flag, but not changed, copied or deleted. It is not
-offered as a kind for new rules. If it is ever missing from the content, or its
-fixed settings have been changed, it is put back as it should be on every load
-(`Rules.applyBuiltIns`, called from `Storage.upgrade`). A passive rule made
-before it was built in shows a note saying it no longer does anything.
+**Writing check.** A panel under the FAQ answer and fact sheet editors, run a
+moment after you stop typing, with Who does this?, Long sentence, No next step
+and every text rule that applies there. It reads what a reader sees, block by
+block, so a sentence never runs across a heading or a list item, and a
+variable counts as its value. Click a flag to select the words in the editor;
+× dismisses it until the page is next opened. It never changes the text.
 
 **Coverage.** `#/coverage` shows each department's processes by status, its
 handoffs, open issues and rule findings, plus variable verification by owning

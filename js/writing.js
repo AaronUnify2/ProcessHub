@@ -2,20 +2,18 @@
    writing.js — the writing check.
 
    A few plain checks on public wording, run as you type in the FAQ and fact
-   sheet editors, and across all the content on the Rules tab. They are
-   writing rules like any other rule: added, changed, switched off or deleted
-   on the Rules tab, so the check says what this organisation has decided,
-   not what a grammar checker thinks.
+   sheet editors, and across all the content on the Rules tab.
 
-   Writing rule kinds:
-     avoid     a word or phrase to avoid, with what to say instead
-     passive   a passive instruction — "the form must be completed" — that
-               leaves the reader asking who has to do it
+   Three are built in (rules.js) — switched on or off on the Rules tab, with
+   one setting each, but not changed or deleted:
+     passive   "Who does this?" — an instruction like "the form must be
+               completed" that leaves the reader asking who has to do it
      long      a sentence longer than a set number of words
      nextstep  an FAQ answer that never tells the reader what to do next
 
-   A content rule of the text kind can also opt in ("Flag while writing"),
-   so a retired name is caught while it is being typed, not after.
+   Every text rule (text that should no longer appear) that applies to FAQ
+   answers or fact sheets is flagged here too, with what to say instead, so
+   a retired name is caught while it is being typed, not after.
 
    Everything here only flags. Nothing changes the text.
 
@@ -27,7 +25,7 @@
 (function (global) {
   'use strict';
 
-  var KINDS = ['avoid', 'passive', 'long', 'nextstep'];
+  var KINDS = ['passive', 'long', 'nextstep'];
   var SCOPES = ['faq', 'factsheet'];
 
   function isWriting(rule) { return KINDS.indexOf(rule && rule.kind) !== -1; }
@@ -150,7 +148,7 @@
       });
     }
 
-    if (rule.kind === 'avoid' || rule.kind === 'text') {
+    if (rule.kind === 'text') {
       var matcher = global.Rules ? Rules.matcherFor(rule) : null;
       if (matcher && !matcher.invalid) {
         var re = new RegExp(matcher.source, matcher.flags.indexOf('g') === -1 ? matcher.flags + 'g' : matcher.flags);
@@ -180,14 +178,15 @@
     });
   }
 
-  /** The rules that apply to a scope, here or on the Rules tab. */
-  function rulesFor(scope, live) {
+  /** The rules the editor checks for a scope: the writing rules, and text rules. */
+  function rulesFor(scope) {
     if (!global.Rules) return [];
     return Rules.list().filter(function (rule) {
       if (rule.enabled === false) return false;
-      if (Rules.isRetiredCopy(rule)) return false;
-      if (!(isWriting(rule) || (live && rule.kind === 'text' && Rules.isOn(rule.live)))) return false;
-      var scopes = rule.scope && rule.scope.length ? rule.scope : SCOPES;
+      if (!isWriting(rule) && rule.kind !== 'text') return false;
+      // A text rule with no scope set applies everywhere.
+      var scopes = rule.scope && rule.scope.length ? rule.scope
+        : (rule.kind === 'text' ? Rules.SCOPES : SCOPES);
       return scopes.indexOf(scope) !== -1;
     });
   }
@@ -274,7 +273,7 @@
     function editing() { return area.offsetParent !== null; }
 
     function run() {
-      var rules = rulesFor(scope, true);
+      var rules = rulesFor(scope);
       var root = editing() ? area : detached(source());
       flags = check(root, scope, rules).filter(function (f) { return !dismissed[keyOf(f)]; });
       draw(rules.length);
@@ -284,10 +283,10 @@
       var head = '<div class="wc-head"><span class="wc-title">Writing check</span>' +
         '<span class="wc-count' + (flags.length ? '' : ' clear') + '">' +
         (flags.length ? flags.length + ' to look at' : 'nothing flagged') +
-        '</span><a class="wc-rules" href="#/rules">' + ruleCount + ' writing rule' +
-        (ruleCount === 1 ? '' : 's') + ' →</a></div>';
+        '</span><a class="wc-rules" href="#/rules">' + ruleCount + ' rule' +
+        (ruleCount === 1 ? '' : 's') + ' checked →</a></div>';
       if (!ruleCount) {
-        box.innerHTML = head + '<p class="wc-empty">No writing rules are switched on. ' +
+        box.innerHTML = head + '<p class="wc-empty">No rules that check wording are switched on. ' +
           'Add them on the <a href="#/rules">Rules tab</a>.</p>';
         return;
       }
@@ -298,7 +297,7 @@
             e(trimEnd(flag.after, 80))
           : e(flag.excerpt);
         var tip = rule.message || '';
-        if (rule.kind === 'avoid' && rule.suggest) tip = 'Use “' + rule.suggest + '” instead. ' + tip;
+        if (rule.kind === 'text' && rule.suggest) tip = 'Use “' + rule.suggest + '” instead. ' + tip;
         return '<div class="wc-row sev-' + e(rule.severity || 'low') + '">' +
           '<button type="button" class="wc-show" data-i="' + i + '"' + (flag.block ? '' : ' disabled') + '>' +
           '<span class="wc-rule">' + e(rule.name) + (flag.note ? ' · ' + e(flag.note) : '') + '</span>' +

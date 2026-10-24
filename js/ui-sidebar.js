@@ -549,13 +549,9 @@
     }
     if (act === 'new-rule') {
       onNavigate('#/rule/' + Rules.add({
-        name: 'New rule', kind: 'text', match: { mode: 'phrase', value: '' },
+        name: 'New rule', match: { mode: 'phrase', value: '', wholeWord: true }, suggest: '',
         scope: ['process', 'step', 'factsheet', 'faq'], severity: 'medium', message: ''
       }));
-    }
-    if (act === 'seed-rules') {
-      Rules.defaults().forEach(function (r) { if (!Rules.get(r.id)) Rules.add(r); });
-      if (global.App) App.route();
     }
     if (act === 'new-dept') {
       name = prompt('Name of the new department:', '');
@@ -675,17 +671,21 @@
 
   function renderRulesTree() {
     var rules = Rules.list();
-    var results = {};
-    Rules.runAll().forEach(function (r) { results[r.rule.id] = r; });
-    var html = rules.map(function (rule) {
+    function line(rule) {
       var off = rule.enabled === false;
-      var found = results[rule.id] ? results[rule.id].findings.length : 0;
-      return row('#/rule/' + rule.id, view.active === 'rule:' + rule.id,
-        e(rule.name), '<span class="side-sev sev-' + e(rule.severity || 'medium') + '">' +
-        e((rule.severity || 'medium').charAt(0).toUpperCase()) + '</span>',
-        off ? 'off' : String(found)).replace('class="side-row', 'class="side-row' + (off ? ' off' : ''));
-    }).join('');
-    el.tree.innerHTML = '<div class="side-rows flat">' + (html || '<p class="empty">No rules yet.</p>') + '</div>' +
+      var badge = Rules.isBuiltIn(rule)
+        ? '<span class="side-sev builtin">B</span>'
+        : '<span class="side-sev sev-' + e(rule.severity || 'medium') + '">' +
+          e((rule.severity || 'medium').charAt(0).toUpperCase()) + '</span>';
+      return row('#/rule/' + rule.id, view.active === 'rule:' + rule.id, e(rule.name), badge,
+        off ? 'off' : String(Rules.count(rule))).replace('class="side-row', 'class="side-row' + (off ? ' off' : ''));
+    }
+    var builtIn = rules.filter(Rules.isBuiltIn);
+    var mine = rules.filter(function (r) { return !Rules.isBuiltIn(r); });
+    var html = '<div class="side-label">Built-in checks</div>' + builtIn.map(line).join('') +
+      '<div class="side-label">Your rules</div>' +
+      (mine.map(line).join('') || '<p class="empty">No rules yet.</p>');
+    el.tree.innerHTML = '<div class="side-rows flat">' + html + '</div>' +
       foot('<button class="btn tiny" data-side-act="new-rule">+ New rule</button>' +
         '<button class="btn tiny" data-route="#/rules">All rules →</button>');
     el.count.textContent = rules.length + ' rules · ' + Rules.totals().findings + ' findings';
