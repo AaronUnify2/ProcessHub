@@ -185,6 +185,7 @@
     if (!global.Rules) return [];
     return Rules.list().filter(function (rule) {
       if (rule.enabled === false) return false;
+      if (Rules.isRetiredCopy(rule)) return false;
       if (!(isWriting(rule) || (live && rule.kind === 'text' && Rules.isOn(rule.live)))) return false;
       var scopes = rule.scope && rule.scope.length ? rule.scope : SCOPES;
       return scopes.indexOf(scope) !== -1;

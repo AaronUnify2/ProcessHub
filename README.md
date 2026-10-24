@@ -294,6 +294,15 @@ Writing findings are kept out of the issues register and its totals — they are
 about how something reads, not whether it is right. The Rules tab offers a
 starting set when there are none.
 
+*Who does this?* — the passive check — is **built in**. Its word lists are
+tuned against the real content, so it is defined in `js/rules.js` and
+`js/writing.js`, sits at the top of the rules list, and can be switched off and
+given words never to flag, but not changed, copied or deleted. It is not
+offered as a kind for new rules. If it is ever missing from the content, or its
+fixed settings have been changed, it is put back as it should be on every load
+(`Rules.applyBuiltIns`, called from `Storage.upgrade`). A passive rule made
+before it was built in shows a note saying it no longer does anything.
+
 **Coverage.** `#/coverage` shows each department's processes by status, its
 handoffs, open issues and rule findings, plus variable verification by owning
 department. The same page is in the Export menu as a self-contained report.

@@ -308,7 +308,7 @@
     if (act === 'toggle-rule') { Rules.toggle(d.rule); refresh(); return; }
     if (act === 'scope') {
       var rule = Rules.get(d.rule);
-      if (rule) {
+      if (rule && !Rules.isBuiltIn(rule)) {
         rule.scope = rule.scope || [];
         var at = rule.scope.indexOf(d.scope);
         if (at === -1) rule.scope.push(d.scope); else rule.scope.splice(at, 1);
@@ -318,6 +318,7 @@
       return;
     }
     if (act === 'del-rule') {
+      if (Rules.isBuiltIn(Rules.get(d.rule))) return;
       if (confirm('Delete this rule? Its findings disappear with it.')) {
         Rules.remove(d.rule);
         if (/^#\/rule\//.test(location.hash)) onNavigate('#/rules'); else refresh();
@@ -1853,16 +1854,49 @@
 
   // Writing rules: how public wording reads. Checked as you type in the FAQ
   // and fact sheet editors, and listed on the Rules tab apart from the rest.
+  // The passive check is built in (rules.js) and cannot be made again, so it
+  // is not offered as a kind to choose.
   var WRITING_KINDS = [
     { value: 'avoid', label: 'A word or phrase to avoid' },
-    { value: 'passive', label: 'Says what must be done, not who does it' },
     { value: 'long', label: 'A sentence that runs long' },
     { value: 'nextstep', label: 'An FAQ answer with no next step' }
   ];
+  var PASSIVE_KIND = { value: 'passive', label: 'Says what must be done, not who does it' };
 
   function kindLabel(kind) {
-    var found = RULE_KINDS.concat(WRITING_KINDS).find(function (k) { return k.value === kind; });
+    var found = RULE_KINDS.concat(WRITING_KINDS, [PASSIVE_KIND])
+      .find(function (k) { return k.value === kind; });
     return found ? found.label : kind;
+  }
+
+  /**
+   * A built-in rule: everything shown, nothing editable but its exceptions,
+   * and it can be switched off but not deleted.
+   */
+  function builtInCard(rule, found) {
+    var spec = 'rule:' + rule.id + ':';
+    var off = rule.enabled === false;
+    return '<div class="rule-card builtin' + (off ? ' off' : '') + '" id="rule-' + e(rule.id) + '">' +
+      '<div class="rule-card-head">' +
+      '<span class="rule-name">' + e(rule.name) + ' <span class="builtin-tag">Built in</span></span>' +
+      '<span class="rule-count' + (found ? '' : ' clear') + '">' +
+      (off ? 'disabled' : found + ' found') + '</span>' +
+      btn('toggle-rule', { rule: rule.id }, off ? 'Enable' : 'Disable', 'tiny') +
+      '</div>' +
+      '<div class="rule-grid">' +
+      field('Check', '<span class="fixed">' + e(kindLabel(rule.kind)) + '</span>') +
+      field('Severity', '<span class="fixed">' + e(rule.severity) + '</span>') +
+      field('Applies to', '<span class="fixed">' + e((rule.scope || []).map(function (sc) {
+        return { faq: 'FAQ answers', factsheet: 'fact sheets' }[sc] || sc;
+      }).join(', ')) + '</span>') +
+      '</div>' +
+      field('Never flag these', f(spec + 'allow',
+        { placeholder: 'words or phrases, separated by commas — e.g. required, must be approved' })) +
+      field('Tip shown with the flag', '<p class="fixed">' + e(rule.message) + '</p>') +
+      '<p class="hint-block">Built into Process Hub. It can be switched off, and told what never ' +
+      'to flag, but not changed, copied or deleted — its word lists are tuned against Council\'s ' +
+      'own content, and changing them is a change to the app.</p>' +
+      '</div>';
   }
 
   var FIELD_HINTS = {
@@ -1871,9 +1905,15 @@
   };
 
   function ruleCard(rule, found) {
+    if (Rules.isBuiltIn(rule)) return builtInCard(rule, found);
     var spec = 'rule:' + rule.id + ':';
     var off = rule.enabled === false;
     var writing = Writing.isWriting(rule);
+    // A passive rule made before the check was built in keeps its kind on
+    // show, so the select is not blank, but it no longer does anything.
+    var writingKinds = rule.kind === 'passive'
+      ? WRITING_KINDS.concat([{ value: 'passive', label: PASSIVE_KIND.label + ' (built in only)' }])
+      : WRITING_KINDS;
 
     var body = '';
     if (rule.kind === 'avoid') {
@@ -1883,10 +1923,6 @@
           { type: 'select', options: YES_NO, placeholder: 'No' })) +
         field('Match capitals exactly', f(spec + 'match:caseSensitive',
           { type: 'select', options: YES_NO, placeholder: 'No' }));
-    }
-    if (rule.kind === 'passive') {
-      body += field('Never flag these', f(spec + 'allow',
-        { placeholder: 'words or phrases, separated by commas — e.g. required, must be approved' }));
     }
     if (rule.kind === 'long') {
       body += field('Longest sentence (words)', f(spec + 'words', { placeholder: '25' }));
@@ -1927,7 +1963,7 @@
       btn('del-rule', { rule: rule.id }, '×', 'tiny danger', 'Delete rule') +
       '</div>' +
       '<div class="rule-grid">' +
-      field('Check', f(spec + 'kind', { type: 'select', options: writing ? WRITING_KINDS : RULE_KINDS })) +
+      field('Check', f(spec + 'kind', { type: 'select', options: writing ? writingKinds : RULE_KINDS })) +
       field('Severity', f(spec + 'severity', { type: 'select',
         options: options(['high', 'medium', 'low']) })) +
       body +
@@ -1993,11 +2029,12 @@
       'in the issues register. Findings disappear by themselves once the content is fixed.</p>';
 
     html += '<h2 class="group">Writing rules</h2>';
-    if (!writing.length) {
-      html += '<p class="empty">No writing rules yet. ' +
+    if (writing.length) html += ruleTable(writing, results);
+    // The built-in rule is always there, so offer the rest of the starting
+    // set whenever it is on its own.
+    if (!writing.filter(function (r) { return !Rules.isBuiltIn(r); }).length) {
+      html += '<p class="empty">No other writing rules yet. ' +
         btn('seed-writing-rules', {}, 'Add a starting set', 'tiny') + '</p>';
-    } else {
-      html += ruleTable(writing, results);
     }
     html += '<p class="hint-block">Writing rules are how Council wants public wording to read. ' +
       'They are checked as you type, in the <strong>Writing check</strong> under the FAQ and fact ' +

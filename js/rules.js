@@ -23,6 +23,13 @@
    runWriting() has their findings for the Rules tab, and the editors check
    them as you type.
 
+   Built-in rules are defined here, in code, and cannot be changed, copied or
+   deleted — only switched off. "Who does this?" is one: its word lists are
+   tuned against the real content, and a second, slightly different copy
+   would drift. The one thing left open is its "Never flag these" list.
+   applyBuiltIns() puts each built-in rule back if it is ever missing and
+   restores its fixed settings, every time the content loads.
+
    Two options narrow what a rule looks at:
      match.caseSensitive / match.wholeWord  (text rules) — so "Merit" the
        retired system is caught but "sufficient merit" is not
@@ -147,6 +154,10 @@
 
   function evaluate(rule) {
     if (rule.enabled === false) return { rule: rule, findings: [], skipped: true };
+    if (isRetiredCopy(rule)) {
+      return { rule: rule, findings: [], error: 'Only the built-in “' + BUILT_IN.rule_w_passive.name +
+        '” rule checks this now. This copy does nothing — delete it.' };
+    }
 
     var findings = [];
     var scopes = (rule.scope && rule.scope.length ? rule.scope : SCOPES)
@@ -303,7 +314,11 @@
 
   // ---- managing rules ------------------------------------------------------
 
-  function list() { return rules(); }
+  /** Built-in rules first, then the rest in the order they were added. */
+  function list() {
+    var all = rules();
+    return all.filter(isBuiltIn).concat(all.filter(function (r) { return !isBuiltIn(r); }));
+  }
 
   function get(id) {
     return rules().find(function (r) { return r.id === id; }) || null;
@@ -321,6 +336,7 @@
   }
 
   function remove(id) {
+    if (BUILT_IN[id]) return;
     var file = Data.state.processes;
     file.rules = (file.rules || []).filter(function (r) { return r.id !== id; });
     Edit.touch();
@@ -385,23 +401,58 @@
     ];
   }
 
+  // ---- built-in rules ------------------------------------------------------
+
+  // The settings that are fixed. Everything else on a built-in rule (whether
+  // it is switched on, its "Never flag these" list, when it was added) stays
+  // with the content.
+  var BUILT_IN = {
+    rule_w_passive: {
+      id: 'rule_w_passive',
+      name: 'Who does this?',
+      kind: 'passive',
+      scope: ['faq', 'factsheet'],
+      severity: 'low',
+      message: 'This says something must be done without saying who does it. If it is the ' +
+        'reader, start with the action: “Complete the form…” rather than “The form must be completed…”.'
+    }
+  };
+  var BUILT_IN_ORDER = ['rule_w_passive'];
+  var FIXED = ['name', 'kind', 'scope', 'severity', 'message'];
+
+  function isBuiltIn(rule) { return !!(rule && BUILT_IN[rule.id]); }
+
+  /** A passive rule that is not the built-in one — made before it was locked. */
+  function isRetiredCopy(rule) { return rule.kind === 'passive' && !isBuiltIn(rule); }
+
   /**
-   * A starting set of writing rules. Each one is only a starting point — the
-   * point is that they can be changed on the Rules tab.
+   * Make sure every built-in rule is in the content, at the top, with its
+   * fixed settings. Called on every load, so a built-in rule removed by a
+   * merge or by hand comes back, and its settings cannot drift.
+   */
+  function applyBuiltIns(file) {
+    if (!file) return;
+    if (!Array.isArray(file.rules)) file.rules = [];
+    BUILT_IN_ORDER.slice().reverse().forEach(function (id) {
+      var def = BUILT_IN[id];
+      var rule = file.rules.find(function (r) { return r.id === id; });
+      if (!rule) {
+        rule = { id: id, allow: '', enabled: true, created: new Date().toISOString().slice(0, 10) };
+        file.rules.unshift(rule);
+      }
+      FIXED.forEach(function (key) {
+        rule[key] = Array.isArray(def[key]) ? def[key].slice() : def[key];
+      });
+    });
+  }
+
+  /**
+   * A starting set of writing rules, offered when there are none. Each one
+   * is only a starting point: they can be changed on the Rules tab. The
+   * built-in rules are not in it — they are always there already.
    */
   function writingDefaults() {
     return [
-      {
-        id: 'rule_w_passive',
-        name: 'Who does this?',
-        kind: 'passive',
-        allow: '',
-        scope: ['faq', 'factsheet'],
-        severity: 'low',
-        message: 'This says something must be done without saying who does it. If it is the ' +
-          'reader, start with the action: “Complete the form…” rather than “The form must be completed…”.',
-        enabled: true
-      },
       {
         id: 'rule_w_long',
         name: 'Long sentence',
@@ -462,6 +513,9 @@
     byProcess: byProcess,
     isOn: isOn,
     matcherFor: matcherFor,
+    isBuiltIn: isBuiltIn,
+    isRetiredCopy: isRetiredCopy,
+    applyBuiltIns: applyBuiltIns,
     defaults: defaults,
     writingDefaults: writingDefaults
   };
