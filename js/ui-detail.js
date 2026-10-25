@@ -318,6 +318,11 @@
 
   /** The "+ route to…" menus on each step, and the other in-page selects. */
   function handleChange(event) {
+    var also = event.target.closest('textarea[data-also-asked]');
+    if (also) {
+      Edit.setAlsoAsked(also.dataset.alsoAsked, also.value);
+      return;
+    }
     var setting = event.target.closest('select[data-rule-setting]');
     if (setting) {
       var bits = setting.dataset.ruleSetting.split(':');
@@ -1117,6 +1122,7 @@
         { type: 'select', options: YES_NO }) + '</dd>' +
       '</dl></section>' +
       '<section class="block"><h2>Answer — public wording</h2><div id="richHost"></div></section>' +
+      alsoAskedBlock(q) +
       valueSources(q.a, 'Each fee, time, number or link in this answer, and the published ' +
         'document behind it') +
       sheetsExpanding(id) +
@@ -1128,6 +1134,29 @@
       check: 'faq',
       onChange: function (html) { Edit.set('faq:' + id + ':a', html); }
     });
+  }
+
+  /**
+   * How people ask this question: other phrasings, and whether it is an
+   * everyday question. Neither is published as text; both steer Probe and
+   * the Ask page towards this answer.
+   */
+  function alsoAskedBlock(q) {
+    var lines = (q.alsoAsked || []).join('\n');
+    return '<section class="block also-asked-block"><h2>Also asked as <span class="count">' +
+      plural((q.alsoAsked || []).length, 'phrasing') + '</span></h2>' +
+      '<p class="hint-block">Other ways people ask this, one per line — in their words, not ours. ' +
+      'They are never shown on the public page; they help <a href="#/probe">Probe</a> and the Ask ' +
+      'page find this answer. When Probe lands on the wrong answer for a question, add that question ' +
+      'here on the right one.</p>' +
+      '<textarea class="also-asked" data-also-asked="' + e(q.id) + '" rows="' +
+      Math.max(3, (q.alsoAsked || []).length + 1) + '" aria-label="Other ways people ask this" ' +
+      'placeholder="e.g. can I build a house on my farm">' + e(lines) + '</textarea>' +
+      '<dl class="also-common"><dt>Everyday question</dt><dd>' + f('faq:' + q.id + ':common',
+        { type: 'select', options: YES_NO, placeholder: 'No' }) +
+      '<span class="hint">Yes gives it a small lift when several answers match about equally — ' +
+      'for the question most people mean, not the specialist one.</span></dd></dl>' +
+      '</section>';
   }
 
   // ---- the FAQ dashboard ---------------------------------------------------

@@ -2217,3 +2217,16 @@ a.source-title:hover { color: var(--accent); text-decoration: underline; }
   .probe-hit, .probe-gap, .probe-gap-row { gap: 0.55rem; padding: 0.55rem 0.6rem; }
   .probe-score { flex-basis: 2.8rem; }
 }
+
+/* ---- an FAQ question's other phrasings, on its page ---------------------- */
+.also-asked {
+  display: block; width: 100%; font: inherit; font-size: 0.9rem; line-height: 1.5;
+  padding: 0.5rem 0.7rem; border: 1px solid var(--border-strong); border-radius: 8px;
+  background: var(--surface); color: var(--text); resize: vertical;
+}
+.also-asked:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.also-common { display: grid; grid-template-columns: minmax(110px, 170px) 1fr; gap: 0.3rem 1rem; margin-top: 0.7rem; }
+.also-common dt { font-size: 0.78rem; color: var(--text-soft); padding-top: 0.2rem; }
+.also-common dd { font-size: 0.88rem; }
+.also-common .hint { display: block; font-size: 0.76rem; color: var(--text-soft); margin-top: 0.2rem; }
+@media (max-width: 560px) { .also-common { grid-template-columns: 1fr; } }

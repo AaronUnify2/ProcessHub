@@ -10,6 +10,17 @@
    Everything comes from the draft as it stands, published or not; the page
    decides what to show. The index is rebuilt whenever the content changes,
    and only text that is new or edited needs the model to read it.
+
+   Two things on an FAQ question steer the matching (both edited on its page,
+   never published as text):
+     alsoAsked  other ways people ask it. Each is matched like the question
+                itself, and the best of them counts, a little discounted
+                (Semantic.ALIAS_DISCOUNT).
+     common     an everyday question. It gets a small lift (Semantic.BOOST),
+                enough to win when several answers match about equally.
+
+   ask.html matches the same way. Probe.exportFingerprints() makes the
+   block of fingerprints it carries, phrasings and lifts included.
    =========================================================================== */
 
 (function (global) {
@@ -73,6 +84,7 @@
       var group = isPublic && groupOf[f.id] ? S.plain(groupOf[f.id]) : '';
       var qText = isPublic ? tabLabel[tab] + (group ? ' — ' + group : '') + ': ' + q : q;
       var chunks = S.chunk(text);
+      var also = alsoAsked(f);
       return {
         kind: 'faq',
         id: f.id,
@@ -86,6 +98,9 @@
         qKey: S.hash(qText),
         chunkTexts: chunks.map(function (c) { return q + ' ' + c; }),
         cKeys: chunks.map(function (c) { return S.hash(q + ' ' + c); }),
+        alsoTexts: also,
+        alsoKeys: also.map(S.hash),
+        common: !!f.common,
         terms: S.terms(q + ' ' + group + ' ' + (tabLabel[tab] || '') + ' ' + text),
         qTerms: S.terms(q)
       };
@@ -106,8 +121,24 @@
     return corpus;
   }
 
+  /** An FAQ question's other phrasings, tidied: trimmed, no blanks, no repeats. */
+  function alsoAsked(f) {
+    var seen = {};
+    return (Array.isArray(f.alsoAsked) ? f.alsoAsked : []).map(function (s) {
+      return String(s || '').replace(/\s+/g, ' ').trim();
+    }).filter(function (s) {
+      var key = s.toLowerCase();
+      if (!s || seen[key]) return false;
+      return (seen[key] = true);
+    });
+  }
+
   function questionJobs(c) {
-    return c.faqs.concat(c.gaps).map(function (x) { return { key: x.qKey, text: x.qText }; });
+    var jobs = c.faqs.concat(c.gaps).map(function (x) { return { key: x.qKey, text: x.qText }; });
+    c.faqs.forEach(function (f) {
+      f.alsoKeys.forEach(function (k, i) { jobs.push({ key: k, text: f.alsoTexts[i] }); });
+    });
+    return jobs;
   }
 
   function passageJobs(c) {
@@ -170,17 +201,28 @@
 
   // ---- scoring -------------------------------------------------------------
 
+  /**
+   * How well an FAQ answer answers a question: the question (or the closest
+   * of its other phrasings), the best passage of the answer, and the words
+   * they share — plus the lift for an everyday question. Same as ask.html.
+   */
   function scoreFaq(c, f, vec, qTerms) {
-    var qv = S.lookup(f.qKey);
-    var sq = qv ? S.dot(vec, qv) : 0;
-    var sa = 0;
-    f.cKeys.forEach(function (k) {
-      var v = S.lookup(k);
-      if (v) sa = Math.max(sa, S.dot(vec, v));
-    });
-    var sem = Math.max(sq, 0.5 * sq + 0.5 * sa);
-    var total = 0.8 * sem + 0.2 * S.keywordScore(qTerms, c.idf, c.maxIdf, f.qTerms, f.terms);
-    return { item: f, score: total, sq: sq, sa: sa };
+    var best = function (keys) {
+      var top = 0;
+      keys.forEach(function (k) {
+        var v = S.lookup(k);
+        if (v) top = Math.max(top, S.dot(vec, v));
+      });
+      return top;
+    };
+    var sq = best([f.qKey]);
+    var also = f.alsoKeys.length ? best(f.alsoKeys) - S.ALIAS_DISCOUNT : 0;
+    var sa = best(f.cKeys);
+    var sqAll = Math.max(sq, also);
+    var sem = Math.max(sqAll, 0.5 * sqAll + 0.5 * sa);
+    var total = 0.8 * sem + 0.2 * S.keywordScore(qTerms, c.idf, c.maxIdf, f.qTerms, f.terms) +
+      (f.common ? S.BOOST : 0);
+    return { item: f, score: total, sq: sq, also: also, sa: sa };
   }
 
   function scoreGap(c, g, vec, qTerms) {
@@ -242,7 +284,43 @@
     });
   }
 
+  /**
+   * The fingerprints block ask.html carries, for the public FAQ only: each
+   * question and answer passage, plus each question's other phrasings and
+   * which questions get the everyday lift. Run it with the published content
+   * loaded (no local changes), then paste the result into ask.html's
+   * fingerprints block. Resolves to the JSON text.
+   */
+  function exportFingerprints() {
+    return prepare().then(function () {
+      return readPassages(build()) || null;
+    }).then(function () {
+      var c = build();
+      var items = {}, aliases = {}, boost = [];
+      var put = function (key) {
+        var v = S.lookup(key);
+        if (v) items[key] = S.pack(v);
+      };
+      c.faqs.filter(function (f) { return f.isPublic; }).forEach(function (f) {
+        put(f.qKey);
+        f.cKeys.forEach(put);
+        if (f.alsoKeys.length) {
+          f.alsoKeys.forEach(put);
+          aliases[f.qKey] = f.alsoKeys;
+        }
+        if (f.common) boost.push(f.qKey);
+      });
+      var lines = Object.keys(items).map(function (k) {
+        return JSON.stringify(k) + ':' + JSON.stringify(items[k]);
+      });
+      return '{"model":' + JSON.stringify(S.MODEL) + ',"made":"' + Data.today() + '",' +
+        '"aliases":' + JSON.stringify(aliases) + ',"boost":' + JSON.stringify(boost) +
+        ',"items":{\n' + lines.join(',\n') + '\n}}';
+    });
+  }
+
   global.Probe = {
+    exportFingerprints: exportFingerprints,
     prepare: prepare,
     search: search,
     gapChecks: gapChecks,
