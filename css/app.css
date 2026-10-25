@@ -2205,7 +2205,7 @@ a.source-title:hover { color: var(--accent); text-decoration: underline; }
 .probe-field textarea { resize: vertical; }
 
 .probe-gap-row .sev { margin-top: 0.15rem; }
-.probe-gap-row > .btn { flex: 0 0 auto; text-decoration: none; }
+.probe-gap-actions .btn { text-decoration: none; }
 .probe-near { display: block; font-size: 0.78rem; color: var(--text-soft); margin-top: 0.3rem; }
 .probe-near.strong { color: var(--good); }
 .probe-near .btn { margin-left: 0.3rem; }
@@ -2230,3 +2230,10 @@ a.source-title:hover { color: var(--accent); text-decoration: underline; }
 .also-common dd { font-size: 0.88rem; }
 .also-common .hint { display: block; font-size: 0.76rem; color: var(--text-soft); margin-top: 0.2rem; }
 @media (max-width: 560px) { .also-common { grid-template-columns: 1fr; } }
+
+/* Deleting a content gap from Probe: top right of its card, beside "Issue →" on a dashboard row */
+.probe-gap-body { position: relative; }
+.probe-gap .probe-del { position: absolute; top: 0; right: 0; }
+.probe-gap .probe-q { padding-right: 2rem; }
+.probe-gap-actions { display: flex; flex: 0 0 auto; gap: 0.3rem; }
+.probe-gap-actions .probe-del { position: static; }

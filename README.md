@@ -223,7 +223,8 @@ Probe found), the department to answer it and the tab it would belong on
 gap is its own kind of issue: it is listed in the issues register, counted
 on the Issues and Departments dashboards and in the register's exports, and
 has its own page (`#/issue/<gap>/<gap>`) with the same resolve, reopen and
-delete. Gaps are kept in `library.json` → `contentGaps` and published with the
+delete. A gap logged by mistake can also be deleted straight from Probe, with
+the **×** on its row or card. Gaps are kept in `library.json` → `contentGaps` and published with the
 rest of the draft.
 
 Probe also reads each question's **Also asked as** phrasings and its

@@ -187,7 +187,7 @@
         var answered = verdict === 'strong' && best;
         return '<div class="probe-gap sev-' + e(g.severity) + '">' +
           '<span class="probe-score" title="How closely it matches your question">' + pct(r.score) + '</span>' +
-          '<div class="probe-gap-body">' +
+          '<div class="probe-gap-body">' + deleteButton(g) +
           '<a class="probe-q" href="#/issue/' + e(g.id) + '/' + e(g.id) + '">' + e(g.q) + '</a>' +
           '<span class="probe-where"><span class="sev">' + e(g.severity) + '</span> ' +
           e(gapMeta(g)) + '</span>' +
@@ -379,7 +379,15 @@
       '<div class="probe-gap-body">' +
       '<a class="probe-q" href="#/probe?gap=' + encodeURIComponent(g.id) + '">' + e(g.q) + '</a>' +
       '<span class="probe-where">' + e(gapMeta(g)) + '</span>' + nearNow +
-      '</div><a class="btn tiny" href="#/issue/' + e(g.id) + '/' + e(g.id) + '">Issue →</a></div>';
+      '</div><span class="probe-gap-actions">' +
+      '<a class="btn tiny" href="#/issue/' + e(g.id) + '/' + e(g.id) + '">Issue →</a>' +
+      deleteButton(g) + '</span></div>';
+  }
+
+  /** Delete a content gap outright — for one logged by mistake. Resolving keeps a record; this doesn't. */
+  function deleteButton(g) {
+    return '<button class="btn tiny danger probe-del" data-probe="delete" data-gap="' + e(g.id) + '" ' +
+      'title="Delete this content gap" aria-label="Delete this content gap">×</button>';
   }
 
   function tile(n, label, sub) {
@@ -423,6 +431,15 @@
     if (act === 'resolve') {
       Edit.resolveGap(node.dataset.gap, node.dataset.faq);
       if (global.App) App.route();
+    }
+    if (act === 'delete' && confirm('Delete this content gap entirely? Resolving keeps a record; ' +
+        'deleting does not.')) {
+      var id = node.dataset.gap;
+      Edit.deleteIssue(id, id);
+      if (view.logged === id) view.logged = null;
+      // Deleting the gap this page was opened for leaves nothing to show.
+      if (view.gapId === id) onNavigate('#/probe');
+      else if (global.App) App.route();
     }
   }
 
