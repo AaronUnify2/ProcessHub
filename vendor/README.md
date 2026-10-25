@@ -37,9 +37,11 @@ Check them with `cd vendor && sha256sum -c` and the block above.
 `ask.html` holds a precomputed fingerprint for every FAQ question and answer
 passage, made with exactly this model. They only mean anything to the model
 that made them. **If the model files are ever replaced, regenerate the
-fingerprints at the same time** (open `ask.html`, wait for "Ready", run
-`copy(Ask.exportFingerprints())` in the console, paste over the
-`fingerprints` block), or the matches will quietly get worse.
+fingerprints at the same time** (open Process Hub with the published
+content, run `copy(await Probe.exportFingerprints())` in the console, paste
+over the `fingerprints` block in `ask.html`), or the matches will quietly get
+worse. Process Hub keeps its own in each browser; a new model name (below)
+makes it work them out again.
 
 ## Upgrading
 

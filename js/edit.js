@@ -940,6 +940,29 @@
     return id;
   }
 
+  /**
+   * The other ways people ask an FAQ question, one per line of text. Kept as
+   * a list on the question (alsoAsked); an empty list is removed altogether.
+   * Never published as text — Probe and ask.html match against them.
+   */
+  function setAlsoAsked(id, text) {
+    var f = Data.state.index.faqs[id];
+    if (!f) return;
+    var seen = {};
+    var list = String(text || '').split('\n').map(function (s) {
+      return s.replace(/\s+/g, ' ').trim();
+    }).filter(function (s) {
+      var key = s.toLowerCase();
+      if (!s || seen[key]) return false;
+      return (seen[key] = true);
+    });
+    var before = JSON.stringify(f.alsoAsked || []);
+    if (JSON.stringify(list) === before) return;
+    if (list.length) f.alsoAsked = list;
+    else delete f.alsoAsked;
+    touch();
+  }
+
   function deleteFaq(id) {
     var lib = Data.state.library;
     lib.faqs = lib.faqs.filter(function (f) { return f.id !== id; });
@@ -1074,6 +1097,7 @@
     decideSignoff: decideSignoff,
     createFaq: createFaq,
     deleteFaq: deleteFaq,
+    setAlsoAsked: setAlsoAsked,
     createVariable: createVariable,
     deleteVariable: deleteVariable,
     createTaxonomy: createTaxonomy,

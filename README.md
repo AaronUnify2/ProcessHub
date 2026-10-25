@@ -147,6 +147,14 @@ Behind the scenes each question stores its tab, its position and the heading
 it sits under; the list and the published `FAQ.json` are two views of the
 same thing, and reordering nothing leaves `FAQ.json` byte-for-byte unchanged.
 
+Each question's page also has **Also asked as**: other ways people ask it,
+one per line, in their words (`alsoAsked`), and **Everyday question**
+(`common`), for the question most people mean when several answers fit.
+Neither is ever published as text. Probe and `ask.html` match a question
+against its phrasings as well as its own wording, and give an everyday
+question a small lift (3 points) that breaks near-ties. When Probe lands on
+the wrong answer, add what was asked as a phrasing on the right one.
+
 ## Fact sheets
 
 A fact sheet is the longer public version of what the FAQ answers say, built
@@ -218,6 +226,9 @@ has its own page (`#/issue/<gap>/<gap>`) with the same resolve, reopen and
 delete. Gaps are kept in `library.json` → `contentGaps` and published with the
 rest of the draft.
 
+Probe also reads each question's **Also asked as** phrasings and its
+**Everyday question** flag (see *The FAQ section*).
+
 Open gaps are searched along with the FAQ, so probing a question that has
 already been logged — in any wording — shows the gap under **Already logged
 as a content gap** rather than inviting a second one. And the gaps check
@@ -229,6 +240,14 @@ The first time Probe opens on a computer the model loads in a few seconds.
 Fingerprints for the published FAQ come ready-made from `ask.html`; anything
 new or edited is read once and kept in the browser (IndexedDB), so only
 changed text is ever read again.
+
+**Refreshing `ask.html`.** `ask.html` carries the fingerprints of the
+published FAQ, including each question's phrasings (as fingerprints only,
+never their text) and which are everyday questions. After phrasings change,
+or once a lot of the FAQ has been edited: open Process Hub with the published
+content and no local changes, run `copy(await Probe.exportFingerprints())`
+in the browser console, and paste the result over the `fingerprints` block
+in `ask.html`.
 
 ## Running the app
 

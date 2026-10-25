@@ -28,6 +28,11 @@
   // a keyword score (see score()), roughly 0 to 1. Same as ask.html.
   var STRONG = 0.55;   // it answers the question
   var WEAK = 0.38;     // below this, nothing really matches
+  var BOOST = 0.03;    // the lift for an everyday ("common") question: a tie-breaker
+  // A match on one of a question's other phrasings counts a little below a
+  // match on the question itself. Without it, more phrasings meant more
+  // wrong ways in: unanswerable questions started scoring as answered.
+  var ALIAS_DISCOUNT = 0.05;
 
   // ---- text ----------------------------------------------------------------
 
@@ -351,6 +356,8 @@
     MODEL: MODEL,
     STRONG: STRONG,
     WEAK: WEAK,
+    BOOST: BOOST,
+    ALIAS_DISCOUNT: ALIAS_DISCOUNT,
     plain: plain,
     chunk: chunk,
     hash: hash,
