@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ask Council — experimental</title>
+<style>
+/* ===========================================================================
+   Ask — an experimental FAQ finder.
+   Matches a question typed in plain words to the published FAQ answers, using
+   a small sentence-embedding model (all-MiniLM-L6-v2) that runs in the browser.
+   It never writes an answer of its own: it only shows the published ones.
+   =========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F5F7FA;
+  --surface: #FFFFFF;
+  --text: #1D1D1F;
+  --text-soft: #6E6E73;
+  --border: rgba(0, 0, 0, 0.09);
+  --border-strong: rgba(0, 0, 0, 0.18);
+  --accent: #0A66C2;
+  --accent-soft: #EAF2FB;
+  --warn: #B45309;
+  --warn-soft: #FEF6E7;
+  --good: #2E7D53;
+  --good-soft: #EAF5EE;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+a { color: var(--accent); }
+
+/* ---- Header ---- */
+
+.ask-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ask-brand { font-weight: 700; color: var(--text); text-decoration: none; }
+.ask-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--warn);
+  background: var(--warn-soft);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.ask-status {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  text-align: right;
+}
+.ask-status.ready { color: var(--good); }
+.ask-status.error { color: #C0392B; }
+
+/* ---- Conversation ---- */
+
+.chat {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  padding: 18px 16px 8px;
+}
+.chat-inner { max-width: 760px; margin: 0 auto; }
+
+.msg { display: flex; margin-bottom: 14px; }
+.msg.user { justify-content: flex-end; }
+
+.bubble {
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.msg.user .bubble {
+  max-width: 85%;
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  border-bottom-right-radius: 4px;
+}
+.msg.bot .bubble { border-bottom-left-radius: 4px; width: 100%; }
+.bubble p + p { margin-top: 6px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 5px 11px;
+  border-radius: 14px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- A matched FAQ ---- */
+
+.match {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-top: 10px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.match.best { border-color: var(--accent); }
+.match-head {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--text);
+}
+.match-head:hover { background: var(--bg); }
+.match-where { font-size: 0.76rem; color: var(--text-soft); }
+.match-q { font-weight: 600; margin-top: 1px; }
+.match-q::after { content: ' ▾'; color: var(--text-soft); font-weight: 400; }
+.match.open .match-q::after { content: ' ▴'; }
+.match-snip { font-size: 0.88rem; color: var(--text-soft); margin-top: 3px; }
+.match.open .match-snip { display: none; }
+.match-score {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0 6px;
+  margin-left: 6px;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-soft);
+  vertical-align: 1px;
+}
+
+.match-body {
+  display: none;
+  padding: 4px 12px 12px;
+  border-top: 1px solid var(--border);
+}
+.match.open .match-body { display: block; }
+.match-foot { margin-top: 10px; font-size: 0.85rem; }
+
+/* The published answer HTML, as the public FAQ page uses it. */
+.answer { font-size: 0.93rem; overflow-x: auto; }
+.answer p, .answer ul, .answer ol, .answer table, .answer div.note,
+.answer div.warn, .answer div.term { margin-top: 8px; }
+.answer ul, .answer ol { padding-left: 22px; }
+.answer table { border-collapse: collapse; font-size: 0.85rem; min-width: 100%; }
+.answer th, .answer td { border: 1px solid var(--border-strong); padding: 4px 7px; text-align: left; vertical-align: top; }
+.answer th { background: var(--bg); }
+.answer .note, .answer .term { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; }
+.answer .warn { background: var(--warn-soft); border-radius: 8px; padding: 8px 10px; }
+.answer .faq-var { font-weight: 600; }
+
+.fallback {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--good-soft);
+  font-size: 0.9rem;
+}
+
+.more {
+  font: inherit;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  background: none;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+/* ---- Input ---- */
+
+.composer {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+}
+.composer form { display: flex; gap: 8px; max-width: 760px; margin: 0 auto; }
+.composer input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 16px; /* 16px stops iOS zooming in on focus */
+  padding: 10px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 22px;
+  background: var(--bg);
+  color: var(--text);
+}
+.composer input:focus { outline: 2px solid var(--accent); outline-offset: -1px; background: var(--surface); }
+.composer button {
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+.composer button:disabled { opacity: 0.45; cursor: default; }
+.composer-note {
+  max-width: 760px;
+  margin: 6px auto 0;
+  font-size: 0.74rem;
+  color: var(--text-soft);
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .ask-header { padding: 8px 12px; flex-wrap: wrap; }
+  .ask-status { width: 100%; margin-left: 0; text-align: left; }
+  .chat { padding: 12px 10px 6px; }
+  .composer { padding-left: 10px; padding-right: 10px; }
+}
+</style>
+</head>
+<body>
+
+<header class="ask-header">
+  <a class="ask-brand" href="index.html" title="Process Hub">Ask Council</a>
+  <span class="ask-tag">Experimental</span>
+  <span class="ask-status" id="status">Starting…</span>
+</header>
+
+<main class="chat" id="chat">
+  <div class="chat-inner" id="chatInner"></div>
+</main>
+
+<footer class="composer">
+  <form id="askForm" autocomplete="off">
+    <input type="text" id="askInput" placeholder="Ask a question in your own words…"
+           aria-label="Your question" enterkeyhint="send" disabled>
+    <button type="submit" id="askButton" disabled>Ask</button>
+  </form>
+  <p class="composer-note">Finds the matching answer in Council's published FAQ. Your question stays on this device.</p>
+</footer>
+
+<!-- The model runs in a background worker, so the page stays responsive while
+     it reads the FAQ. The library is loaded from a CDN at a pinned version;
+     the model itself (about 23 MB, quantised) comes from the Hugging Face hub
+     the first time and is cached by the browser after that. -->
+<script type="text/plain" id="workerSource">
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2';
+
+env.allowLocalModels = false;
+var extractor = null;
+
+self.onmessage = async function (ev) {
+  var msg = ev.data;
+  try {
+    if (msg.type === 'load') {
+      extractor = await pipeline('feature-extraction', msg.model, {
+        dtype: 'q8',
+        progress_callback: function (p) {
+          self.postMessage({ type: 'progress', file: p.file || '', status: p.status, progress: p.progress || 0 });
+        }
+      });
+      self.postMessage({ id: msg.id, ok: true });
+    } else if (msg.type === 'embed') {
+      var out = await extractor(msg.texts, { pooling: 'mean', normalize: true });
+      self.postMessage({ id: msg.id, ok: true, data: out.data, dims: out.dims });
+    }
+  } catch (err) {
+    self.postMessage({ id: msg.id, ok: false, error: String((err && err.message) || err) });
+  }
+};
+</script>
+
+<script>
+var MODEL = 'Xenova/all-MiniLM-L6-v2';
+var FAQ_URL = 'exports/FAQ.json';
+var PUBLIC_FAQ = 'https://aaronunify2.github.io/UnifyVersion1/FAQ.html';
+var CACHE_KEY = 'processhub.ask.vectors';
+
+// How confident a match has to be. Scores are cosine similarities blended
+// with a keyword score (see score()), roughly 0 to 1.
+var STRONG = 0.55;   // show it as "this should answer it"
+var WEAK = 0.38;     // below this, say we couldn't find it
+var SHOW = 3;        // matches shown at first
+var SHOW_MORE = 3;   // extra matches behind "Show more"
+
+var Ask = {
+  faqs: [],          // { tabId, tabLabel, group, q, a, text, qVec, aVec, terms }
+  idf: {},
+  worker: null,
+  ready: false,
+  phone: '1300 697 372',
+  requestUrl: 'https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y'
+};
+window.Ask = Ask;   // for testing in a console
+
+var $ = function (id) { return document.getElementById(id); };
+
+// ---------------------------------------------------------------- utilities
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+// HTML to plain text, using the browser's own parser.
+function plain(html) {
+  var doc = new DOMParser().parseFromString('<div>' + (html || '') + '</div>', 'text/html');
+  doc.querySelectorAll('td, th, li, p, div, br').forEach(function (el) {
+    el.insertAdjacentText('afterend', ' ');
+  });
+  return doc.body.textContent.replace(/\s+/g, ' ').trim();
+}
+
+function hash(s) {
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+
+function setStatus(text, cls) {
+  var el = $('status');
+  el.textContent = text;
+  el.className = 'ask-status' + (cls ? ' ' + cls : '');
+}
+
+// Float32Array <-> base64, so the vectors fit in localStorage.
+function toB64(arr) {
+  var bytes = new Uint8Array(arr.buffer, arr.byteOffset, arr.byteLength);
+  var s = '';
+  for (var i = 0; i < bytes.length; i += 8192) {
+    s += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+  }
+  return btoa(s);
+}
+function fromB64(b64) {
+  var s = atob(b64);
+  var bytes = new Uint8Array(s.length);
+  for (var i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i);
+  return new Float32Array(bytes.buffer);
+}
+
+function dot(a, b) {
+  var s = 0;
+  for (var i = 0; i < a.length; i++) s += a[i] * b[i];
+  return s;
+}
+
+// ------------------------------------------------------------ keyword score
+//
+// The model knows general English, not Council's terms (NPPR, GBO, Form 16,
+// 1080). A light keyword score sits alongside it so exact terms still count.
+
+var STOP = ('a an and are as at be by can could do does for from had has have how i if in into is it its ' +
+  'me my of on or our should so that the their them then there these they this to was we what when where ' +
+  'which who why will with would you your yours am get got im ive dont cant about any some need want ' +
+  'tell know please just much many also there').split(' ');
+var STOPSET = {};
+STOP.forEach(function (w) { STOPSET[w] = true; });
+
+// Everyday words people type, and the words the FAQ uses for the same thing.
+// A match adds the FAQ's words to the question before it is searched, so
+// "where's the tip" finds the waste facilities. Keep it short and obvious.
+var GLOSSARY = [
+  [/\b(the )?tip\b|\bdump\b|\btransfer station\b/i, 'waste facility'],
+  [/\b(fridges?|freezers?|washing machines?|dryers?|dishwashers?|ovens?|stoves?)\b/i, 'whitegoods'],
+  [/\bchooks?\b/i, 'chickens poultry livestock'],
+  [/\brego\b/i, 'registration'],
+  [/\b(holiday (house|home)|investment property|second home|rental property|beach house|weekender)\b/i,
+    'NPPR non-principal place of residence rate category'],
+  [/\bgranny flat\b/i, 'secondary dwelling'],
+  [/\b(wheelie )?bins? (day|night)\b|\brubbish day\b/i, 'bin collection day'],
+  [/\bin town\b|\bhouse block\b|\bsuburb/i, 'urban'],
+  [/\b(farm|acreage|property out of town)\b/i, 'rural']
+];
+
+function expand(question) {
+  var extra = [];
+  GLOSSARY.forEach(function (g) { if (g[0].test(question)) extra.push(g[1]); });
+  return extra.length ? question + ' (' + extra.join('; ') + ')' : question;
+}
+
+function stem(w) {
+  if (w.length > 5 && /ing$/.test(w)) return w.slice(0, -3);
+  if (w.length > 4 && /ies$/.test(w)) return w.slice(0, -3) + 'y';
+  if (w.length > 4 && /ed$/.test(w)) return w.slice(0, -2);
+  if (w.length > 3 && /s$/.test(w) && !/ss$/.test(w)) return w.slice(0, -1);
+  return w;
+}
+
+function terms(text) {
+  var out = {};
+  (text.toLowerCase().replace(/[’']/g, '').match(/[a-z0-9]+/g) || []).forEach(function (w) {
+    if (!STOPSET[w] && w.length > 1) out[stem(w)] = true;
+  });
+  return out;
+}
+
+function keywordScore(qTerms, faq) {
+  var total = 0, hit = 0;
+  Object.keys(qTerms).forEach(function (t) {
+    var w = Ask.idf[t] || Ask.maxIdf;
+    total += w;
+    if (faq.qTerms[t]) hit += w;
+    else if (faq.terms[t]) hit += w * 0.5;
+  });
+  return total ? hit / total : 0;
+}
+
+// ------------------------------------------------------------ loading
+
+// Long answers are read in short passages, so one sentence deep in an answer
+// ("rentals, holiday houses, second homes") can still be found.
+function chunk(text) {
+  var sentences = text.match(/[^.!?]+[.!?]*\s*/g) || [text];
+  var out = [], cur = '';
+  sentences.forEach(function (s) {
+    if (cur && (cur + s).length > 380) { out.push(cur.trim()); cur = ''; }
+    cur += s;
+  });
+  if (cur.trim()) out.push(cur.trim());
+  return out.slice(0, 16);
+}
+
+async function loadFaqs() {
+  var res = await fetch(FAQ_URL, { cache: 'no-cache' });
+  if (!res.ok) throw new Error('Could not load the FAQ (' + res.status + ')');
+  var raw = await res.text();
+  var data = JSON.parse(raw);
+
+  (data.variables || []).forEach(function (v) {
+    if (v.id === 'phone_1300_697_372') Ask.phone = v.value;
+    if (v.id === 'url_crm_sdrc_qld_gov_au') Ask.requestUrl = v.value;
+  });
+
+  var faqs = [];
+  (data.tabs || []).forEach(function (tab) {
+    var group = '';
+    (tab.items || []).forEach(function (item) {
+      if (item.type === 'group') { group = plain(item.title); return; }
+      if (item.type !== 'faq') return;
+      var q = plain(item.q);
+      var text = plain(item.a);
+      faqs.push({
+        tabId: tab.id,
+        tabLabel: plain(tab.label),
+        group: group,
+        q: q,
+        a: item.a,
+        text: text,
+        chunks: chunk(text),
+        terms: terms(q + ' ' + group + ' ' + tab.label + ' ' + text),
+        qTerms: terms(q)
+      });
+    });
+  });
+
+  // Inverse document frequency for the keyword score.
+  var df = {};
+  faqs.forEach(function (f) { Object.keys(f.terms).forEach(function (t) { df[t] = (df[t] || 0) + 1; }); });
+  Ask.maxIdf = Math.log(faqs.length + 1);
+  Object.keys(df).forEach(function (t) { Ask.idf[t] = Math.log((faqs.length + 1) / df[t]); });
+
+  Ask.faqs = faqs;
+  Ask.hash = hash(MODEL + '|' + raw);
+}
+
+// What the model reads for each FAQ. The tab and section give a short question
+// like "Can I bring my dog?" its context (camping, not pets at home).
+function questionText(f) {
+  return f.tabLabel + (f.group ? ' — ' + f.group : '') + ': ' + f.q;
+}
+function chunkText(f, c) {
+  return f.q + ' ' + c;
+}
+
+// Talking to the worker: each request gets an id, and its reply settles the
+// promise with that id.
+var pending = {}, nextId = 1;
+
+function startWorker() {
+  var blob = new Blob([$('workerSource').textContent], { type: 'text/javascript' });
+  Ask.worker = new Worker(URL.createObjectURL(blob), { type: 'module' });
+  Ask.worker.onmessage = function (ev) {
+    var msg = ev.data;
+    if (msg.type === 'progress') {
+      if (msg.status === 'progress' && /onnx$/.test(msg.file)) {
+        setStatus('Loading the language model… ' + Math.round(msg.progress) + '%');
+      }
+      return;
+    }
+    var p = pending[msg.id];
+    delete pending[msg.id];
+    if (p) msg.ok ? p.resolve(msg) : p.reject(new Error(msg.error));
+  };
+  Ask.worker.onerror = function (ev) {
+    var err = new Error(ev.message || 'The model could not start');
+    Object.keys(pending).forEach(function (id) { pending[id].reject(err); delete pending[id]; });
+  };
+}
+
+function send(msg) {
+  return new Promise(function (resolve, reject) {
+    msg.id = nextId++;
+    pending[msg.id] = { resolve: resolve, reject: reject };
+    Ask.worker.postMessage(msg);
+  });
+}
+
+// The model runs one job at a time. Calls queue up here, so a question typed
+// while the passages are still being read waits for one small batch at most.
+var queue = Promise.resolve();
+
+function embed(texts) {
+  var job = queue.then(async function () {
+    var out = await send({ type: 'embed', texts: texts });
+    var dim = out.dims[out.dims.length - 1];
+    var vecs = [];
+    for (var i = 0; i < texts.length; i++) vecs.push(out.data.slice(i * dim, (i + 1) * dim));
+    return vecs;
+  });
+  queue = job.catch(function () {});
+  return job;
+}
+
+function loadCachedVectors() {
+  try {
+    var c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (!c || c.hash !== Ask.hash) return false;
+    var q = fromB64(c.q), a = fromB64(c.a), dim = c.dim, k = 0;
+    Ask.faqs.forEach(function (f, i) {
+      f.qVec = q.slice(i * dim, (i + 1) * dim);
+      f.cVecs = f.chunks.map(function () { k++; return a.slice((k - 1) * dim, k * dim); });
+    });
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function saveCachedVectors() {
+  try {
+    var dim = Ask.faqs[0].qVec.length, n = Ask.faqs.length, k = 0;
+    var total = Ask.faqs.reduce(function (sum, f) { return sum + f.cVecs.length; }, 0);
+    var q = new Float32Array(n * dim), a = new Float32Array(total * dim);
+    Ask.faqs.forEach(function (f, i) {
+      q.set(f.qVec, i * dim);
+      f.cVecs.forEach(function (v) { a.set(v, k * dim); k++; });
+    });
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ hash: Ask.hash, dim: dim, q: toB64(q), a: toB64(a) }));
+  } catch (err) {
+    // Storage full or blocked: the vectors are simply worked out again next time.
+  }
+}
+
+async function runJobs(jobs, batch, label) {
+  for (var i = 0; i < jobs.length; i += batch) {
+    var slice = jobs.slice(i, i + batch);
+    var vecs = await embed(slice.map(function (j) { return j.text; }));
+    slice.forEach(function (j, n) { j.put(vecs[n]); });
+    setStatus(label + ' ' + Math.round(Math.min(i + batch, jobs.length) / jobs.length * 100) + '%');
+  }
+}
+
+// First the questions, which is enough to start answering. Then the passages
+// of every answer, in the background, which sharpens the matches. Both are
+// kept in this browser afterwards, until the published FAQ changes.
+async function buildQuestionVectors() {
+  if (loadCachedVectors()) { Ask.fromCache = true; return; }
+  Ask.faqs.forEach(function (f) { f.cVecs = []; });
+  await runJobs(Ask.faqs.map(function (f) {
+    return { text: questionText(f), put: function (v) { f.qVec = v; } };
+  }), 32, 'Reading the FAQ questions…');
+}
+
+async function buildPassageVectors() {
+  if (Ask.fromCache) return;
+  var jobs = [];
+  Ask.faqs.forEach(function (f) {
+    f.chunks.forEach(function (c) {
+      jobs.push({ text: chunkText(f, c), put: function (v) { f.cVecs.push(v); } });
+    });
+  });
+  await runJobs(jobs, 8, 'Ready · reading the full answers to sharpen matches…');
+  saveCachedVectors();
+}
+
+// ------------------------------------------------------------ matching
+
+function score(f, qVec, qTerms) {
+  var sq = dot(qVec, f.qVec);
+  var sa = 0;
+  f.cVecs.forEach(function (v) { sa = Math.max(sa, dot(qVec, v)); });
+  var sem = Math.max(sq, 0.5 * sq + 0.5 * sa);
+  return { total: 0.8 * sem + 0.2 * keywordScore(qTerms, f), sem: sem, sq: sq, sa: sa };
+}
+
+async function search(question, limit) {
+  question = expand(question);
+  var vec = (await embed([question]))[0];
+  var qTerms = terms(question);
+  return Ask.faqs
+    .map(function (f, i) { var s = score(f, vec, qTerms); return { faq: f, index: i, score: s.total, parts: s }; })
+    .sort(function (a, b) { return b.score - a.score; })
+    .slice(0, limit || 10);
+}
+Ask.search = search;
+
+// ------------------------------------------------------------ rendering
+
+function addMessage(who, html) {
+  var wrap = document.createElement('div');
+  wrap.className = 'msg ' + who;
+  wrap.innerHTML = '<div class="bubble">' + html + '</div>';
+  $('chatInner').appendChild(wrap);
+  $('chat').scrollTop = $('chat').scrollHeight;
+  return wrap.querySelector('.bubble');
+}
+
+// Links inside answers point at tabs of the public FAQ page (#water); make
+// them go there, in a new tab.
+function answerHtml(html) {
+  var box = document.createElement('div');
+  box.innerHTML = html;
+  box.querySelectorAll('a[href]').forEach(function (a) {
+    var href = a.getAttribute('href');
+    if (href.charAt(0) === '#') a.setAttribute('href', PUBLIC_FAQ + href);
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener');
+  });
+  box.querySelectorAll('[style]').forEach(function (el) { el.removeAttribute('style'); });
+  return box.innerHTML;
+}
+
+function snippet(text) {
+  return text.length > 150 ? text.slice(0, 150).replace(/\s+\S*$/, '') + '…' : text;
+}
+
+function matchCard(m, isBest) {
+  var f = m.faq;
+  var card = document.createElement('div');
+  card.className = 'match' + (isBest ? ' best open' : '');
+  card.innerHTML =
+    '<button type="button" class="match-head" aria-expanded="' + (isBest ? 'true' : 'false') + '">' +
+      '<div class="match-where">' + esc(f.tabLabel) + (f.group ? ' › ' + esc(f.group) : '') +
+        '<span class="match-score" title="How closely it matched">' + Math.round(m.score * 100) + '%</span></div>' +
+      '<div class="match-q">' + esc(f.q) + '</div>' +
+      '<div class="match-snip">' + esc(snippet(f.text)) + '</div>' +
+    '</button>' +
+    '<div class="match-body">' +
+      '<div class="answer">' + answerHtml(f.a) + '</div>' +
+      '<p class="match-foot"><a href="' + esc(PUBLIC_FAQ + '#' + f.tabId) + '" target="_blank" rel="noopener">' +
+        'Open the ' + esc(f.tabLabel) + ' FAQ ↗</a></p>' +
+    '</div>';
+  card.querySelector('.match-head').addEventListener('click', function () {
+    var open = card.classList.toggle('open');
+    this.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  return card;
+}
+
+function fallbackHtml() {
+  return '<div class="fallback">Still not sure? Call Council on <strong>' + esc(Ask.phone) + '</strong>, ' +
+    'or <a href="' + esc(Ask.requestUrl) + '" target="_blank" rel="noopener">lodge a request online</a>. ' +
+    'You can also <a href="' + esc(PUBLIC_FAQ) + '" target="_blank" rel="noopener">browse the full FAQ</a>.</div>';
+}
+
+// Long answers would push the question off screen: show the question at the
+// top, with the start of the reply under it.
+function scrollToQuestion() {
+  var msgs = document.querySelectorAll('.msg.user');
+  var last = msgs[msgs.length - 1];
+  if (last) $('chat').scrollTop = last.offsetTop - 12;
+}
+
+async function ask(question) {
+  question = question.trim();
+  if (!question || !Ask.ready) return;
+  addMessage('user', esc(question));
+  $('askInput').value = '';
+
+  var results = await search(question, SHOW + SHOW_MORE);
+  var best = results[0];
+  var shown = results.filter(function (r) { return r.score >= WEAK; });
+  var bubble;
+
+  if (!shown.length) {
+    addMessage('bot',
+      '<p>Sorry — I couldn\'t find a published answer that matches that.</p>' +
+      '<p>Try asking it another way, or naming the topic (rates, bins, dogs, building…).</p>' + fallbackHtml());
+    scrollToQuestion();
+    return;
+  }
+
+  var lead = best.score >= STRONG
+    ? 'This should answer it:'
+    : 'I\'m not certain, but one of these might help:';
+  bubble = addMessage('bot', '<p>' + lead + '</p>');
+
+  shown.slice(0, SHOW).forEach(function (r, i) {
+    bubble.appendChild(matchCard(r, i === 0 && best.score >= STRONG));
+  });
+
+  var extra = shown.slice(SHOW);
+  if (extra.length) {
+    var more = document.createElement('button');
+    more.type = 'button';
+    more.className = 'more';
+    more.textContent = 'Show ' + extra.length + ' more';
+    more.addEventListener('click', function () {
+      extra.forEach(function (r) { bubble.insertBefore(matchCard(r, false), more); });
+      more.remove();
+    });
+    bubble.appendChild(more);
+  }
+
+  bubble.insertAdjacentHTML('beforeend', fallbackHtml());
+  scrollToQuestion();
+}
+Ask.ask = ask;
+
+// ------------------------------------------------------------ start
+
+function welcome() {
+  var b = addMessage('bot',
+    '<p><strong>Hi!</strong> Ask a question about Council services in your own words, and I\'ll find the ' +
+    'answer in Council\'s published FAQ.</p>' +
+    '<p>I can only point you to answers Council has already published — I don\'t make anything up.</p>' +
+    '<div class="chips" id="chips"></div>');
+  [
+    'My neighbour\'s dog won\'t stop barking',
+    'Can I live in a caravan while building?',
+    'My bin wasn\'t picked up',
+    'Why did my rates go up on my holiday house?',
+    'There\'s a snake in my house'
+  ].forEach(function (text) {
+    var c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'chip';
+    c.textContent = text;
+    c.addEventListener('click', function () { ask(text); });
+    b.querySelector('#chips').appendChild(c);
+  });
+}
+
+async function start() {
+  welcome();
+  try {
+    setStatus('Loading the FAQ…');
+    await loadFaqs();
+    setStatus('Loading the language model (about 23 MB, first time only)…');
+    startWorker();
+    await send({ type: 'load', model: MODEL });
+    var t0 = Date.now();
+    await buildQuestionVectors();
+    Ask.questionSeconds = (Date.now() - t0) / 1000;
+    Ask.ready = true;
+    $('askInput').disabled = false;
+    $('askButton').disabled = false;
+    $('askInput').focus();
+
+    await buildPassageVectors();
+    Ask.buildSeconds = (Date.now() - t0) / 1000;
+    Ask.complete = true;
+    setStatus('Ready · ' + Ask.faqs.length + ' answers', 'ready');
+  } catch (err) {
+    console.error(err);
+    setStatus('Couldn\'t start: ' + err.message, 'error');
+    addMessage('bot', '<p>Sorry — the finder couldn\'t start on this device.</p>' + fallbackHtml());
+  }
+}
+
+$('askForm').addEventListener('submit', function (ev) {
+  ev.preventDefault();
+  ask($('askInput').value);
+});
+
+start();
+</script>
+</body>
+</html>
