@@ -32,6 +32,8 @@ content in those older public copies was judged acceptable to leave.
 ```
   index.html         the app
   live.html          the live call view
+  ask.html           experimental: ask a question in plain words, get the matching FAQ answers
+                     (a small language model running in the browser)
   css/app.css · css/live.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
                      rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
@@ -39,6 +41,8 @@ content in those older public copies was judged acceptable to leave.
                      ui-sidebar.js · ui-detail.js · app.js · live.js
   exports/
     FAQ.json         the live published FAQ content — the public FAQ page reads this
+  vendor/            self-hosted copies of Transformers.js and the model for ask.html —
+                     see vendor/README.md
 ```
 
 ## Signing in

@@ -269,20 +269,23 @@ a { color: var(--accent); }
 </footer>
 
 <!-- The model runs in a background worker, so the page stays responsive while
-     it reads the FAQ. The library is loaded from a CDN at a pinned version;
-     the model itself (about 23 MB, quantised) comes from the Hugging Face hub
-     the first time and is cached by the browser after that. -->
+     it reads the FAQ. The library and the model are copies kept in this
+     repository under vendor/ (see vendor/README.md), so nothing is fetched
+     from anyone else's servers and nothing changes unless we change it. The
+     browser keeps the model after the first visit. -->
 <script type="text/plain" id="workerSource">
-import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2';
-
-env.allowLocalModels = false;
 var extractor = null;
 
 self.onmessage = async function (ev) {
   var msg = ev.data;
   try {
     if (msg.type === 'load') {
-      extractor = await pipeline('feature-extraction', msg.model, {
+      var lib = await import(msg.base + 'vendor/transformers-3.0.2/transformers.min.js');
+      lib.env.allowRemoteModels = false;
+      lib.env.allowLocalModels = true;
+      lib.env.localModelPath = msg.base + 'vendor/models/';
+      lib.env.backends.onnx.wasm.wasmPaths = msg.base + 'vendor/transformers-3.0.2/';
+      extractor = await lib.pipeline('feature-extraction', msg.model, {
         dtype: 'q8',
         progress_callback: function (p) {
           self.postMessage({ type: 'progress', file: p.file || '', status: p.status, progress: p.progress || 0 });
@@ -1893,7 +1896,7 @@ async function start() {
 
     setStatus('Loading the language model (about 23 MB, first time only)…');
     startWorker();
-    await send({ type: 'load', model: MODEL });
+    await send({ type: 'load', model: MODEL, base: new URL('.', location.href).href });
 
     // Questions without a fingerprint are needed before answering.
     await readMissing(todo.questions, 32, 'Reading new FAQ questions…', function (j, v) { j.faq.qVec = v; });
