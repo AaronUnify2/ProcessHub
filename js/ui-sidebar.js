@@ -12,8 +12,9 @@
                 ↑ ↓ on the open question, which also works on a phone.
 
    And one each for fact sheets, variables, the issues register, content
-   rules and departments: a list to jump straight to anything,
-   while the content area shows that section's dashboard. Variables nest
+   rules, departments and Probe: a list to jump straight to anything,
+   while the content area shows that section's dashboard. Probe's list is
+   the questions probed lately and the content gaps still open. Variables nest
    department › sub-department › source document › value, so you can see
    where each figure comes from as well as who owns it.
 
@@ -32,7 +33,7 @@
   // Where each section's button leads: its dashboard.
   var SECTION_HOME = {
     processes: '#/', faq: '#/faqs', factsheets: '#/factsheets', variables: '#/variables',
-    issues: '#/issues', rules: '#/rules', departments: '#/departments'
+    issues: '#/issues', rules: '#/rules', departments: '#/departments', probe: '#/probe'
   };
 
   // Sections whose search looks at one kind of content only.
@@ -119,7 +120,8 @@
       variables: renderVariablesTree,
       issues: renderIssuesTree,
       rules: renderRulesTree,
-      departments: renderDepartmentsTree
+      departments: renderDepartmentsTree,
+      probe: renderProbeTree
     }[view.section] || renderTree;
     draw();
     el.body.scrollTop = top;
@@ -767,6 +769,37 @@
     el.tree.innerHTML = (html || '<p class="empty">No issues recorded.</p>') +
       foot('<button class="btn tiny" data-route="#/rules">Rule findings →</button>');
     el.count.textContent = open.length + ' open · ' + resolved.length + ' resolved';
+  }
+
+  // ---- probe
+
+  function renderProbeTree() {
+    var recent = prefs.probeRecent || [];
+    var gaps = Data.state.library.contentGaps || [];
+    var open = gaps.filter(function (g) { return !g.resolved; });
+    var weight = { high: 0, medium: 1, low: 2 };
+    var html = group('probe:recent', 'Recent questions', recent.length,
+      recent.length
+        ? recent.map(function (q) {
+            return row('#/probe?q=' + encodeURIComponent(q), view.active === 'q:' + q,
+              '<span class="side-row-title">' + e(q) + '</span>', '', '', '');
+          }).join('')
+        : '<p class="empty">Questions you probe are listed here.</p>',
+      false);
+    html += group('probe:gaps', 'Open content gaps', open.length,
+      open.length
+        ? open.slice().sort(function (a, b) {
+            return (weight[a.severity] || 1) - (weight[b.severity] || 1);
+          }).map(function (g) {
+            return row('#/probe?gap=' + encodeURIComponent(g.id), view.active === 'gap:' + g.id,
+              '<span class="side-row-title">' + e(g.q) + '</span>' +
+              '<span class="side-row-sub">' + e(g.severity) + ' · ' +
+              e(g.ownerId ? Data.taxonomyName(g.ownerId) : 'no department') + '</span>', '', '', '');
+          }).join('')
+        : '<p class="empty">None logged.</p>',
+      false);
+    el.tree.innerHTML = html;
+    el.count.textContent = open.length + ' open content gap' + (open.length === 1 ? '' : 's');
   }
 
   // ---- content rules

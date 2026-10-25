@@ -38,11 +38,12 @@ content in those older public copies was judged acceptable to leave.
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
                      rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
                      richtext.js · canvas.js
-                     ui-sidebar.js · ui-detail.js · app.js · live.js
+                     semantic.js · semantic-worker.js · probe.js
+                     ui-sidebar.js · ui-detail.js · ui-probe.js · app.js · live.js
   exports/
     FAQ.json         the live published FAQ content — the public FAQ page reads this
-  vendor/            self-hosted copies of Transformers.js and the model for ask.html —
-                     see vendor/README.md
+  vendor/            self-hosted copies of Transformers.js and the model for ask.html
+                     and the Probe section — see vendor/README.md
 ```
 
 ## Signing in
@@ -78,6 +79,7 @@ a dashboard for the section as a whole.
 | Issues | open issues by severity, then resolved | severity counts, issues by department, and the full register of what people have raised |
 | Rules | the built-in checks, then your rules, each with what it finds | the six built-in checks as cards, then your text rules; each opens on its own page |
 | Departments | the department tree with a status bar per department | progress for every department — processes by status, FAQ answers (how many public), fact sheets (how many approved), variables (how many verified), open issues; each row opens the department |
+| Probe | the questions probed lately, and the open content gaps | ask a question the way a customer would and see whether the FAQ answers it; open content gaps, and which of them an FAQ answer now seems to cover (below) |
 
 Search looks at FAQ questions, fact sheets or variables only when in those
 sections, and at everything elsewhere.
@@ -186,6 +188,48 @@ warns about it before you export.
 Fact sheets attach to process steps with `+ Fact sheet`, and appear in the
 live call view's **Fact sheets** panel.
 
+## Probe
+
+Probe answers one question: *does the FAQ have an answer for this?* Type a
+question the way a customer would put it — "can I keep chooks in town",
+"where's the tip" — and Probe ranks every FAQ answer in your draft by how well
+it answers it, with a plain verdict on top:
+
+| | |
+|---|---|
+| ✓ Answered | a strong match (55% or more): the content is there |
+| ~ Partly | related answers (38–55%), but maybe not this question |
+| ✗ Not answered | nothing comes close |
+
+It compares by meaning, not by words, using the same small language model as
+`ask.html` (all-MiniLM-L6-v2, self-hosted in `vendor/`), running in the
+browser — nothing typed leaves it. Each result shows its score, where it sits
+on the FAQ page (or that it isn't public), its status, and the answer itself.
+**Include questions not on the public page** is on by default, so you can tell
+a real gap from an answer written but not yet published.
+
+**Content gaps.** A question the FAQ doesn't answer can be logged with **⚑ Log
+as a content gap** — the question, a note (filled in with the nearest answer
+Probe found), the department to answer it and the tab it would belong on
+(both guessed from the nearest answer), severity and who raised it. A content
+gap is its own kind of issue: it is listed in the issues register, counted
+on the Issues and Departments dashboards and in the register's exports, and
+has its own page (`#/issue/<gap>/<gap>`) with the same resolve, reopen and
+delete. Gaps are kept in `library.json` → `contentGaps` and published with the
+rest of the draft.
+
+Open gaps are searched along with the FAQ, so probing a question that has
+already been logged — in any wording — shows the gap under **Already logged
+as a content gap** rather than inviting a second one. And the gaps check
+themselves: once an FAQ answer matches a gap strongly, the Probe dashboard
+marks it *may be answered by …*, and **✓ Resolve** closes it, recording the
+answer that covers it.
+
+The first time Probe opens on a computer the model loads in a few seconds.
+Fingerprints for the published FAQ come ready-made from `ask.html`; anything
+new or edited is read once and kept in the browser (IndexedDB), so only
+changed text is ever read again.
+
 ## Running the app
 
 It reads its content from GitHub, so it needs a connection and a token the
@@ -229,7 +273,9 @@ about a process (or one of its steps), an FAQ answer, a fact sheet or a
 variable, and it is kept on that item (`issues` on the process, the FAQ answer,
 the fact sheet or the variable). Raise one with `⚑` on any of those pages, `⚑`
 on a single step, from the live call view, or with **⚑ Raise an issue** on the
-Issues tab, where you search for what it is about.
+Issues tab, where you search for what it is about. A **content gap** — a
+question the FAQ doesn't answer — is the one kind with nothing to sit on: it
+is logged from Probe and kept in its own list (see *Probe*).
 
 Each page lists its issues at the foot, after *Used in*: open ones in full,
 resolved ones folded away. Resolving keeps the issue, stamped with the date and

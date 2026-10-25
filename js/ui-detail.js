@@ -796,7 +796,8 @@
 
   /** "FAQ answer", "fact sheet" — an issue owner's kind, inside a sentence. */
   function kindInSentence(kind) {
-    return { process: 'process', faq: 'FAQ answer', factsheet: 'fact sheet', variable: 'variable' }[kind] || kind;
+    return { process: 'process', faq: 'FAQ answer', factsheet: 'fact sheet', variable: 'variable',
+      gap: 'content gap' }[kind] || kind;
   }
 
   /**
@@ -1977,7 +1978,8 @@
     // What the software finds is on the Rules tab; this page is what people raise.
     html += '<p class="hint-block">Issues are what people raise — here, with ⚑ on any process, ' +
       'step, FAQ answer, fact sheet or variable, or from the live call view. Each one is listed ' +
-      'at the foot of the page it is about. What Process Hub finds by itself is on the ' +
+      'at the foot of the page it is about. Content gaps — questions the FAQ doesn\'t answer — are ' +
+      'logged from <a href="#/probe">Probe</a>. What Process Hub finds by itself is on the ' +
       '<a href="#/rules">Rules tab</a>.</p>';
 
     paint(listPane('Issues register',
@@ -1995,6 +1997,7 @@
     var who = { owner: owner.id, issue: issue.id };
 
     var details = '';
+    if (owner.kind === 'gap') return renderGap(owner, issue);
     if (owner.kind === 'process') {
       var p = owner.obj;
       var steps = [{ value: '', label: 'The process as a whole' }].concat(p.steps.map(function (st, i) {
@@ -2037,6 +2040,62 @@
       (issue.resolution ? '<p class="hint-block">Resolved: ' + e(issue.resolution) + '</p>' : '') +
       '</section>' +
       '<section class="block meta"><h2>Details</h2><dl>' + details + '</dl></section></article>');
+  }
+
+  /**
+   * A content gap: a question the FAQ doesn't answer, logged from Probe. It
+   * is its own issue, so the page is an issue page with the question at the
+   * top, and what Probe found when it was logged.
+   */
+  function renderGap(owner, gap) {
+    var spec = 'issue:' + gap.id + ':' + gap.id + ':';
+    var who = { owner: gap.id, issue: gap.id };
+    var faqLink = function (id, score) {
+      var faq = Data.state.index.faqs[id];
+      if (!faq) return '<span class="hint">an FAQ question since deleted</span>';
+      return '<a href="#/faq/' + e(id) + '">' + e(Data.plainText(faq.q)) + '</a>' +
+        (score != null ? ' <span class="hint">' + Math.round(score * 100) + '% match</span>' : '');
+    };
+    var tabs = [{ value: '', label: 'Not decided yet' }].concat(
+      Data.state.library.publishTabs.map(function (t) { return { value: t.id, label: Data.plainText(t.label) }; }));
+
+    paint('<article class="pane">' +
+      '<header class="pane-head">' +
+      '<div class="crumbs"><a href="#/issues">Issues register</a> · content gap · ' +
+      (gap.resolved ? 'resolved ' + e(gap.resolved) : e(gap.severity) + ' severity') + '</div>' +
+      '<h1 class="editable-h1">' + f(spec + 'q', { placeholder: 'The question' }) + '</h1>' +
+      '<div class="badges">' +
+      '<span class="badge quiet">Content gap</span>' +
+      (gap.resolved
+        ? '<span class="badge status-published">✓ resolved</span>'
+        : '<span class="badge sev-badge sev-' + e(gap.severity) + '">' + f(spec + 'severity',
+            { type: 'select', options: options(['high', 'medium', 'low']) }) + '</span>') +
+      '<span class="badge quiet">Raised ' + e(gap.raised || '—') + '</span>' +
+      '<span class="badge quiet">By ' + f(spec + 'raisedBy', { placeholder: 'who raised it' }) + '</span>' +
+      '</div>' +
+      '<div class="row-actions">' +
+      '<button class="btn small" data-route="' + e(owner.route) + '">Probe this question again →</button>' +
+      '<span class="spacer"></span>' +
+      (gap.resolved
+        ? btn('reopen-issue', who, 'Reopen') + btn('del-issue', who, 'Delete', 'small danger')
+        : btn('resolve-issue', who, '✓ Resolve') + btn('del-issue', who, 'Delete', 'small danger')) +
+      '</div></header>' +
+      '<section class="block"><h2>Note</h2>' +
+      '<div class="issue-note">' + f(spec + 'note', { type: 'multiline', placeholder: 'What is missing' }) + '</div>' +
+      (gap.resolution ? '<p class="hint-block">Resolved: ' + e(gap.resolution) + '</p>' : '') +
+      '</section>' +
+      '<section class="block meta"><h2>Details</h2><dl>' +
+      '<dt>Department to answer it</dt><dd>' + f(spec + 'ownerId', { type: 'select',
+        options: departmentOptions('Not decided yet'), placeholder: 'Not decided yet' }) + '</dd>' +
+      '<dt>Tab it would belong on</dt><dd>' + f(spec + 'tabId', { type: 'select', options: tabs,
+        placeholder: 'Not decided yet' }) + '</dd>' +
+      '<dt>Nearest answer when logged</dt><dd>' +
+      (gap.nearest ? faqLink(gap.nearest.faqId, gap.nearest.score) : '—') + '</dd>' +
+      (gap.answeredBy ? '<dt>Answered by</dt><dd>' + faqLink(gap.answeredBy) + '</dd>' : '') +
+      '</dl></section>' +
+      '<p class="hint-block">Logged from <a href="#/probe">Probe</a>. Write or extend an FAQ answer ' +
+      'that covers it, then probe it again: when an answer matches, Probe offers to resolve the gap.</p>' +
+      '</article>');
   }
 
   // ---- rules ---------------------------------------------------------------
@@ -2701,6 +2760,7 @@
     rules: renderRules,
     departments: renderDepartments,
     home: renderHome,
-    openAttach: openAttach
+    openAttach: openAttach,
+    paint: paint
   };
 }(window));

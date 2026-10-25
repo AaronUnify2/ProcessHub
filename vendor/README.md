@@ -1,7 +1,9 @@
 # vendor/ — self-hosted copies for the Ask page
 
 `ask.html` matches visitors' questions to the published FAQ with a small
-language model that runs in their browser. Everything it needs is kept here,
+language model that runs in their browser, and Process Hub's Probe section
+(`js/semantic.js`, `js/semantic-worker.js`) uses the same model to find the
+questions the FAQ doesn't answer. Everything they need is kept here,
 in this repository, so the page fetches nothing from anyone else's servers and
 keeps working whatever happens to the original sources. Nothing here changes
 unless someone deliberately replaces it.
@@ -43,6 +45,9 @@ fingerprints at the same time** (open `ask.html`, wait for "Ready", run
 
 Only if there is a reason to — a browser stops running it, or a clearly
 better model. Put the new version in its own folder (e.g.
-`transformers-3.x.y/`), change the paths in `ask.html`'s worker, regenerate
-the fingerprints, test with outside network access blocked, and update this
-file. Remove the old folder afterwards.
+`transformers-3.x.y/`), change the paths in `ask.html`'s worker and in
+`js/semantic-worker.js`, regenerate the fingerprints, test with outside
+network access blocked, and update this file. Remove the old folder
+afterwards. A different model also needs a new model name in `ask.html` and
+`js/semantic.js` (`MODEL`): fingerprints are kept under it in each browser,
+and a new name is what tells them apart from the old model's.

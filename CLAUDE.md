@@ -25,9 +25,9 @@ sense in six months. No clever abstractions, no syntax that needs tooling.
 **No external dependencies unless asked.** If a library is genuinely needed,
 load it from a CDN with a pinned version. Never a local install. The one
 exception, at Aaron's request, is `vendor/`: unmodified copies of
-Transformers.js and the all-MiniLM-L6-v2 model for `ask.html`, self-hosted so
-the page depends on no one else's servers. Keep them as they are; to change
-them, follow `vendor/README.md`.
+Transformers.js and the all-MiniLM-L6-v2 model for `ask.html` and the Probe
+section, self-hosted so they depend on no one else's servers. Keep them as
+they are; to change them, follow `vendor/README.md`.
 
 **Always produce complete files, not diffs or fragments.** Aaron prefers whole
 files — it reduces errors and makes review straightforward.
