@@ -163,6 +163,8 @@
     state.variables.variables.forEach(function (v) { index.variables[v.id] = v; });
     state.library.factSheets.forEach(function (s) { index.factSheets[s.id] = s; });
     state.library.faqs.forEach(function (f) { index.faqs[f.id] = f; });
+    index.gaps = {};
+    (state.library.contentGaps || []).forEach(function (g) { index.gaps[g.id] = g; });
 
     state.processes.taxonomy.forEach(function (node) {
       index.taxonomy[node.id] = node;
@@ -589,9 +591,17 @@
    * a fact sheet or a variable. Each keeps its own issues, in an `issues`
    * list on the item itself. An owner describes the item an issue is about,
    * whatever kind it is.
+   *
+   * A content gap is the odd one out: a question the FAQ doesn't answer,
+   * logged from Probe. There is no item for it to sit on, so each gap is
+   * its own issue, kept in library.contentGaps, and its owner is the gap
+   * itself — obj.issues holds just the gap, so everything that reads issues
+   * through an owner (the register, the sidebar, the exports, editing) works
+   * on gaps unchanged.
    */
   var ISSUE_KINDS = {
-    process: 'Process', faq: 'FAQ answer', factsheet: 'Fact sheet', variable: 'Variable'
+    process: 'Process', faq: 'FAQ answer', factsheet: 'Fact sheet', variable: 'Variable',
+    gap: 'Content gap'
   };
 
   function ownerFrom(kind, obj) {
@@ -607,17 +617,22 @@
       return { kind: kind, id: obj.id, obj: obj, label: obj.title, taxonomyId: obj.ownerId,
         route: '#/factsheet/' + obj.id };
     }
+    if (kind === 'gap') {
+      return { kind: kind, id: obj.id, obj: { issues: [obj] }, gap: obj, label: obj.q,
+        taxonomyId: obj.ownerId, route: '#/probe?gap=' + encodeURIComponent(obj.id) };
+    }
     return { kind: 'variable', id: obj.id, obj: obj, label: obj.value, taxonomyId: obj.ownerId,
       route: '#/variable/' + obj.id };
   }
 
-  /** The process, FAQ answer, fact sheet or variable with this id, as an owner. */
+  /** The process, FAQ answer, fact sheet, variable or content gap with this id, as an owner. */
   function issueOwner(id) {
     var idx = state.index;
     if (idx.processes[id]) return ownerFrom('process', idx.processes[id]);
     if (idx.faqs[id]) return ownerFrom('faq', idx.faqs[id]);
     if (idx.factSheets[id]) return ownerFrom('factsheet', idx.factSheets[id]);
     if (idx.variables[id]) return ownerFrom('variable', idx.variables[id]);
+    if (idx.gaps && idx.gaps[id]) return ownerFrom('gap', idx.gaps[id]);
     return null;
   }
 
@@ -628,6 +643,7 @@
     state.library.faqs.forEach(function (f) { out.push(ownerFrom('faq', f)); });
     state.library.factSheets.forEach(function (sh) { out.push(ownerFrom('factsheet', sh)); });
     state.variables.variables.forEach(function (v) { out.push(ownerFrom('variable', v)); });
+    (state.library.contentGaps || []).forEach(function (g) { out.push(ownerFrom('gap', g)); });
     return out;
   }
 
@@ -888,7 +904,11 @@
       return ids;
     }
 
-    /** Owned content: FAQ answers, fact sheets and variables, and their open issues. */
+    /**
+     * Owned content: FAQ answers, fact sheets and variables, and their open
+     * issues — plus the open content gaps filed under the department, each
+     * of which is an issue in itself.
+     */
     function owned(row, test) {
       row.faq = tallyFaqs(state.library.faqs.filter(test));
       row.sheets = tallySheets(state.library.factSheets.filter(test));
@@ -899,6 +919,11 @@
           row.issues += open.length;
           row.high += open.filter(function (i) { return i.severity === 'high'; }).length;
         });
+      (state.library.contentGaps || []).filter(test).forEach(function (g) {
+        if (!isOpen(g)) return;
+        row.issues++;
+        if (g.severity === 'high') row.high++;
+      });
     }
 
     function walk(node, depth) {
@@ -972,6 +997,7 @@
     scrubDerived(state.processes);
     state.library = data.library;
     if (!Array.isArray(state.library.factSheets)) state.library.factSheets = [];
+    if (!Array.isArray(state.library.contentGaps)) state.library.contentGaps = [];
     state.variables = data.variables;
     suggestIndex = null;
     buildIndexes();

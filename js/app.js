@@ -32,6 +32,11 @@
       Detail.issue(pid, iid); return 'issue:' + pid + ':' + iid;
     }],
     [/^#\/issues$/, 'issues', function () { Detail.issues(); }],
+    // Probe: #/probe, #/probe?q=<question>, #/probe?gap=<content gap id>
+    [/^#\/probe(?:\?(q|gap)=(.*))?$/, 'probe', function (mode, value) {
+      ProbePage.render(mode, value);
+      return mode ? mode + ':' + value : 'probe';
+    }],
     [/^#\/rule\/(.+)$/, 'rules', function (id) { Detail.rule(id); return 'rule:' + id.split('/')[0]; }],
     [/^#\/rules$/, 'rules', function () { Detail.rules(); }],
     // Coverage is now part of Departments; old links still land in the right place.
@@ -491,6 +496,7 @@
     Data.load(data);
     Sidebar.init({ prefs: prefs, onNavigate: navigate });
     Detail.init({ onNavigate: navigate, prefs: prefs });
+    ProbePage.init({ onNavigate: navigate, prefs: prefs });
     Edit.init({ onChange: showDirty, onSaved: showSaved });
     wireExportMenu();
 

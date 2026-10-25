@@ -132,6 +132,7 @@
    *   library.articles                 removed
    *   articleRefs on steps, processes  removed
    *   library.factSheets               added, empty, where missing
+   *   library.contentGaps              added, empty, where missing
    *   factSheetRefs                    added, empty, on every step and process
    *   rules scoped to articles         rescoped to fact sheets; the rule that
    *                                    only looked for unused articles goes
@@ -142,6 +143,7 @@
     if (lib) {
       delete lib.articles;
       if (!Array.isArray(lib.factSheets)) lib.factSheets = [];
+      if (!Array.isArray(lib.contentGaps)) lib.contentGaps = [];
     }
     var file = data.processes;
     if (file) {

@@ -10,7 +10,8 @@
      step:<pid>:<sid>:<key>
      check:<pid>:<sid>:<cid>
      connection:<pid>:<cid>:<key>
-     issue:<owner>:<iid>:<key>   (owner: a process, FAQ answer, fact sheet or variable id)
+     issue:<owner>:<iid>:<key>   (owner: a process, FAQ answer, fact sheet or variable id;
+                                  for a content gap, owner and issue are both the gap's id)
      rule:<rid>:<key>  ·  rule:<rid>:match:<key>
      taxonomy:<tid>:<key>
      factsheet:<fsid>:<key> (key may be dotted, e.g. current.url)
@@ -651,14 +652,66 @@
     if (!issue) return;
     delete issue.resolved;
     delete issue.resolution;
+    delete issue.answeredBy;
     touch();
   }
 
   function deleteIssue(ownerId, issueId) {
-    var holder = issueHolder(ownerId);
-    if (!holder) return;
+    var owner = Data.issueOwner(ownerId);
+    if (!owner) return;
+    // A content gap is its own issue: deleting it removes the gap.
+    if (owner.kind === 'gap') {
+      var lib = Data.state.library;
+      lib.contentGaps = (lib.contentGaps || []).filter(function (g) { return g.id !== issueId; });
+      touch();
+      return;
+    }
+    var holder = owner.obj;
     holder.issues = (holder.issues || []).filter(function (i) { return i.id !== issueId; });
-    if (!holder.issues.length && Data.issueOwner(ownerId).kind !== 'process') delete holder.issues;
+    if (!holder.issues.length && owner.kind !== 'process') delete holder.issues;
+    touch();
+  }
+
+  // ---- content gaps --------------------------------------------------------
+  // A question the FAQ doesn't answer yet, logged from Probe. Each is an
+  // issue in its own right (see Data.ISSUE_KINDS): it has a severity, can be
+  // resolved and reopened, and sits in the issues register with the rest.
+
+  /**
+   * Log a content gap. fields: { q, note, severity, ownerId, tabId,
+   * nearest: { faqId, score }, raisedBy }. Returns the new gap's id.
+   */
+  function raiseGap(fields) {
+    var q = String((fields && fields.q) || '').trim();
+    if (!q) return null;
+    var lib = Data.state.library;
+    lib.contentGaps = lib.contentGaps || [];
+    var gap = {
+      id: shortId('gap_'),
+      q: q,
+      note: String(fields.note || '').trim() || 'No FAQ answer covers this question.',
+      severity: fields.severity || 'medium',
+      ownerId: fields.ownerId || '',
+      tabId: fields.tabId || '',
+      nearest: fields.nearest && fields.nearest.faqId
+        ? { faqId: fields.nearest.faqId, score: Math.round(fields.nearest.score * 100) / 100 }
+        : null,
+      raised: today(),
+      raisedBy: fields.raisedBy || ''
+    };
+    lib.contentGaps.push(gap);
+    touch();
+    return gap.id;
+  }
+
+  /** Close a gap because an FAQ answer now covers it, naming the answer. */
+  function resolveGap(gapId, faqId) {
+    var gap = (Data.state.library.contentGaps || []).find(function (g) { return g.id === gapId; });
+    var faq = Data.state.index.faqs[faqId];
+    if (!gap || !faq) return;
+    gap.resolved = today();
+    gap.resolution = 'Answered by: ' + Data.plainText(faq.q);
+    gap.answeredBy = faqId;
     touch();
   }
 
@@ -1003,6 +1056,8 @@
     resolveIssue: resolveIssue,
     reopenIssue: reopenIssue,
     deleteIssue: deleteIssue,
+    raiseGap: raiseGap,
+    resolveGap: resolveGap,
     verifyVariable: verifyVariable,
     useSource: useSource,
     sourceSeen: sourceSeen,

@@ -2,7 +2,7 @@
    merge.js — combining a local draft with published files that moved on.
 
    Works one item at a time: a process, a fact sheet, an FAQ question, a
-   variable, a department, a rule or a publish tab. For each item there are up
+   variable, a department, a rule, a publish tab or a content gap. For each item there are up
    to three copies — yours, the published one, and the base both started from.
 
      changed only by you          yours is kept
@@ -24,6 +24,7 @@
     { file: 'library', key: 'factSheets', kind: 'Fact sheet', label: function (x) { return x.title; } },
     { file: 'library', key: 'faqs', kind: 'FAQ', label: function (x) { return Data.plainText(x.q); } },
     { file: 'library', key: 'publishTabs', kind: 'Publish tab', label: function (x) { return Data.plainText(x.label); } },
+    { file: 'library', key: 'contentGaps', kind: 'Content gap', label: function (x) { return x.q; } },
     { file: 'variables', key: 'variables', kind: 'Variable', label: function (x) { return x.value; } }
   ];
 
