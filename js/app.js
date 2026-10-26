@@ -304,7 +304,7 @@
       Process: ['process', 'processes'], Department: ['department', 'departments'],
       Rule: ['rule', 'rules'], 'Fact sheet': ['fact sheet', 'fact sheets'],
       FAQ: ['FAQ question', 'FAQ questions'], 'Publish tab': ['publish tab', 'publish tabs'],
-      Variable: ['variable', 'variables']
+      Variable: ['variable', 'variables'], 'Content gap': ['content gap', 'content gaps']
     };
     var parts = Object.keys(counts).map(function (kind) {
       var n = counts[kind];
