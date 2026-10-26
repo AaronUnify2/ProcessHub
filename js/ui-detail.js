@@ -1932,28 +1932,86 @@
     return Data.ISSUE_KINDS[entry.owner.kind] + ' · ' + entry.owner.label;
   }
 
-  function renderIssueRegister() {
+  // What each tile on the register shows when clicked.
+  var ISSUE_FILTERS = {
+    high: { label: 'High severity', test: function (x) { return x.issue.severity === 'high'; } },
+    medium: { label: 'Medium severity', test: function (x) { return x.issue.severity === 'medium'; } },
+    low: { label: 'Low severity', test: function (x) { return x.issue.severity === 'low'; } },
+    gaps: { label: 'Content gaps', test: function (x) { return x.owner.kind === 'gap'; } }
+  };
+
+  function issueListRow(entry) {
+    return '<button class="list-row issue-list sev-' + e(entry.issue.severity) + '"' +
+      ' data-route="' + e(issueRoute(entry)) + '">' +
+      '<span class="sev">' + e(entry.issue.severity) + '</span>' +
+      '<span class="list-title">' + e(aboutLine(entry)) + '</span>' +
+      '<span class="list-sub">' + e(entry.issue.note) + '</span>' +
+      '</button>';
+  }
+
+  function resolvedListRow(entry) {
+    return '<button class="list-row issue-list" data-route="' + e(issueRoute(entry)) + '">' +
+      '<span class="sev">✓ ' + e(entry.issue.resolved) + '</span>' +
+      '<span class="list-title">' + e(aboutLine(entry)) + '</span>' +
+      '<span class="list-sub">' + e(entry.issue.note) +
+      (entry.issue.resolution ? ' — ' + e(entry.issue.resolution) : '') + '</span>' +
+      '</button>';
+  }
+
+  /**
+   * The issues register. Each tile is a button: high, medium, low, content
+   * gaps or resolved shows just those issues (#/issues?show=high), and the
+   * open-issues tile shows them all again. Every row opens its issue.
+   */
+  function renderIssueRegister(show) {
     var recorded = Data.allIssues();
     var resolved = Data.allIssues({ resolved: 'only' });
     var counts = { high: 0, medium: 0, low: 0 };
     recorded.forEach(function (x) { counts[x.issue.severity] = (counts[x.issue.severity] || 0) + 1; });
+    var gaps = recorded.filter(ISSUE_FILTERS.gaps.test).length;
     var affected = {};
     recorded.forEach(function (x) { affected[x.owner.id] = true; });
+    if (show !== 'resolved' && !ISSUE_FILTERS[show]) show = '';
+
+    var choice = function (key, n, label, sub) {
+      var route = key ? '#/issues?show=' + key : '#/issues';
+      return tile(n, label, sub, route).replace('class="tile"', 'class="tile' + (key === show ? ' on' : '') + '"' +
+        ' aria-pressed="' + (key === show ? 'true' : 'false') + '"');
+    };
 
     var html = '<div class="row-actions">' +
       btn('raise-issue', {}, '⚑ Raise an issue', 'small primary') +
       btn('export-issues-html', {}, '⤓ Report (HTML)') +
       btn('export-issues-csv', {}, '⤓ CSV') +
       '<span class="spacer"></span>' +
+      '<button class="btn small" data-route="#/probe">◎ Probe</button>' +
       '<button class="btn small" data-route="#/rules">⚙ Rules</button>' +
       '</div>' +
-      '<section class="tiles">' +
-      tile(recorded.length, 'open issues', plural(Object.keys(affected).length, 'item') + ' affected', '') +
-      tile(counts.high || 0, 'high severity', 'fix these first', '') +
-      tile(counts.medium || 0, 'medium', '', '') +
-      tile(counts.low || 0, 'low', '', '') +
-      tile(resolved.length, 'resolved', 'kept as a record', '') +
+      '<section class="tiles issue-tiles">' +
+      choice('', recorded.length, 'open issues', plural(Object.keys(affected).length, 'item') + ' affected') +
+      choice('high', counts.high || 0, 'high severity', 'fix these first') +
+      choice('medium', counts.medium || 0, 'medium', '') +
+      choice('low', counts.low || 0, 'low', '') +
+      choice('gaps', gaps, 'content gaps', 'questions the FAQ doesn\'t answer') +
+      choice('resolved', resolved.length, 'resolved', 'kept as a record') +
       '</section>';
+
+    // --- one tile chosen: just those issues
+    if (show) {
+      var list = show === 'resolved' ? resolved : recorded.filter(ISSUE_FILTERS[show].test);
+      var title = show === 'resolved' ? 'Resolved' : ISSUE_FILTERS[show].label;
+      html += '<h2 class="group">' + e(title) + ' <span>' + list.length +
+        (show === 'resolved' ? '' : ' open') + '</span> ' +
+        '<button class="btn tiny" data-route="#/issues">Show all</button></h2>' +
+        (list.length
+          ? list.map(show === 'resolved' ? resolvedListRow : issueListRow).join('')
+          : '<p class="empty">' + (show === 'gaps'
+            ? 'No open content gaps. Questions the FAQ can\'t answer are logged from <a href="#/probe">Probe</a>.'
+            : 'None.') + '</p>');
+      paint(listPane('Issues register',
+        recorded.length + ' open · ' + resolved.length + ' resolved', html));
+      return;
+    }
 
     // --- by department
     var byDept = {};
@@ -1981,35 +2039,19 @@
 
     // --- recorded by people: these are judgements, so they come first
     html += '<h2 class="group">Recorded issues <span>' + recorded.length + ' open</span></h2>' +
-      (recorded.length
-        ? recorded.map(function (entry) {
-            return '<button class="list-row issue-list sev-' + e(entry.issue.severity) + '"' +
-              ' data-route="' + e(issueRoute(entry)) + '">' +
-              '<span class="sev">' + e(entry.issue.severity) + '</span>' +
-              '<span class="list-title">' + e(aboutLine(entry)) + '</span>' +
-              '<span class="list-sub">' + e(entry.issue.note) + '</span>' +
-              '</button>';
-          }).join('')
-        : '<p class="empty">Nothing open.</p>');
+      (recorded.length ? recorded.map(issueListRow).join('') : '<p class="empty">Nothing open.</p>');
 
     if (resolved.length) {
       html += '<details class="resolved"><summary>' + plural(resolved.length, 'resolved issue') +
-        '</summary>' + resolved.map(function (entry) {
-          return '<button class="list-row issue-list" data-route="' + e(issueRoute(entry)) + '">' +
-            '<span class="sev">✓ ' + e(entry.issue.resolved) + '</span>' +
-            '<span class="list-title">' + e(aboutLine(entry)) + '</span>' +
-            '<span class="list-sub">' + e(entry.issue.note) +
-            (entry.issue.resolution ? ' — ' + e(entry.issue.resolution) : '') + '</span>' +
-            '</button>';
-        }).join('') + '</details>';
+        '</summary>' + resolved.map(resolvedListRow).join('') + '</details>';
     }
 
     // What the software finds is on the Rules tab; this page is what people raise.
     html += '<p class="hint-block">Issues are what people raise — here, with ⚑ on any process, ' +
       'step, FAQ answer, fact sheet or variable, or from the live call view. Each one is listed ' +
       'at the foot of the page it is about. Content gaps — questions the FAQ doesn\'t answer — are ' +
-      'logged from <a href="#/probe">Probe</a>. What Process Hub finds by itself is on the ' +
-      '<a href="#/rules">Rules tab</a>.</p>';
+      'logged from <a href="#/probe">Probe</a>. Click a tile above to see just those issues. What ' +
+      'Process Hub finds by itself is on the <a href="#/rules">Rules tab</a>.</p>';
 
     paint(listPane('Issues register',
       recorded.length + ' open · ' + resolved.length + ' resolved', html));
