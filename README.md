@@ -76,7 +76,7 @@ a dashboard for the section as a whole.
 | FAQ | publish tabs, headings and questions — drag to reorder (below) | what needs attention, figures per tab |
 | Fact sheets | fact sheets by stage: draft, in sign-off, approved, live | counts by stage, who sign-off is waiting on, what needs attention, by owner |
 | Variables | department › sub-department › source document › value, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
-| Issues | open issues by severity, then resolved | severity counts, issues by department, and the full register of what people have raised |
+| Issues | open issues by severity, then resolved | tiles for open, high, medium, low, content gaps and resolved — click one to list just those issues (`#/issues?show=high`, `gaps`, `resolved`…); issues by department, and the full register of what people have raised |
 | Rules | the built-in checks, then your rules, each with what it finds | the six built-in checks as cards, then your text rules; each opens on its own page |
 | Departments | the department tree with a status bar per department | progress for every department — processes by status, FAQ answers (how many public), fact sheets (how many approved), variables (how many verified), open issues; each row opens the department |
 | Probe | the questions probed lately, and the open content gaps | ask a question the way a customer would and see whether the FAQ answers it; open content gaps, and which of them an FAQ answer now seems to cover (below) |

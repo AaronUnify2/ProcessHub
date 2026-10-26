@@ -31,7 +31,8 @@
     [/^#\/issue\/([^/]+)\/(.+)$/, 'issues', function (pid, iid) {
       Detail.issue(pid, iid); return 'issue:' + pid + ':' + iid;
     }],
-    [/^#\/issues$/, 'issues', function () { Detail.issues(); }],
+    // #/issues?show=high|medium|low|gaps|resolved — the register showing one tile's issues
+    [/^#\/issues(?:\?show=(\w+))?$/, 'issues', function (show) { Detail.issues(show); }],
     // Probe: #/probe, #/probe?q=<question>, #/probe?gap=<content gap id>
     [/^#\/probe(?:\?(q|gap)=(.*))?$/, 'probe', function (mode, value) {
       ProbePage.render(mode, value);
