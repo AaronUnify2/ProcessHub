@@ -2230,18 +2230,30 @@
     var results = {};
     Rules.run().forEach(function (r) { results[r.rule.id] = r; });
 
-    var html = '<h2 class="group">Built-in checks</h2>' +
-      '<p class="hint-block">Each one goes through all of Process Hub at once. Open one to ' +
-      'see what it finds, by type and department. They can be switched off, not changed.</p>' +
-      '<div class="chk-cards">' + builtIns.map(function (rule) {
-        var off = rule.enabled === false;
-        var head = off ? null : Checks.headline(rule);
-        return '<button class="chk-card' + (off ? ' off' : '') + '" data-route="#/rule/' + e(rule.id) + '">' +
-          '<span class="chk-card-name">' + e(rule.name) + '</span>' +
-          '<span class="chk-card-n">' + (off ? 'Off' : head.count) + '</span>' +
-          '<span class="chk-card-words">' + (off ? 'Switched off' : e(head.words)) + '</span>' +
-          '</button>';
-      }).join('') + '</div>';
+    var card = function (rule) {
+      var off = rule.enabled === false;
+      var head = off ? null : Checks.headline(rule);
+      return '<button class="chk-card' + (off ? ' off' : '') + '" data-route="#/rule/' + e(rule.id) + '">' +
+        '<span class="chk-card-name">' + e(rule.name) + '</span>' +
+        '<span class="chk-card-n">' + (off ? 'Off' : head.count) + '</span>' +
+        '<span class="chk-card-words">' + (off ? 'Switched off' : e(head.words)) + '</span>' +
+        '</button>';
+    };
+    var writing = builtIns.filter(Rules.isWriting);
+    var housekeeping = builtIns.filter(function (r) { return !Rules.isWriting(r); });
+
+    // Writing first: how the public wording reads is the day-to-day work.
+    var html = '<p class="hint-block">The built-in checks each go through all of Process Hub at ' +
+      'once. Open one to see what it finds, by type and department. They can be switched off, ' +
+      'not changed.</p>' +
+      '<h2 class="group">Writing</h2>' +
+      '<p class="hint-block">How FAQ answers and fact sheets read: who does what, sentence length, ' +
+      'and what the reader does next. The editors also flag these as you type.</p>' +
+      '<div class="chk-cards">' + writing.map(card).join('') + '</div>' +
+      '<h2 class="group">Housekeeping</h2>' +
+      '<p class="hint-block">Loose ends across everything: empty fields, things nobody has looked ' +
+      'at in a while, and content nothing uses.</p>' +
+      '<div class="chk-cards">' + housekeeping.map(card).join('') + '</div>';
 
     html += '<h2 class="group">Your rules</h2>' +
       '<div class="row-actions">' +

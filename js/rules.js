@@ -104,11 +104,16 @@
         'number or email address, and no “see <another answer>”.'
     }
   };
-  var BUILT_IN_ORDER = ['rule_b_empty', 'rule_b_stale', 'rule_b_unused',
-    'rule_w_passive', 'rule_w_long', 'rule_w_nextstep'];
+  // Writing checks first: they are the ones worked through day to day.
+  var BUILT_IN_ORDER = ['rule_w_passive', 'rule_w_long', 'rule_w_nextstep',
+    'rule_b_empty', 'rule_b_stale', 'rule_b_unused'];
+  var WRITING_KINDS = { passive: true, long: true, nextstep: true };
   var FIXED = ['name', 'kind', 'scope', 'severity', 'message'];
 
   function isBuiltIn(rule) { return !!(rule && BUILT_IN[rule.id]); }
+
+  /** A built-in check on how FAQ answers and fact sheets are written, rather than on housekeeping. */
+  function isWriting(rule) { return isBuiltIn(rule) && !!WRITING_KINDS[BUILT_IN[rule.id].kind]; }
 
   function builtInSummary(rule) { return (BUILT_IN[rule.id] || {}).summary || ''; }
 
@@ -398,6 +403,7 @@
   global.Rules = {
     SCOPES: SCOPES,
     list: list,
+    isWriting: isWriting,
     textRules: textRules,
     get: get,
     add: add,
