@@ -77,7 +77,7 @@ a dashboard for the section as a whole.
 | Fact sheets | fact sheets by stage: draft, in sign-off, approved, live | counts by stage, who sign-off is waiting on, what needs attention, by owner |
 | Variables | department › sub-department › source document › value, coloured by verification | verified, pending, stale, unused, sourced; what still needs a public source; every source document and the values it backs; a verification email or sheet per department |
 | Issues | open issues by severity, then resolved | tiles for open, high, medium, low, content gaps and resolved — click one to list just those issues (`#/issues?show=high`, `gaps`, `resolved`…); issues by department, and the full register of what people have raised |
-| Rules | the built-in checks, then your rules, each with what it finds | the six built-in checks as cards, then your text rules; each opens on its own page |
+| Rules | writing checks, housekeeping checks, then your rules, each with what it finds | the six built-in checks as cards under *Writing* and *Housekeeping*, then your text rules; each opens on its own page |
 | Departments | the department tree with a status bar per department | progress for every department — processes by status, FAQ answers (how many public), fact sheets (how many approved), variables (how many verified), open issues; each row opens the department |
 | Probe | the questions probed lately, and the open content gaps | ask a question the way a customer would and see whether the FAQ answers it; open content gaps, and which of them an FAQ answer now seems to cover (below) |
 
@@ -355,21 +355,22 @@ instead of a typed address, so a changed web address is still one edit.
 *Built-in checks* — six of them, defined in code (`js/rules.js`, worked out by
 `js/checks.js` and `js/writing.js`). Each goes through all of Process Hub at
 once and lists what it finds by type — variables, FAQ answers, fact sheets,
-processes — and then by department, with dropdowns to narrow the list:
+processes — and then by department, with dropdowns to narrow the list. The
+tab and its sidebar show them in two groups, writing first:
 
-| Check | What it shows | Setting |
-|---|---|---|
-| Empty fields | every field in the app, how many leave it empty; pick a row for the list | — |
-| Not touched | every review, verification and edit date older than the period chosen, or missing | 1, 3, 6 or 12 months |
-| Nothing uses it | variables nothing uses; FAQ answers and fact sheets no process attaches | — |
-| Who does this? | instructions that say something must be done without saying who | words never to flag |
-| Long sentence | sentences in FAQ answers and fact sheets over a word limit | the word limit |
-| No next step | FAQ answers with no link, phone, email or "see *another answer*" | — |
+| | Check | What it shows | Setting |
+|---|---|---|---|
+| **Writing** | Who does this? | instructions that say something must be done without saying who | words never to flag |
+| | Long sentence | sentences in FAQ answers and fact sheets over a word limit | the word limit |
+| | No next step | FAQ answers with no link, phone, email or "see *another answer*" | — |
+| **Housekeeping** | Empty fields | every field in the app, how many leave it empty; pick a row for the list | — |
+| | Not touched | every review, verification and edit date older than the period chosen, or missing | 1, 3, 6 or 12 months |
+| | Nothing uses it | variables nothing uses; FAQ answers and fact sheets no process attaches | — |
 
 They can be switched off, and given their one setting, but not changed, copied or
 deleted. `Rules.applyBuiltIns`, called from `Storage.upgrade` on every load,
-puts any that are missing back with their fixed settings. The last three are
-also checked as you type, in the **Writing check** panel under the FAQ and
+puts any that are missing back with their fixed settings. The writing checks
+are also run as you type, in the **Writing check** panel under the FAQ and
 fact sheet editors.
 
 *Your rules* — the one kind people add: **text that should no longer appear**

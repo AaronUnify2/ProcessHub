@@ -815,9 +815,11 @@
       return row('#/rule/' + rule.id, view.active === 'rule:' + rule.id, e(rule.name), badge,
         off ? 'off' : String(Rules.count(rule))).replace('class="side-row', 'class="side-row' + (off ? ' off' : ''));
     }
-    var builtIn = rules.filter(Rules.isBuiltIn);
+    var writing = rules.filter(Rules.isWriting);
+    var housekeeping = rules.filter(function (r) { return Rules.isBuiltIn(r) && !Rules.isWriting(r); });
     var mine = rules.filter(function (r) { return !Rules.isBuiltIn(r); });
-    var html = '<div class="side-label">Built-in checks</div>' + builtIn.map(line).join('') +
+    var html = '<div class="side-label">Writing</div>' + writing.map(line).join('') +
+      '<div class="side-label">Housekeeping</div>' + housekeeping.map(line).join('') +
       '<div class="side-label">Your rules</div>' +
       (mine.map(line).join('') || '<p class="empty">No rules yet.</p>');
     el.tree.innerHTML = '<div class="side-rows flat">' + html + '</div>' +
