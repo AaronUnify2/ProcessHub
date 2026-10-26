@@ -2618,7 +2618,8 @@
       (t.faqUnowned ? ' ' + plural(t.faqUnowned, 'FAQ answer has', 'FAQ answers have') +
         ' no owning department and are not counted in a row.' : '') + '</p>';
 
-    paint(listPane('Departments', t.processes + ' processes, ' + done + ' reviewed or published · ' +
+    paint(listPane('Departments', plural(t.processes, 'process', 'processes') + ', ' + done +
+      ' reviewed or published · ' +
       plural(Data.state.processes.taxonomy.length, 'department') + ' and sub-departments', html));
   }
 
