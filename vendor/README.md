@@ -3,7 +3,8 @@
 `ask.html` matches visitors' questions to the published FAQ with a small
 language model that runs in their browser, and Process Hub's Probe section
 (`js/semantic.js`, `js/semantic-worker.js`) uses the same model to find the
-questions the FAQ doesn't answer. Everything they need is kept here,
+questions the FAQ doesn't answer. The experimental `map.html` uses it too,
+with `ask.html`'s fingerprints. Everything they need is kept here,
 in this repository, so the page fetches nothing from anyone else's servers and
 keeps working whatever happens to the original sources. Nothing here changes
 unless someone deliberately replaces it.
@@ -47,9 +48,9 @@ makes it work them out again.
 
 Only if there is a reason to — a browser stops running it, or a clearly
 better model. Put the new version in its own folder (e.g.
-`transformers-3.x.y/`), change the paths in `ask.html`'s worker and in
-`js/semantic-worker.js`, regenerate the fingerprints, test with outside
+`transformers-3.x.y/`), change the paths in `ask.html`'s and `map.html`'s
+workers and in `js/semantic-worker.js`, regenerate the fingerprints, test with outside
 network access blocked, and update this file. Remove the old folder
-afterwards. A different model also needs a new model name in `ask.html` and
+afterwards. A different model also needs a new model name in `ask.html`, `map.html` and
 `js/semantic.js` (`MODEL`): fingerprints are kept under it in each browser,
 and a new name is what tells them apart from the old model's.

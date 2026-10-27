@@ -34,6 +34,7 @@ content in those older public copies was judged acceptable to leave.
   live.html          the live call view
   ask.html           experimental: ask a question in plain words, get the matching FAQ answers
                      (a small language model running in the browser)
+  map.html           experimental: the published FAQ laid out by meaning, with the same model
   css/app.css · css/live.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
                      rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
@@ -249,6 +250,28 @@ or once a lot of the FAQ has been edited: open Process Hub with the published
 content and no local changes, run `copy(await Probe.exportFingerprints())`
 in the browser console, and paste the result over the `fingerprints` block
 in `ask.html`.
+
+## The meaning map (experimental)
+
+`map.html` lays the published FAQ out on one page by meaning: every answer is
+a dot, and answers the model reads as being about the same thing sit close
+together, whatever tab they are on. Like `ask.html` it reads only public
+files — `exports/FAQ.json`, the fingerprints in `ask.html`, and the model in
+`vendor/` — so it opens instantly and needs no sign-in:
+`https://aaronunify2.github.io/ProcessHub/map.html`.
+
+- **Read: Whole answers** averages each question with every passage of its
+  answer; **Questions only** uses the question as `ask.html` reads it.
+- The layout is t-SNE, worked out in the browser and seeded, so the same
+  content gives the same map; **Re-run layout** draws it from another start.
+  Nearness is meaningful, distance across the page is not.
+- **Colour by: Meaning group** shows the model's own grouping (k-means on the
+  fingerprints, ignoring tabs), named after each group's most distinctive words.
+- The side panel lists **possible overlaps** (pairs read as near-identical)
+  and **answers far from their tab** (most of their nearest answers are on
+  other tabs) — candidates for merging or cross-linking.
+- Typing a question loads the model and drops a star where it lands, with
+  lines to the closest answers.
 
 ## Running the app
 
