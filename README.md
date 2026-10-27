@@ -40,6 +40,7 @@ content in those older public copies was judged acceptable to leave.
                      rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
                      richtext.js · canvas.js
                      semantic.js · semantic-worker.js · probe.js · meaning-map.js · probe-map.js
+                     spot-hint.js
                      ui-sidebar.js · ui-detail.js · ui-probe.js · app.js · live.js
   exports/
     FAQ.json         the live published FAQ content — the public FAQ page reads this
@@ -267,6 +268,19 @@ from the draft — unpublished questions included, as hollow rings:
   the answers it comes closest to; a patch of them is a topic the FAQ is thin
   on. Tap one to probe it again.
 - Tap a dot for its question, status and meaning group, with a link to it.
+- **Tap empty space** to ask *what would go here?* A target marks the spot,
+  and the caption suggests three questions that would sit there, each a link
+  that probes it. The model can only read, not write, so the suggestions are
+  made in steps (`js/spot-hint.js`): the spot's fingerprint is estimated by
+  blending the answers around it, nearest counting most; candidate questions
+  are written from the phrases those answers use most and the rest of the FAQ
+  uses least, set into everyday question shapes ("Who do I contact about …?",
+  "Is there a fee for …?"); and the model keeps the candidates closest to the
+  spot. Each shows how well it fits the spot and the nearest question the FAQ
+  already has. The wording is only ever the FAQ's own phrases, so it reads
+  stiffly — a hint to probe, not a finished question. A spot far from any dot
+  is flagged as empty ground between topics, where the hints are the most
+  likely to be gaps.
 
 The map waits until every answer has been read, lays itself out once, and
 again only when an FAQ question or answer changes.

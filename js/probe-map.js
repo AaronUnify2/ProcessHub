@@ -14,6 +14,8 @@
      - open content gaps are diamonds, placed among the answers they come
        closest to, so a patch of diamonds is a topic the FAQ is thin on
      - questions not on the public page are hollow rings
+     - tapping empty space picks a spot (a target): the caption suggests
+       questions that would sit there (spot-hint.js), each ready to probe
 
    The layout is worked out once for the FAQ text as it stands, and again
    only when an FAQ question or answer changes. It is seeded, so the same
@@ -32,13 +34,17 @@
 
   var NOT_PUBLIC = '#8E8E93';
   var SHOWN = 6;              // lines to this many of Probe's best answers
+  var SPOT_LINES = 5;         // lines from a picked spot to the answers it is read from
+  var EMPTY = 4;              // a spot this many typical gaps from any dot is empty ground
 
   var widget = null;
-  var built = null;           // { sig, ids, index, items, groups, layout, tabColour }
+  var built = null;           // { sig, items, vecs, index, groups, layout, tabColour }
   var building = null;        // the promise of a build in progress
   var stop = null;            // stops the layout running
   var state = {};             // what attach() was last asked to show
   var selected = -1;          // a dot picked on the map
+  var spot = null;            // a spot picked: { x, y, reading, hints, failed, run }
+  var spotRun = 0;
   var focusKey = null;        // a legend chip picked: a tab id, '_private', or 'c' + group
   var colourBy = 'tab';
   var lastReading = null;     // how the last probed question read, for testing in a console
@@ -72,15 +78,18 @@
       },
       onSelect: function (i) {
         selected = i;
+        spot = null;
         paint();
         caption();
       },
+      onSpot: function (x, y) { pickSpot(x, y); },
       onMarker: function (m) {
         if (m.gapId) location.hash = '#/probe?gap=' + encodeURIComponent(m.gapId);
       },
       onLegend: function (key) {
         focusKey = focusKey === key ? null : key;
         selected = -1;
+        spot = null;
         paint();
         caption();
       }
@@ -110,7 +119,7 @@
     }
     var changed = (next.query || '') !== (state.query || '');
     state = next || {};
-    if (changed) { selected = -1; focusKey = null; }
+    if (changed) { selected = -1; focusKey = null; spot = null; }
 
     if (built && built.layout) { paint(); caption(); }
     else w.set({ message: 'Drawing the map once every answer has been read…' });
@@ -135,10 +144,14 @@
         return f.id + ':' + f.qKey + ':' + f.cKeys.join(',') + (f.isPublic ? ':p' : '');
       }).join('|'));
       if (built && built.sig === sig) {
-        built.items = c.faqs;   // the same text; the newest corpus objects
+        // The same text; the newest corpus objects, in the same order.
+        built.items = built.items.map(function (old) {
+          return c.faqs.filter(function (f) { return f.id === old.id; })[0] || old;
+        });
         return built;
       }
       if (stop) { stop(); stop = null; }
+      spot = null;
 
       var items = c.faqs.filter(function (f) { return S.lookup(f.qKey); });
       var vecs = items.map(function (f) {
@@ -150,18 +163,18 @@
       var tabColour = {};
       Data.state.library.publishTabs.forEach(function (t, n) { tabColour[t.id] = MM.PALETTE[n % MM.PALETTE.length]; });
 
+      if (items.length < 5) throw new Error('Too few FAQ questions to map');
       var next = {
         sig: sig,
         items: items,
+        vecs: vecs,
         index: index,
         tabColour: tabColour,
-        groups: items.length > 2 ? MM.groups(vecs, items.map(function (f) {
+        groups: MM.groups(vecs, items.map(function (f) {
           return MM.words(f.q + ' ' + f.q + ' ' + f.group + ' ' + f.text.slice(0, 300));
-        }), 1) : { list: [], of: new Int32Array(items.length) },
-        layout: null
+        }), 1),
+        layout: MM.layout(MM.similarities(vecs), items.length, 1)
       };
-      if (items.length < 5) throw new Error('Too few FAQ questions to map');
-      next.layout = MM.layout(MM.similarities(vecs), items.length, 1);
       built = next;
 
       return new Promise(function (resolve) {
@@ -178,6 +191,73 @@
     });
     building.then(function () { building = null; }, function () { building = null; });
     return building;
+  }
+
+  // ---- a spot picked on the map --------------------------------------------
+
+  /**
+   * Read a spot: estimate its fingerprint from the answers around it, then
+   * ask spot-hint.js for questions that would sit there.
+   */
+  function pickSpot(x, y) {
+    if (!built || !built.layout || !built.layout.done) return;
+    selected = -1;
+    var reading = MM.spotVector(built.vecs, built.layout.Y, x, y);
+    var run = ++spotRun;
+    spot = { x: x, y: y, reading: reading, hints: null, failed: false, run: run };
+    paint();
+    caption();
+
+    SpotHint.suggest({
+      vec: reading.vec,
+      near: reading.near.map(function (m) { return { item: built.items[m.i], w: m.w }; }),
+      corpus: built.items
+    }).then(function (hints) {
+      if (!spot || spot.run !== run) return;
+      spot.hints = hints;
+      caption();
+    }).catch(function (err) {
+      console.warn('No hints for this spot:', err);
+      if (!spot || spot.run !== run) return;
+      spot.failed = true;
+      caption();
+    });
+  }
+
+  function spotHtml() {
+    var r = spot.reading;
+    var near = r.near.slice(0, 3);
+    var html = '<div class="probe-map-spot">' +
+      '<div class="probe-map-spot-head"><strong>What would go here?</strong>' +
+      '<button class="btn tiny" type="button" id="probeMapSpotClear" aria-label="Clear the spot">×</button></div>' +
+      '<p class="hint">' + (r.gap > EMPTY
+        ? 'This is <strong>empty ground between topics</strong>, so these are a blend of the answers around it — ' +
+          'questions here may be ones the FAQ doesn\'t answer yet.'
+        : 'This spot is among existing answers; questions here are probably close to ones the FAQ already has.') +
+      ' Read from: ' + near.map(function (m) {
+        var f = built.items[m.i];
+        return '<a href="#/faq/' + e(f.id) + '">“' + e(f.q) + '”</a>';
+      }).join(', ') + '.</p>';
+
+    if (spot.failed) {
+      html += '<p class="hint">The suggestions couldn\'t be worked out on this device.</p>';
+    } else if (!spot.hints) {
+      html += '<p class="hint">Writing suggestions…</p>';
+    } else if (!spot.hints.length) {
+      html += '<p class="hint">The answers here don\'t give enough words to suggest a question.</p>';
+    } else {
+      html += '<ul class="probe-map-hints">' + spot.hints.map(function (h) {
+        var close = h.nearest && h.nearest.s >= 0.8;
+        return '<li><a class="probe-q" href="#/probe?q=' + encodeURIComponent(h.text) + '">' + e(h.text) + '</a>' +
+          '<span class="probe-where">fits this spot ' + pct(h.fit) +
+          (h.nearest ? ' · ' + (close ? 'close to' : 'nearest question:') +
+            ' <a href="#/faq/' + e(h.nearest.item.id) + '">“' + e(h.nearest.item.q) + '”</a> ' + pct(h.nearest.s) : '') +
+          '</span></li>';
+      }).join('') + '</ul>' +
+        '<p class="hint">Written from the words of the answers around the spot, and checked by the model — ' +
+        'a hint at the wording, not an answer. Tap one to probe it; if the FAQ can\'t answer it, log it as a gap.</p>';
+    }
+    return html + '</div>';
   }
 
   // ---- drawing -------------------------------------------------------------
@@ -207,11 +287,11 @@
       if (state.gapIds && !state.gapIds[chk.gap.id]) return;
       var top = (chk.top || []).filter(function (h) { return built.index[h.item.id] !== undefined; })
         .map(function (h) { return { i: built.index[h.item.id], s: h.score }; });
-      var spot = MM.placeAmong(top, Y);
-      if (!spot) return;
+      var at = MM.placeAmong(top, Y);
+      if (!at) return;
       var sev = chk.gap.severity;
       out.push({
-        x: spot.x, y: spot.y, gapId: chk.gap.id,
+        x: at.x, y: at.y, gapId: chk.gap.id,
         colour: sev === 'high' ? '#C0392B' : sev === 'low' ? '#B08900' : '#E8590C',
         title: '⚑ ' + chk.gap.q,
         sub: 'Content gap · ' + (sev || 'medium') + ' · tap to probe it'
@@ -226,17 +306,22 @@
     var m = matches();
     var focus = null, links = null, star = null;
 
-    if (selected >= 0) {
+    if (m.length) star = MM.placeAmong(m, built.layout.Y);
+
+    if (spot) {
+      // The answers the spot is read from, heavier lines for the nearer.
+      var from = spot.reading.near.slice(0, SPOT_LINES);
+      focus = {};
+      from.forEach(function (x) { focus[x.i] = true; });
+      links = { from: { x: spot.x, y: spot.y }, to: from.map(function (x) { return { i: x.i, s: 0.45 + x.w }; }) };
+    } else if (m.length) {
+      links = { from: star, to: m };
+      focus = {};
+      m.forEach(function (x) { focus[x.i] = true; });
+      if (selected >= 0) focus[selected] = true;
+    } else if (selected >= 0) {
       focus = {};
       focus[selected] = true;
-      links = null;
-    }
-    if (m.length) {
-      var spot = MM.placeAmong(m, built.layout.Y);
-      star = spot;
-      links = { from: spot, to: m };
-      focus = focus || {};
-      m.forEach(function (x) { focus[x.i] = true; });
     } else if (focusKey) {
       focus = {};
       items.forEach(function (f, i) { if (keyOf(f, i) === focusKey) focus[i] = true; });
@@ -274,6 +359,7 @@
       selected: selected,
       links: links,
       star: star,
+      spot: spot ? { x: spot.x, y: spot.y } : null,
       markers: markers(),
       names: names,
       legend: legend,
@@ -289,6 +375,8 @@
     if (!el || !built || !built.layout || !built.layout.done) return;
     var parts = [];
 
+    if (spot) parts.push(spotHtml());
+
     if (selected >= 0 && built.items[selected]) {
       var f = built.items[selected];
       var hit = state.result && state.result.faqs.filter(function (h) { return h.item.id === f.id; })[0];
@@ -296,7 +384,7 @@
         '<a class="probe-q" href="#/faq/' + e(f.id) + '">' + e(f.q) + '</a>' +
         '<span class="probe-where">' + e(where(f)) +
         ' · <span class="badge status-' + e(f.faq.status) + '">' + e(f.faq.status || '—') + '</span>' +
-        (built.groups.list.length ? ' · meaning group: ' + e(built.groups.list[built.groups.of[selected]].label) : '') +
+        ' · meaning group: ' + e(built.groups.list[built.groups.of[selected]].label) +
         (hit ? ' · scores ' + pct(hit.score) + ' for this question' : '') + '</span></div>');
     }
 
@@ -305,12 +393,22 @@
       parts.push('<p>Open content gaps are the ◇ diamonds, each placed among the answers it comes closest to — ' +
         'a patch of them is a topic the FAQ is thin on. Tap one to probe it again.</p>');
     }
-    if (!state.query) {
-      parts.push('<p class="hint">Hover or tap a dot to see its question; drag to move, scroll or pinch to zoom. ' +
-        'Hollow rings are questions not on the public page. Nearness on the map means something; ' +
-        'distance across it doesn\'t.</p>');
+    if (!spot) {
+      parts.push('<p class="hint">Tap empty space to see what question would go there. ' +
+        (state.query ? '' : 'Hover or tap a dot to see its question; drag to move, scroll or pinch to zoom. ' +
+          'Hollow rings are questions not on the public page. Nearness on the map means something; ' +
+          'distance across it doesn\'t.') + '</p>');
     }
     el.innerHTML = parts.join('');
+
+    var clear = document.getElementById('probeMapSpotClear');
+    if (clear) {
+      clear.addEventListener('click', function () {
+        spot = null;
+        paint();
+        caption();
+      });
+    }
   }
 
   /**
@@ -388,6 +486,8 @@
   global.ProbeMap = {
     html: html,
     attach: attach,
-    lastReading: function () { return lastReading; }
+    lastReading: function () { return lastReading; },
+    spot: function () { return spot; },          // for testing in a console
+    pickSpot: function (x, y) { pickSpot(x, y); }
   };
 }(window));
