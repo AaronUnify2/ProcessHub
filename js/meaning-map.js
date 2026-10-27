@@ -322,12 +322,53 @@
     return { x: x / wsum, y: y / wsum };
   }
 
+  /**
+   * The fingerprint a spot on the map would have, as near as can be told.
+   * The layout can't be run backwards, so this blends the fingerprints of
+   * the dots around the spot, the nearest counting most. vecs[i] is dot i's
+   * fingerprint. Returns { vec, near: [{ i, w }] (heaviest first), gap }:
+   * gap is how far the spot is from its nearest dot, in typical spaces
+   * between neighbouring dots — over about 4, it is empty ground between
+   * topics, and the blend is a guess.
+   */
+  function spotVector(vecs, Y, x, y) {
+    var n = vecs.length;
+    var dist = [];
+    for (var i = 0; i < n; i++) dist.push({ i: i, d: Math.hypot(Y[i * 2] - x, Y[i * 2 + 1] - y) });
+    dist.sort(function (a, b) { return a.d - b.d; });
+
+    // The typical space between a dot and its nearest neighbour.
+    var gaps = [];
+    for (var a = 0; a < n; a++) {
+      var best = Infinity;
+      for (var b = 0; b < n; b++) {
+        if (a !== b) best = Math.min(best, Math.hypot(Y[a * 2] - Y[b * 2], Y[a * 2 + 1] - Y[b * 2 + 1]));
+      }
+      gaps.push(best);
+    }
+    gaps.sort(function (p, q) { return p - q; });
+    var typical = gaps[Math.floor(gaps.length / 2)] || 1;
+
+    var near = dist.slice(0, 8);
+    var sigma = Math.max(near[Math.min(2, near.length - 1)].d, typical);
+    var v = new Float32Array(vecs[0].length), wsum = 0;
+    var weighted = near.map(function (m) {
+      var w = Math.exp(-(m.d * m.d) / (2 * sigma * sigma));
+      for (var k = 0; k < v.length; k++) v[k] += vecs[m.i][k] * w;
+      wsum += w;
+      return { i: m.i, w: w };
+    });
+    weighted.forEach(function (m) { m.w /= wsum || 1; });
+    return { vec: normalise(v), near: weighted, gap: dist[0].d / typical };
+  }
+
   // ---- the widget ----------------------------------------------------------
 
   /**
    * A map on a canvas. options:
    *   info(i)        { title, sub } for a dot's tooltip and label
-   *   onSelect(i)    a dot was tapped (-1: empty space)
+   *   onSelect(i)    a dot was tapped (-1: empty space, if there is no onSpot)
+   *   onSpot(x, y)   empty space was tapped, at this spot in map units
    *   onMarker(m)    a marker was tapped
    *   onLegend(key)  a legend chip was tapped
    * Returns { el, set(state), fit(), redraw() }. state (all optional, merged):
@@ -337,6 +378,7 @@
    *   selected index or -1
    *   links    { from: { x, y } | index, to: [{ i, s }] }
    *   star     { x, y } or null
+   *   spot     { x, y } or null — a spot picked on the map, drawn as a target
    *   markers  [{ x, y, colour, title, sub, ... }]
    *   names    [{ x, y, label, colour }] group names
    *   legend   [{ key, label, colour, on }]
@@ -361,7 +403,7 @@
     var legendEl = el.querySelector('.mmap-legend');
     var overlay = el.querySelector('.mmap-overlay');
 
-    var st = { pos: null, points: [], focus: null, selected: -1, links: null, star: null,
+    var st = { pos: null, points: [], focus: null, selected: -1, links: null, star: null, spot: null,
       markers: [], names: [], legend: [], settling: false, message: '' };
     var view = { scale: 1, tx: 0, ty: 0 };
     var bounds = { x: 0, y: 0, w: 1, h: 1 };
@@ -518,6 +560,19 @@
         star(s[0], s[1], 11, 5);
       }
 
+      if (st.spot) {
+        var t = toScreen(st.spot.x, st.spot.y);
+        ctx.strokeStyle = '#1D1D1F';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(t[0], t[1], 9, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(t[0] - 14, t[1]); ctx.lineTo(t[0] - 5, t[1]);
+        ctx.moveTo(t[0] + 5, t[1]); ctx.lineTo(t[0] + 14, t[1]);
+        ctx.moveTo(t[0], t[1] - 14); ctx.lineTo(t[0], t[1] - 5);
+        ctx.moveTo(t[0], t[1] + 5); ctx.lineTo(t[0], t[1] + 14);
+        ctx.stroke();
+      }
+
       if (st.selected >= 0) label(st.selected, true);
       if (hover >= 0 && hover !== st.selected) label(hover, false);
     }
@@ -544,7 +599,7 @@
       var p = at(i);
       var text = info.title.length > 60 ? info.title.slice(0, 58).replace(/\s+\S*$/, '') + '…' : info.title;
       ctx.font = (bold ? '600 ' : '') + '12px ' + FONT;
-      ctx.textAlign = p[0] > size.w - 200 ? 'right' : 'left';
+      ctx.textAlign = p[0] > size.w / 2 ? 'right' : 'left';   // the side with more room
       ctx.textBaseline = 'middle';
       var x = ctx.textAlign === 'right' ? p[0] - 11 : p[0] + 11;
       ctx.lineWidth = 4;
@@ -676,6 +731,10 @@
       if (wasTap && ev.type === 'pointerup') {
         var h = hit(p[0], p[1]);
         if (h && h.marker) { if (options.onMarker) options.onMarker(h.marker); }
+        else if (!h && options.onSpot) {
+          var m = toMap(p[0], p[1]);
+          options.onSpot(m[0], m[1]);
+        }
         else if (options.onSelect) options.onSelect(h ? h.dot : -1);
         if (ev.pointerType !== 'mouse') showTip(null);
       }
@@ -727,6 +786,7 @@
     run: run,
     heart: heart,
     placeAmong: placeAmong,
+    spotVector: spotVector,
     create: create
   };
 }(window));
