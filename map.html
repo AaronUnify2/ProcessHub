@@ -3,15 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Meaning map — experimental</title>
+<link rel="stylesheet" href="css/gate.css">
+<link rel="stylesheet" href="css/meaning-map.css">
 <style>
 /* ===========================================================================
-   Meaning map — an experiment.
+   Meaning map — an experiment, for council staff (behind the sign-in).
    Lays the published FAQ out on a page by what each answer means, as the
    small language model behind ask.html (all-MiniLM-L6-v2) reads it. Answers
    the model thinks are about the same thing sit close together, whatever tab
-   they are on. It reads only public files: exports/FAQ.json, the
-   fingerprints ask.html carries, and the model in vendor/.
+   they are on. The map itself is js/meaning-map.js, shared with the Probe
+   section of Process Hub. It reads exports/FAQ.json, the fingerprints
+   ask.html carries, and the model in vendor/.
    =========================================================================== */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,7 +32,6 @@
   --warn: #B45309;
   --warn-soft: #FEF6E7;
   --good: #2E7D53;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 html, body { height: 100%; }
@@ -59,7 +62,7 @@ button, select, input { font: inherit; }
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-.map-brand { font-weight: 700; }
+.map-brand { font-weight: 700; color: var(--text); text-decoration: none; }
 .map-tag {
   font-size: 0.72rem;
   font-weight: 600;
@@ -125,84 +128,8 @@ button, select, input { font: inherit; }
 /* ---- Map and side panel ---- */
 
 .main { flex: 1; display: flex; min-height: 0; }
-
-.stage {
-  flex: 1;
-  position: relative;
-  min-width: 0;
-  overflow: hidden;
-  touch-action: none;
-  background:
-    radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.06) 1px, transparent 0) 0 0 / 22px 22px,
-    var(--bg);
-}
-.stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
-.stage canvas.dragging { cursor: grabbing; }
-.stage canvas.pointing { cursor: pointer; }
-
-.tip {
-  position: absolute;
-  pointer-events: none;
-  max-width: 280px;
-  padding: 6px 9px;
-  border-radius: 8px;
-  background: rgba(29, 29, 31, 0.92);
-  color: #fff;
-  font-size: 0.82rem;
-  line-height: 1.35;
-  display: none;
-  z-index: 2;
-}
-.tip small { display: block; opacity: 0.7; margin-top: 2px; }
-
-.legend {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  max-width: calc(100% - 20px);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  z-index: 1;
-}
-.legend button {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--text);
-  cursor: pointer;
-}
-.legend button.on { border-color: var(--text); font-weight: 600; }
-.legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-
-.zoom {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  z-index: 1;
-}
-.zoom .btn { padding: 2px 0; width: 32px; text-align: center; background: rgba(255, 255, 255, 0.92); }
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  color: var(--text-soft);
-  font-size: 0.95rem;
-  text-align: center;
-  padding: 20px;
-}
+.stage { flex: 1; min-width: 0; position: relative; }
+.stage .mmap { position: absolute; inset: 0; }
 
 .panel {
   width: 360px;
@@ -263,12 +190,11 @@ button, select, input { font: inherit; }
 .list .q { flex: 1; }
 .list .score { font-variant-numeric: tabular-nums; color: var(--text-soft); font-size: 0.8rem; white-space: nowrap; }
 .list .other { display: block; color: var(--warn); font-size: 0.76rem; }
+.list .other.plain { color: var(--text-soft); }
 .pair { border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px; }
 .pair:last-child { border-bottom: 0; }
 
 @media (max-width: 760px) {
-  .legend { flex-wrap: nowrap; overflow-x: auto; right: 10px; padding-bottom: 2px; }
-  .legend button { flex-shrink: 0; }
   .main { flex-direction: column; }
   .stage { flex: none; height: 58vh; height: 58dvh; }
   .panel { width: auto; border-left: 0; border-top: 1px solid var(--border); flex: 1; }
@@ -276,10 +202,10 @@ button, select, input { font: inherit; }
 }
 </style>
 </head>
-<body>
+<body class="gated">
 
 <header class="map-header">
-  <span class="map-brand">Meaning map</span>
+  <a class="map-brand" href="index.html" title="Process Hub">Meaning map</a>
   <span class="map-tag">Experimental</span>
   <span class="map-status" id="status">Starting…</span>
 </header>
@@ -305,17 +231,7 @@ button, select, input { font: inherit; }
 </div>
 
 <div class="main">
-  <div class="stage" id="stage">
-    <canvas id="canvas"></canvas>
-    <div class="overlay" id="overlay">Loading…</div>
-    <div class="tip" id="tip"></div>
-    <div class="zoom">
-      <button class="btn" type="button" id="zoomIn" aria-label="Zoom in">+</button>
-      <button class="btn" type="button" id="zoomOut" aria-label="Zoom out">−</button>
-      <button class="btn" type="button" id="zoomFit" aria-label="Fit the map" title="Fit">⤢</button>
-    </div>
-    <div class="legend" id="legend"></div>
-  </div>
+  <div class="stage" id="stage"></div>
   <aside class="panel" id="panel"></aside>
 </div>
 
@@ -351,42 +267,39 @@ self.onmessage = async function (ev) {
 };
 </script>
 
+<script src="js/github.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/meaning-map.js"></script>
 <script>
 var MODEL = 'Xenova/all-MiniLM-L6-v2';
 var FAQ_URL = 'exports/FAQ.json';
 var PUBLIC_FAQ = 'https://aaronunify2.github.io/UnifyVersion1/FAQ.html';
 var EXTRA_KEY = 'processhub.map.extra';   // fingerprints this browser worked out itself
 
-// The layout (t-SNE). Perplexity is roughly how many neighbours each answer
-// tries to keep close; the map settles after ITERATIONS steps.
-var PERPLEXITY = 12;
-var ITERATIONS = 900;
-var STEPS_PER_FRAME = 6;
 var NEIGHBOURS = 6;          // shown for a chosen answer
 var DUPLICATE = 0.86;        // pairs at least this alike are listed as possible overlaps
 
-// One colour per tab or meaning group; distinct enough side by side.
-var PALETTE = ['#0A66C2', '#D9480F', '#2B8A3E', '#AE3EC9', '#E8590C', '#1098AD', '#C2255C', '#5F3DC4',
-  '#74B816', '#F08C00', '#364FC7', '#A61E4D', '#087F5B', '#862E9C', '#495057', '#B08900', '#0B7285', '#E64980'];
-
-var Meaning = {
-  faqs: [],         // { i, tabId, tabLabel, group, q, a, text, chunks, qKey, cKeys, qVec, cVecs, vec, cluster }
-  tabs: [],         // { id, label, colour }
-  clusters: [],     // { label, colour, members, at }
-  pos: null,        // Float64Array, x0 y0 x1 y1 …, from the layout
+var M = {
+  faqs: [],         // { i, tab, tabId, tabLabel, group, q, a, text, chunks, qKey, cKeys, qVec, cVecs, vec, words }
+  tabs: [],         // { id, label, colour, count }
+  groups: null,     // { list: [{ members, label, colour }], of: Int32Array }
+  sim: null,        // n × n similarities
+  layout: null,
+  stop: null,       // stops the layout while it is running
   baked: {},        // key -> packed fingerprint, from ask.html
   extra: {},        // key -> packed fingerprint, worked out in this browser
   worker: null,
-  modelReady: null, // promise, once the model is asked for
+  modelReady: null,
   mode: 'whole',
   colourBy: 'tab',
   selected: -1,
-  hover: -1,
-  focusTab: null,
+  neighbours: [],
+  focusKey: null,   // a legend chip picked: a tab id, or 'c' + group number
   probe: null,      // { text, x, y, matches: [{ i, s }] }
+  pendingProbe: null,
   seed: 1
 };
-window.MeaningMap = Meaning;   // for poking at in a console
+window.MeaningMapPage = M;   // for poking at in a console
 
 var $ = function (id) { return document.getElementById(id); };
 
@@ -398,7 +311,7 @@ function esc(s) {
   });
 }
 
-// HTML to plain text, using the browser's own parser.
+// HTML to plain text, using the browser's own parser — as ask.html does.
 function plain(html) {
   var doc = new DOMParser().parseFromString('<div>' + (html || '') + '</div>', 'text/html');
   doc.querySelectorAll('td, th, li, p, div, br').forEach(function (el) {
@@ -426,9 +339,8 @@ function setStatus(text, cls) {
   el.className = 'map-status' + (cls ? ' ' + cls : '');
 }
 
-function setOverlay(text) {
-  $('overlay').textContent = text || '';
-  $('overlay').style.display = text ? '' : 'none';
+function readyStatus() {
+  setStatus('Ready · ' + M.faqs.length + ' answers · ' + M.groups.list.length + ' meaning groups', 'ready');
 }
 
 // Fingerprints are packed as in ask.html: one byte per number, base64.
@@ -449,58 +361,7 @@ function unpack(b64) {
     var b = s.charCodeAt(i);
     vec[i] = b > 127 ? b - 256 : b;
   }
-  return normalise(vec);
-}
-
-function normalise(vec) {
-  var len = 0;
-  for (var i = 0; i < vec.length; i++) len += vec[i] * vec[i];
-  len = Math.sqrt(len) || 1;
-  for (var j = 0; j < vec.length; j++) vec[j] /= len;
-  return vec;
-}
-
-function dot(a, b) {
-  var s = 0;
-  for (var i = 0; i < a.length; i++) s += a[i] * b[i];
-  return s;
-}
-
-// A small seeded random number generator (mulberry32), so the same seed
-// always draws the same map.
-function rng(seed) {
-  var t = seed >>> 0;
-  return function () {
-    t = (t + 0x6D2B79F5) >>> 0;
-    var r = Math.imul(t ^ (t >>> 15), 1 | t);
-    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
-    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function gaussian(rand) {
-  var u = 1 - rand(), v = rand();
-  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-}
-
-// ------------------------------------------------------------ words, for naming groups
-
-var STOP = ('a an and are as at be by can could do does for from had has have how i if in into is it its ' +
-  'me my of on or our should so that the their them then there these they this to was we what when where ' +
-  'which who why will with would you your yours am get got im ive dont cant about any some need want ' +
-  'tell know please just much many also council need make use out up one other more than not no new ' +
-  'own sure work happen happens after before over who whose').split(' ');
-var STOPSET = {};
-STOP.forEach(function (w) { STOPSET[w] = true; });
-
-function words(text) {
-  var out = {};
-  (text.toLowerCase().replace(/[’']/g, '').match(/[a-z][a-z0-9]+/g) || []).forEach(function (w) {
-    if (STOPSET[w] || w.length < 3) return;
-    if (/(sh|ch|x|ss)es$/.test(w)) w = w.slice(0, -2);
-    else if (w.length > 4 && /s$/.test(w) && !/(ss|us|is)$/.test(w)) w = w.slice(0, -1);
-    out[w] = true;
-  });
-  return out;
+  return MeaningMap.normalise(vec);
 }
 
 // ------------------------------------------------------------ loading
@@ -531,7 +392,7 @@ async function loadFaqs() {
   var faqs = [], tabs = [];
   (data.tabs || []).forEach(function (tab) {
     var group = '';
-    var t = { id: tab.id, label: plain(tab.label), colour: PALETTE[tabs.length % PALETTE.length], count: 0 };
+    var t = { id: tab.id, label: plain(tab.label), colour: MeaningMap.PALETTE[tabs.length % MeaningMap.PALETTE.length], count: 0 };
     tabs.push(t);
     (tab.items || []).forEach(function (item) {
       if (item.type === 'group') { group = plain(item.title); return; }
@@ -550,13 +411,13 @@ async function loadFaqs() {
       };
       f.qKey = hash(questionText(f));
       f.cKeys = f.chunks.map(function (c) { return hash(chunkText(f, c)); });
-      f.words = words(f.q + ' ' + f.q + ' ' + group + ' ' + text.slice(0, 300));
+      f.words = MeaningMap.words(f.q + ' ' + f.q + ' ' + group + ' ' + text.slice(0, 300));
       t.count++;
       faqs.push(f);
     });
   });
-  Meaning.faqs = faqs;
-  Meaning.tabs = tabs.filter(function (t) { return t.count; });
+  M.faqs = faqs;
+  M.tabs = tabs.filter(function (t) { return t.count; });
 }
 
 async function loadFingerprints() {
@@ -566,27 +427,27 @@ async function loadFingerprints() {
     var m = html.match(/<script type="application\/json" id="fingerprints">([\s\S]*?)<\/script>/);
     if (m) {
       var block = JSON.parse(m[1]);
-      if (block.model === MODEL && block.items) Meaning.baked = block.items;
+      if (block.model === MODEL && block.items) M.baked = block.items;
     }
   } catch (err) {
     console.warn('Fingerprints from ask.html unavailable:', err);
   }
   try {
     var saved = JSON.parse(localStorage.getItem(EXTRA_KEY) || 'null');
-    if (saved && saved.model === MODEL && saved.items) Meaning.extra = saved.items;
+    if (saved && saved.model === MODEL && saved.items) M.extra = saved.items;
   } catch (err) { /* private window or blocked storage: work them out again */ }
 }
 
 function lookup(key) {
-  var p = Meaning.baked[key] || Meaning.extra[key];
+  var p = M.baked[key] || M.extra[key];
   return p ? unpack(p) : null;
 }
 
 function saveExtra() {
   try {
     var keep = {};
-    Meaning.faqs.forEach(function (f) {
-      [f.qKey].concat(f.cKeys).forEach(function (k) { if (Meaning.extra[k]) keep[k] = Meaning.extra[k]; });
+    M.faqs.forEach(function (f) {
+      [f.qKey].concat(f.cKeys).forEach(function (k) { if (M.extra[k]) keep[k] = M.extra[k]; });
     });
     localStorage.setItem(EXTRA_KEY, JSON.stringify({ model: MODEL, items: keep }));
   } catch (err) { /* not kept; worked out again next time */ }
@@ -596,26 +457,23 @@ function saveExtra() {
 // ask.html doesn't carry (text published since it was last refreshed).
 async function attachFingerprints() {
   var todo = [];
-  Meaning.faqs.forEach(function (f) {
-    f.qVec = lookup(f.qKey);
-    if (!f.qVec) todo.push({ key: f.qKey, text: questionText(f) });
-    f.cVecs = [];
+  M.faqs.forEach(function (f) {
+    if (!lookup(f.qKey)) todo.push({ key: f.qKey, text: questionText(f) });
     f.cKeys.forEach(function (k, n) {
-      var v = lookup(k);
-      if (v) f.cVecs.push(v); else todo.push({ key: k, text: chunkText(f, f.chunks[n]) });
+      if (!lookup(k)) todo.push({ key: k, text: chunkText(f, f.chunks[n]) });
     });
   });
-  if (!todo.length) return 0;
-
-  await ensureModel();
-  for (var i = 0; i < todo.length; i += 16) {
-    setStatus('Reading new FAQ text… ' + Math.min(i + 16, todo.length) + ' of ' + todo.length);
-    var slice = todo.slice(i, i + 16);
-    var vecs = await embed(slice.map(function (j) { return j.text; }));
-    slice.forEach(function (j, n) { Meaning.extra[j.key] = pack(vecs[n]); });
+  if (todo.length) {
+    await ensureModel();
+    for (var i = 0; i < todo.length; i += 16) {
+      setStatus('Reading new FAQ text… ' + Math.min(i + 16, todo.length) + ' of ' + todo.length);
+      var slice = todo.slice(i, i + 16);
+      var vecs = await embed(slice.map(function (j) { return j.text; }));
+      slice.forEach(function (j, n) { M.extra[j.key] = pack(vecs[n]); });
+    }
+    saveExtra();
   }
-  saveExtra();
-  Meaning.faqs.forEach(function (f) {
+  M.faqs.forEach(function (f) {
     f.qVec = lookup(f.qKey);
     f.cVecs = f.cKeys.map(lookup).filter(Boolean);
   });
@@ -623,33 +481,18 @@ async function attachFingerprints() {
 }
 
 // What each dot stands for. "Whole answers": the question and every passage
-// of its answer, averaged into one point. "Questions only": the question as
+// of its answer, blended into one point. "Questions only": the question as
 // ask.html reads it (which includes its tab and section).
 function chooseVectors() {
-  Meaning.faqs.forEach(function (f) {
-    if (Meaning.mode === 'question' || !f.cVecs.length) { f.vec = f.qVec; return; }
-    var v = new Float32Array(f.qVec.length);
-    var parts = [f.qVec].concat(f.cVecs);
-    parts.forEach(function (p, n) {
-      var w = n === 0 ? 2 : 1;    // the question counts double: it says what the answer is for
-      for (var d = 0; d < v.length; d++) v[d] += p[d] * w;
-    });
-    f.vec = normalise(v);
+  M.faqs.forEach(function (f) {
+    f.vec = M.mode === 'question' ? f.qVec : MeaningMap.blend(f.qVec, f.cVecs);
   });
-  var n = Meaning.faqs.length;
-  Meaning.sim = new Float32Array(n * n);
-  for (var i = 0; i < n; i++) {
-    Meaning.sim[i * n + i] = 1;
-    for (var j = i + 1; j < n; j++) {
-      var s = dot(Meaning.faqs[i].vec, Meaning.faqs[j].vec);
-      Meaning.sim[i * n + j] = Meaning.sim[j * n + i] = s;
-    }
-  }
+  M.sim = MeaningMap.similarities(M.faqs.map(function (f) { return f.vec; }));
 }
 
 function similar(i) {
-  var n = Meaning.faqs.length, out = [];
-  for (var j = 0; j < n; j++) if (j !== i) out.push({ i: j, s: Meaning.sim[i * n + j] });
+  var n = M.faqs.length, out = [];
+  for (var j = 0; j < n; j++) if (j !== i) out.push({ i: j, s: M.sim[i * n + j] });
   out.sort(function (a, b) { return b.s - a.s; });
   return out;
 }
@@ -659,10 +502,10 @@ function similar(i) {
 var pending = {}, nextId = 1, queue = Promise.resolve();
 
 function ensureModel() {
-  if (Meaning.modelReady) return Meaning.modelReady;
+  if (M.modelReady) return M.modelReady;
   var blob = new Blob([$('workerSource').textContent], { type: 'text/javascript' });
-  Meaning.worker = new Worker(URL.createObjectURL(blob), { type: 'module' });
-  Meaning.worker.onmessage = function (ev) {
+  M.worker = new Worker(URL.createObjectURL(blob), { type: 'module' });
+  M.worker.onmessage = function (ev) {
     var msg = ev.data;
     if (msg.type === 'progress') {
       if (msg.status === 'progress' && /onnx$/.test(msg.file)) {
@@ -674,21 +517,21 @@ function ensureModel() {
     delete pending[msg.id];
     if (p) msg.ok ? p.resolve(msg) : p.reject(new Error(msg.error));
   };
-  Meaning.worker.onerror = function (ev) {
+  M.worker.onerror = function (ev) {
     var err = new Error(ev.message || 'The model could not start');
     Object.keys(pending).forEach(function (id) { pending[id].reject(err); delete pending[id]; });
   };
   setStatus('Loading the language model (about 23 MB, first time only)…');
-  Meaning.modelReady = send({ type: 'load', model: MODEL, base: new URL('.', location.href).href });
-  Meaning.modelReady.catch(function () { Meaning.modelReady = null; });
-  return Meaning.modelReady;
+  M.modelReady = send({ type: 'load', model: MODEL, base: new URL('.', location.href).href });
+  M.modelReady.catch(function () { M.modelReady = null; });
+  return M.modelReady;
 }
 
 function send(msg) {
   return new Promise(function (resolve, reject) {
     msg.id = nextId++;
     pending[msg.id] = { resolve: resolve, reject: reject };
-    Meaning.worker.postMessage(msg);
+    M.worker.postMessage(msg);
   });
 }
 
@@ -704,374 +547,92 @@ function embed(texts) {
   return job;
 }
 
-// ------------------------------------------------------------ meaning groups (k-means)
-//
-// Groups the answers by fingerprint alone — the tabs play no part — and names
-// each group after the words its answers use most and the rest use least.
+// ------------------------------------------------------------ the map
 
-function cluster(seed) {
-  var faqs = Meaning.faqs, n = faqs.length;
-  var k = Math.max(2, Math.min(16, Math.round(Math.sqrt(n / 2))));
-  var rand = rng(seed * 7919 + 13);
-
-  // k-means++ start: each new centre is likely to be far from those chosen.
-  var centres = [faqs[Math.floor(rand() * n)].vec.slice()];
-  while (centres.length < k) {
-    var d = faqs.map(function (f) {
-      var best = -1;
-      centres.forEach(function (c) { best = Math.max(best, dot(f.vec, c)); });
-      return Math.max(0, 1 - best);
-    });
-    var total = d.reduce(function (a, b) { return a + b; }, 0), r = rand() * total, pick = 0;
-    for (; pick < n - 1; pick++) { r -= d[pick]; if (r <= 0) break; }
-    centres.push(faqs[pick].vec.slice());
+var map = MeaningMap.create({
+  info: function (i) {
+    var f = M.faqs[i];
+    return f ? { title: f.q, sub: f.tabLabel + (f.group ? ' › ' + f.group : '') } : null;
+  },
+  onSelect: function (i) { select(i); },
+  onLegend: function (key) {
+    M.focusKey = M.focusKey === key ? null : key;
+    M.selected = -1;
+    M.probe = null;
+    showOverview();
+    paint();
   }
-
-  var assign = new Int32Array(n).fill(-1);
-  for (var round = 0; round < 40; round++) {
-    var moved = false;
-    faqs.forEach(function (f, i) {
-      var best = 0, bestS = -2;
-      centres.forEach(function (c, ci) { var s = dot(f.vec, c); if (s > bestS) { bestS = s; best = ci; } });
-      if (assign[i] !== best) { assign[i] = best; moved = true; }
-    });
-    if (!moved) break;
-    centres = centres.map(function (c, ci) {
-      var sum = new Float32Array(c.length), m = 0;
-      faqs.forEach(function (f, i) {
-        if (assign[i] !== ci) return;
-        m++;
-        for (var dd = 0; dd < sum.length; dd++) sum[dd] += f.vec[dd];
-      });
-      return m ? normalise(sum) : c;
-    });
-  }
-
-  var df = {};
-  faqs.forEach(function (f) { Object.keys(f.words).forEach(function (w) { df[w] = (df[w] || 0) + 1; }); });
-
-  var groups = [];
-  for (var ci = 0; ci < k; ci++) {
-    var members = [];
-    faqs.forEach(function (f, i) { if (assign[i] === ci) members.push(i); });
-    if (!members.length) continue;
-    var tf = {};
-    members.forEach(function (i) { Object.keys(faqs[i].words).forEach(function (w) { tf[w] = (tf[w] || 0) + 1; }); });
-    var named = Object.keys(tf).filter(function (w) { return tf[w] >= Math.min(2, members.length); })
-      .map(function (w) { return { w: w, s: (tf[w] / members.length) * Math.log(n / df[w]) }; })
-      .sort(function (a, b) { return b.s - a.s; })
-      .slice(0, 3).map(function (x) { return x.w; });
-    groups.push({ members: members, label: named.join(' · ') || 'misc' });
-  }
-  groups.sort(function (a, b) { return b.members.length - a.members.length; });
-  groups.forEach(function (g, gi) {
-    g.colour = PALETTE[gi % PALETTE.length];
-    g.members.forEach(function (i) { faqs[i].cluster = gi; });
-  });
-  Meaning.clusters = groups;
-}
-
-// ------------------------------------------------------------ the layout (t-SNE)
-//
-// t-SNE: answers that are close in meaning pull together, everything else
-// pushes apart, until the map settles. Exact (no shortcuts), which is quick
-// for a few hundred answers. Distances on the map are only meaningful
-// locally: two islands far apart are "different", not "this much different".
-
-function makeLayout(seed) {
-  var n = Meaning.faqs.length;
-  var P = new Float64Array(n * n);
-  var row = new Float64Array(n);
-  var target = Math.log(Math.min(PERPLEXITY, (n - 1) / 3));
-
-  // For each answer, find the spread that gives it about PERPLEXITY neighbours.
-  for (var i = 0; i < n; i++) {
-    var beta = 1, lo = -Infinity, hi = Infinity;
-    for (var tries = 0; tries < 60; tries++) {
-      var sum = 0, h = 0;
-      for (var j = 0; j < n; j++) {
-        var dist = j === i ? 0 : 2 - 2 * Meaning.sim[i * n + j];   // squared distance between unit vectors
-        row[j] = j === i ? 0 : Math.exp(-dist * beta);
-        sum += row[j];
-      }
-      sum = sum || 1e-12;
-      for (var j2 = 0; j2 < n; j2++) {
-        if (j2 === i) continue;
-        var p = row[j2] / sum;
-        if (p > 1e-12) h -= p * Math.log(p);
-      }
-      if (Math.abs(h - target) < 1e-4) break;
-      if (h > target) { lo = beta; beta = hi === Infinity ? beta * 2 : (beta + hi) / 2; }
-      else { hi = beta; beta = lo === -Infinity ? beta / 2 : (beta + lo) / 2; }
-    }
-    for (var j3 = 0; j3 < n; j3++) P[i * n + j3] = row[j3] / sum;
-  }
-  // Symmetric, summing to 1.
-  for (var a = 0; a < n; a++) {
-    for (var b = a + 1; b < n; b++) {
-      var v = Math.max((P[a * n + b] + P[b * n + a]) / (2 * n), 1e-12);
-      P[a * n + b] = P[b * n + a] = v;
-    }
-    P[a * n + a] = 0;
-  }
-
-  var rand = rng(seed);
-  var Y = new Float64Array(n * 2), gains = new Float64Array(n * 2).fill(1), vel = new Float64Array(n * 2);
-  for (var y = 0; y < n * 2; y++) Y[y] = gaussian(rand) * 1e-2;
-
-  var num = new Float64Array(n * n), grad = new Float64Array(n * 2);
-  var layout = { iter: 0, Y: Y };
-
-  layout.step = function () {
-    var it = layout.iter++;
-    var exaggerate = it < 120 ? 8 : 1;
-    var momentum = it < 120 ? 0.5 : 0.8;
-    var rate = Math.max(n / 8, 40);
-
-    var qsum = 0;
-    for (var i2 = 0; i2 < n; i2++) {
-      for (var j4 = i2 + 1; j4 < n; j4++) {
-        var dx = Y[i2 * 2] - Y[j4 * 2], dy = Y[i2 * 2 + 1] - Y[j4 * 2 + 1];
-        var q = 1 / (1 + dx * dx + dy * dy);
-        num[i2 * n + j4] = num[j4 * n + i2] = q;
-        qsum += 2 * q;
-      }
-    }
-    grad.fill(0);
-    for (var i3 = 0; i3 < n; i3++) {
-      for (var j5 = 0; j5 < n; j5++) {
-        if (i3 === j5) continue;
-        var w = num[i3 * n + j5];
-        var mult = 4 * (exaggerate * P[i3 * n + j5] - w / qsum) * w;
-        grad[i3 * 2] += mult * (Y[i3 * 2] - Y[j5 * 2]);
-        grad[i3 * 2 + 1] += mult * (Y[i3 * 2 + 1] - Y[j5 * 2 + 1]);
-      }
-    }
-    var mx = 0, my = 0;
-    for (var d = 0; d < n * 2; d++) {
-      var same = (grad[d] > 0) === (vel[d] > 0);
-      gains[d] = Math.max(same ? gains[d] * 0.8 : gains[d] + 0.2, 0.01);
-      vel[d] = momentum * vel[d] - rate * gains[d] * grad[d];
-      Y[d] += vel[d];
-      if (d % 2) my += Y[d]; else mx += Y[d];
-    }
-    mx /= n; my /= n;
-    for (var c = 0; c < n; c++) { Y[c * 2] -= mx; Y[c * 2 + 1] -= my; }
-  };
-  return layout;
-}
-
-// ------------------------------------------------------------ drawing
-
-var canvas = $('canvas'), ctx = canvas.getContext('2d');
-var view = { scale: 1, tx: 0, ty: 0 };     // map units -> screen pixels
-var bounds = { x: 0, y: 0, w: 1, h: 1 };   // of the layout, in map units
-var userMoved = false;                     // stop auto-fitting once someone pans or zooms
-var drawQueued = false;
-
-function resize() {
-  var r = canvas.getBoundingClientRect();
-  var dpr = window.devicePixelRatio || 1;
-  canvas.width = Math.round(r.width * dpr);
-  canvas.height = Math.round(r.height * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  if (!userMoved) fit();
-  draw();
-}
-
-function measure() {
-  var Y = Meaning.pos, n = Meaning.faqs.length;
-  if (!Y) return;
-  var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-  for (var i = 0; i < n; i++) {
-    x0 = Math.min(x0, Y[i * 2]); x1 = Math.max(x1, Y[i * 2]);
-    y0 = Math.min(y0, Y[i * 2 + 1]); y1 = Math.max(y1, Y[i * 2 + 1]);
-  }
-  bounds = { x: x0, y: y0, w: Math.max(x1 - x0, 1e-6), h: Math.max(y1 - y0, 1e-6) };
-}
-
-function fit() {
-  measure();
-  var r = canvas.getBoundingClientRect();
-  var pad = 36;
-  var below = $('legend').offsetHeight + 10;   // keep the dots clear of the legend
-  var s = Math.min((r.width - pad * 2) / bounds.w, (r.height - pad * 2 - below) / bounds.h);
-  view.scale = Math.max(s, 1e-6);
-  view.tx = r.width / 2 - (bounds.x + bounds.w / 2) * view.scale;
-  view.ty = (r.height - below) / 2 - (bounds.y + bounds.h / 2) * view.scale;
-}
-
-function toScreen(x, y) { return [x * view.scale + view.tx, y * view.scale + view.ty]; }
-function toMap(sx, sy) { return [(sx - view.tx) / view.scale, (sy - view.ty) / view.scale]; }
+});
+$('stage').appendChild(map.el);
 
 function colourOf(f) {
-  return Meaning.colourBy === 'cluster' ? Meaning.clusters[f.cluster].colour : f.tab.colour;
+  return M.colourBy === 'cluster' ? M.groups.list[M.groups.of[f.i]].colour : f.tab.colour;
 }
 
-function requestDraw() {
-  if (drawQueued) return;
-  drawQueued = true;
-  requestAnimationFrame(function () { drawQueued = false; draw(); });
-}
-
-function draw() {
-  var r = canvas.getBoundingClientRect();
-  ctx.clearRect(0, 0, r.width, r.height);
-  var Y = Meaning.pos, faqs = Meaning.faqs;
-  if (!Y) return;
-
-  var focus = {};    // dots to keep at full strength while something is chosen
-  var dimming = false;
-  if (Meaning.selected >= 0) {
-    dimming = true;
-    focus[Meaning.selected] = true;
-    Meaning.neighbours.forEach(function (m) { focus[m.i] = true; });
-  } else if (Meaning.probe) {
-    dimming = true;
-    Meaning.probe.matches.forEach(function (m) { focus[m.i] = true; });
-  } else if (Meaning.focusTab) {
-    dimming = true;
-    faqs.forEach(function (f) { if (Meaning.colourBy === 'cluster' ? 'c' + f.cluster === Meaning.focusTab : f.tabId === Meaning.focusTab) focus[f.i] = true; });
-  }
-
-  // Lines from the chosen answer (or the placed question) to its neighbours.
-  var from = null, links = [];
-  if (Meaning.selected >= 0) { from = toScreen(Y[Meaning.selected * 2], Y[Meaning.selected * 2 + 1]); links = Meaning.neighbours; }
-  else if (Meaning.probe) { from = toScreen(Meaning.probe.x, Meaning.probe.y); links = Meaning.probe.matches; }
-  if (from) {
-    links.forEach(function (m) {
-      var to = toScreen(Y[m.i * 2], Y[m.i * 2 + 1]);
-      ctx.strokeStyle = 'rgba(29, 29, 31, ' + Math.max(0.12, Math.min(0.6, (m.s - 0.3) * 1.2)).toFixed(2) + ')';
-      ctx.lineWidth = 1 + Math.max(0, (m.s - 0.5) * 4);
-      ctx.beginPath(); ctx.moveTo(from[0], from[1]); ctx.lineTo(to[0], to[1]); ctx.stroke();
+/** Hand the map everything it needs to draw the current state. */
+function paint(extra) {
+  if (!M.layout) return;
+  var focus = null, links = null, star = null;
+  if (M.selected >= 0) {
+    focus = {};
+    focus[M.selected] = true;
+    M.neighbours.forEach(function (m) { focus[m.i] = true; });
+    links = { from: M.selected, to: M.neighbours };
+  } else if (M.probe) {
+    focus = {};
+    M.probe.matches.forEach(function (m) { focus[m.i] = true; });
+    links = { from: { x: M.probe.x, y: M.probe.y }, to: M.probe.matches };
+    star = { x: M.probe.x, y: M.probe.y };
+  } else if (M.focusKey) {
+    focus = {};
+    M.faqs.forEach(function (f) {
+      var key = M.colourBy === 'cluster' ? 'c' + M.groups.of[f.i] : f.tabId;
+      if (key === M.focusKey) focus[f.i] = true;
     });
   }
-
-  var radius = Math.max(3.5, Math.min(7, 4 * Math.sqrt(view.scale / (r.width / bounds.w || 1)) * 1.4));
-  faqs.forEach(function (f, i) {
-    var p = toScreen(Y[i * 2], Y[i * 2 + 1]);
-    ctx.globalAlpha = dimming && !focus[i] ? 0.15 : 0.9;
-    ctx.fillStyle = colourOf(f);
-    ctx.beginPath();
-    ctx.arc(p[0], p[1], i === Meaning.hover || i === Meaning.selected ? radius + 3 : radius, 0, Math.PI * 2);
-    ctx.fill();
-    if (i === Meaning.selected) {
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = '#1D1D1F';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-  });
-  ctx.globalAlpha = 1;
-
-  // Group names at the heart of each group, once the map has settled a bit.
-  if (Meaning.colourBy === 'cluster' && Meaning.layout && Meaning.layout.iter > 200) {
-    ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    Meaning.clusters.forEach(function (g, gi) {
-      if (dimming && Meaning.focusTab !== 'c' + gi) return;
-      var at = heart(g.members);
-      var p = toScreen(at[0], at[1]);
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.strokeText(g.label, p[0], p[1] - 14);
-      ctx.fillStyle = g.colour;
-      ctx.fillText(g.label, p[0], p[1] - 14);
-    });
-  }
-
-  // The placed question: a star.
-  if (Meaning.probe) {
-    var s = toScreen(Meaning.probe.x, Meaning.probe.y);
-    star(s[0], s[1], 11, 5);
-  }
-
-  // Answers whose words are shown on the map: the chosen one and its nearest.
-  if (Meaning.selected >= 0) label(Meaning.selected, true);
-  if (Meaning.hover >= 0 && Meaning.hover !== Meaning.selected) label(Meaning.hover, false);
+  var legend = M.colourBy === 'cluster'
+    ? M.groups.list.map(function (g, gi) { return { key: 'c' + gi, label: g.label, colour: g.colour, on: M.focusKey === 'c' + gi }; })
+    : M.tabs.map(function (t) { return { key: t.id, label: t.label, colour: t.colour, on: M.focusKey === t.id }; });
+  var names = M.colourBy === 'cluster'
+    ? M.groups.list.filter(function (g, gi) { return !M.focusKey || M.focusKey === 'c' + gi; }).map(function (g) {
+        var h = MeaningMap.heart(g.members, M.layout.Y);
+        return { x: h.x, y: h.y, label: g.label, colour: g.colour };
+      })
+    : [];
+  var state = {
+    points: M.faqs.map(function (f) { return { colour: colourOf(f) }; }),
+    focus: focus, selected: M.selected, links: links, star: star, names: names, legend: legend,
+    settling: !M.layout.done, message: ''
+  };
+  if (extra) Object.keys(extra).forEach(function (k) { state[k] = extra[k]; });
+  map.set(state);
 }
-
-// The member of a group with the most of the group around it on the map —
-// where its name goes. (The middle of a group can be empty if it splits.)
-function heart(members) {
-  var Y = Meaning.pos, best = members[0], bestD = Infinity;
-  members.forEach(function (i) {
-    var d = 0;
-    members.forEach(function (j) {
-      var dx = Y[i * 2] - Y[j * 2], dy = Y[i * 2 + 1] - Y[j * 2 + 1];
-      d += Math.sqrt(dx * dx + dy * dy);
-    });
-    if (d < bestD) { bestD = d; best = i; }
-  });
-  return [Y[best * 2], Y[best * 2 + 1]];
-}
-
-function star(x, y, outer, points) {
-  var inner = outer * 0.45;
-  ctx.beginPath();
-  for (var k = 0; k < points * 2; k++) {
-    var rad = k % 2 ? inner : outer;
-    var ang = Math.PI / points * k - Math.PI / 2;
-    ctx[k ? 'lineTo' : 'moveTo'](x + Math.cos(ang) * rad, y + Math.sin(ang) * rad);
-  }
-  ctx.closePath();
-  ctx.fillStyle = '#FFD43B';
-  ctx.strokeStyle = '#1D1D1F';
-  ctx.lineWidth = 1.5;
-  ctx.fill();
-  ctx.stroke();
-}
-
-function label(i, bold) {
-  var Y = Meaning.pos, f = Meaning.faqs[i];
-  var p = toScreen(Y[i * 2], Y[i * 2 + 1]);
-  var text = f.q.length > 60 ? f.q.slice(0, 58).replace(/\s+\S*$/, '') + '…' : f.q;
-  ctx.font = (bold ? '600 ' : '') + '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
-  ctx.strokeText(text, p[0] + 11, p[1]);
-  ctx.fillStyle = '#1D1D1F';
-  ctx.fillText(text, p[0] + 11, p[1]);
-}
-
-// ------------------------------------------------------------ running the layout
 
 function runLayout() {
-  if (Meaning.frame) cancelAnimationFrame(Meaning.frame);
-  Meaning.layout = makeLayout(Meaning.seed);
-  Meaning.pos = Meaning.layout.Y;
-  Meaning.probe = null;
-  userMoved = false;
-  setOverlay('');
+  if (M.stop) M.stop();
+  M.layout = MeaningMap.layout(M.sim, M.faqs.length, M.seed);
+  M.probe = null;
   $('reshuffle').disabled = true;
-  var tick = function () {
-    for (var s = 0; s < STEPS_PER_FRAME && Meaning.layout.iter < ITERATIONS; s++) Meaning.layout.step();
-    if (!userMoved) fit();
-    draw();
-    if (Meaning.layout.iter < ITERATIONS) {
-      setStatus('Arranging by meaning… ' + Math.round(Meaning.layout.iter / ITERATIONS * 100) + '%');
-      Meaning.frame = requestAnimationFrame(tick);
-    } else {
-      Meaning.frame = null;
-      $('reshuffle').disabled = false;
-      setStatus('Ready · ' + Meaning.faqs.length + ' answers · ' + Meaning.clusters.length + ' meaning groups', 'ready');
-      if (Meaning.pendingProbe) { var t = Meaning.pendingProbe; Meaning.pendingProbe = null; place(t); }
-    }
-  };
-  tick();
+  var first = true;
+  M.stop = MeaningMap.run(M.layout, function (lay) {
+    if (first) { paint({ pos: lay.Y }); first = false; } else paint();
+    if (!lay.done) setStatus('Arranging by meaning… ' + Math.round(lay.iter / lay.total * 100) + '%');
+  }, function () {
+    M.stop = null;
+    $('reshuffle').disabled = false;
+    readyStatus();
+    paint();
+    if (M.pendingProbe) { var t = M.pendingProbe; M.pendingProbe = null; place(t); }
+  });
 }
 
 function rebuild() {
   chooseVectors();
-  cluster(Meaning.seed);
-  renderLegend();
-  if (!userMoved) fit();
-  Meaning.selected = -1;
-  Meaning.neighbours = [];
-  Meaning.focusTab = null;
+  M.groups = MeaningMap.groups(M.faqs.map(function (f) { return f.vec; }),
+    M.faqs.map(function (f) { return f.words; }), M.seed);
+  M.selected = -1;
+  M.neighbours = [];
+  M.focusKey = null;
   showOverview();
   runLayout();
 }
@@ -1081,9 +642,9 @@ function rebuild() {
 function dotHtml(colour) { return '<i style="background:' + colour + '"></i>'; }
 
 function faqButton(i, extra) {
-  var f = Meaning.faqs[i];
+  var f = M.faqs[i];
   return '<button type="button" data-faq="' + i + '">' + dotHtml(colourOf(f)) +
-    '<span class="q">' + esc(f.q) + (extra && extra.note ? '<span class="other">' + esc(extra.note) + '</span>' : '') + '</span>' +
+    '<span class="q">' + esc(f.q) + (extra && extra.note ? '<span class="other' + (extra.plain ? ' plain' : '') + '">' + esc(extra.note) + '</span>' : '') + '</span>' +
     (extra && extra.score != null ? '<span class="score">' + Math.round(extra.score * 100) + '%</span>' : '') +
     '</button>';
 }
@@ -1103,13 +664,13 @@ function answerHtml(html) {
 }
 
 function showOverview() {
-  var faqs = Meaning.faqs, n = faqs.length;
-  if (!n || !Meaning.sim) return;
+  var faqs = M.faqs, n = faqs.length;
+  if (!n || !M.sim) return;
 
   // The most alike pairs: possible overlaps worth a look.
   var pairs = [];
   for (var i = 0; i < n; i++) for (var j = i + 1; j < n; j++) {
-    var s = Meaning.sim[i * n + j];
+    var s = M.sim[i * n + j];
     if (s >= DUPLICATE) pairs.push({ a: i, b: j, s: s });
   }
   pairs.sort(function (x, y) { return y.s - x.s; });
@@ -1135,7 +696,8 @@ function showOverview() {
     'whatever tab they are on. Colours are the tabs, so a colour turning up in another colour’s patch ' +
     'is an answer the model would file somewhere else.</p>' +
     '<p class="soft">Hover or tap a dot to read it. Drag to move, scroll or pinch to zoom. ' +
-    'Type a question above to see where it lands.</p>' +
+    'Type a question above to see where it lands. The same map is in Process Hub’s ' +
+    '<a href="index.html#/probe">Probe</a> section, drawn from the draft.</p>' +
     '<p class="soft">An experiment: positions show which answers are near each other, not exact distances, ' +
     'and the model knows general English rather than Council’s terms.</p>';
 
@@ -1156,11 +718,11 @@ function showOverview() {
     : '<p class="soft">Every answer sits among answers from its own tab.</p>';
 
   html += '<h3>Meaning groups</h3><p class="soft">The model’s own grouping, ignoring tabs, named after the words each group uses most. Choose <em>Colour by: Meaning group</em> to see them.</p>' +
-    '<ul class="list">' + Meaning.clusters.map(function (g, gi) {
+    '<ul class="list">' + M.groups.list.map(function (g, gi) {
       var tabsIn = {};
       g.members.forEach(function (i) { tabsIn[faqs[i].tabLabel] = true; });
       return '<li><button type="button" data-group="' + gi + '">' + dotHtml(g.colour) +
-        '<span class="q">' + esc(g.label) + '<span class="other" style="color:var(--text-soft)">' +
+        '<span class="q">' + esc(g.label) + '<span class="other plain">' +
         esc(Object.keys(tabsIn).join(', ')) + '</span></span><span class="score">' + g.members.length + '</span></button></li>';
     }).join('') + '</ul>';
 
@@ -1169,18 +731,17 @@ function showOverview() {
 }
 
 function showFaq(i) {
-  var f = Meaning.faqs[i];
-  var near = Meaning.neighbours;
+  var f = M.faqs[i];
   var html = '<p><button class="btn" type="button" data-back="1">← Overview</button></p>' +
     '<div class="crumb">' + dotHtml(f.tab.colour) + esc(f.tabLabel + (f.group ? ' › ' + f.group : '')) + '</div>' +
     '<h2>' + esc(f.q) + '</h2>' +
-    '<p class="soft">Meaning group: ' + esc(Meaning.clusters[f.cluster].label) + '</p>' +
+    '<p class="soft">Meaning group: ' + esc(M.groups.list[M.groups.of[i]].label) + '</p>' +
     '<div class="answer">' + answerHtml(f.a) + '</div>' +
     '<p class="soft" style="margin-top:8px"><a href="' + esc(PUBLIC_FAQ + '#' + f.tabId) + '" target="_blank" rel="noopener">Open the ' +
     esc(f.tabLabel) + ' tab of the FAQ</a></p>' +
     '<h3>Closest in meaning</h3><ul class="list">' +
-    near.map(function (m) {
-      var g = Meaning.faqs[m.i];
+    M.neighbours.map(function (m) {
+      var g = M.faqs[m.i];
       return '<li>' + faqButton(m.i, { score: m.s, note: g.tabId !== f.tabId ? 'on the ' + g.tabLabel + ' tab' : '' }) + '</li>';
     }).join('') + '</ul>';
   $('panel').innerHTML = html;
@@ -1188,82 +749,47 @@ function showFaq(i) {
 }
 
 function showProbe() {
-  var p = Meaning.probe;
+  var p = M.probe;
   var html = '<p><button class="btn" type="button" data-back="1">← Overview</button></p>' +
     '<h2>“' + esc(p.text) + '”</h2>' +
     '<p class="soft">The star shows where the model places this question, among the answers it reads as closest. ' +
     'The percentages are how alike it finds the question and the closest part of each answer. ' +
-    'This is the model on its own: Ask also weighs the words themselves, so it finds Council’s own terms better.</p>' +
+    'This is the model on its own: Ask and Probe also weigh the words themselves, so they find Council’s own terms better.</p>' +
     '<ul class="list">' + p.matches.map(function (m) {
-      return '<li>' + faqButton(m.i, { score: m.s, note: Meaning.faqs[m.i].tabLabel }) + '</li>';
+      return '<li>' + faqButton(m.i, { score: m.s, note: M.faqs[m.i].tabLabel }) + '</li>';
     }).join('') + '</ul>';
   $('panel').innerHTML = html;
   $('panel').scrollTop = 0;
 }
 
 function select(i) {
-  Meaning.selected = i;
-  Meaning.probe = null;
-  Meaning.neighbours = i >= 0 ? similar(i).slice(0, NEIGHBOURS) : [];
-  if (i >= 0) { showFaq(i); ensureVisible(i); } else showOverview();
-  draw();
-}
-
-// Pan just enough to bring a chosen dot into view (on a phone the panel is
-// below the map, so it may have scrolled away).
-function ensureVisible(i) {
-  var r = canvas.getBoundingClientRect();
-  var p = toScreen(Meaning.pos[i * 2], Meaning.pos[i * 2 + 1]);
-  var m = 40;
-  if (p[0] < m || p[0] > r.width - m || p[1] < m || p[1] > r.height - m) {
-    view.tx += r.width / 2 - p[0];
-    view.ty += r.height / 2 - p[1];
-    userMoved = true;
-  }
+  M.selected = i;
+  M.probe = null;
+  M.neighbours = i >= 0 ? similar(i).slice(0, NEIGHBOURS) : [];
+  if (i >= 0) showFaq(i); else showOverview();
+  paint();
+  if (i >= 0) map.revealDot(i);
 }
 
 $('panel').addEventListener('click', function (ev) {
   var b = ev.target.closest('button');
   if (!b) return;
-  if (b.dataset.back) { Meaning.probe = null; Meaning.focusTab = null; renderLegend(); select(-1); return; }
+  if (b.dataset.back) { M.probe = null; M.focusKey = null; select(-1); return; }
   if (b.dataset.faq != null) { select(+b.dataset.faq); return; }
   if (b.dataset.group != null) {
-    if (Meaning.colourBy !== 'cluster') { Meaning.colourBy = 'cluster'; $('colourSelect').value = 'cluster'; }
-    Meaning.focusTab = 'c' + b.dataset.group;
-    renderLegend();
-    draw();
+    if (M.colourBy !== 'cluster') { M.colourBy = 'cluster'; $('colourSelect').value = 'cluster'; }
+    M.focusKey = 'c' + b.dataset.group;
+    M.selected = -1;
+    paint();
   }
-});
-
-// ------------------------------------------------------------ legend
-
-function renderLegend() {
-  var items = Meaning.colourBy === 'cluster'
-    ? Meaning.clusters.map(function (g, gi) { return { key: 'c' + gi, label: g.label, colour: g.colour }; })
-    : Meaning.tabs.map(function (t) { return { key: t.id, label: t.label, colour: t.colour }; });
-  $('legend').innerHTML = items.map(function (it) {
-    return '<button type="button" data-key="' + esc(it.key) + '" class="' + (Meaning.focusTab === it.key ? 'on' : '') + '">' +
-      dotHtml(it.colour) + esc(it.label) + '</button>';
-  }).join('');
-}
-
-$('legend').addEventListener('click', function (ev) {
-  var b = ev.target.closest('button');
-  if (!b) return;
-  Meaning.focusTab = Meaning.focusTab === b.dataset.key ? null : b.dataset.key;
-  Meaning.selected = -1;
-  Meaning.probe = null;
-  renderLegend();
-  showOverview();
-  draw();
 });
 
 // ------------------------------------------------------------ placing a question
 
 async function place(text) {
   text = text.trim();
-  if (!text || !Meaning.faqs.length) return;
-  if (Meaning.frame) { Meaning.pendingProbe = text; return; }   // wait for the map to settle
+  if (!text || !M.faqs.length) return;
+  if (M.stop) { M.pendingProbe = text; return; }   // wait for the map to settle
   $('searchBtn').disabled = true;
   try {
     await ensureModel();
@@ -1271,30 +797,19 @@ async function place(text) {
     var v = (await embed([text]))[0];
     // Scored as ask.html scores (without its keyword help): the best of the
     // question and each passage of the answer, so one sentence can match.
-    var scored = Meaning.faqs.map(function (f) {
-      var s = dot(v, f.qVec);
-      f.cVecs.forEach(function (c) { s = Math.max(s, dot(v, c)); });
+    var scored = M.faqs.map(function (f) {
+      var s = MeaningMap.dot(v, f.qVec);
+      f.cVecs.forEach(function (c) { s = Math.max(s, MeaningMap.dot(v, c)); });
       return { i: f.i, s: s };
-    })
-      .sort(function (a, b) { return b.s - a.s; }).slice(0, NEIGHBOURS);
-
-    // Its spot: among its closest answers, pulled hardest towards the closest.
-    var x = 0, y = 0, wsum = 0;
-    scored.slice(0, 3).forEach(function (m) {
-      var w = Math.exp((m.s - scored[0].s) * 25);
-      x += Meaning.pos[m.i * 2] * w; y += Meaning.pos[m.i * 2 + 1] * w; wsum += w;
-    });
-    Meaning.probe = { text: text, x: x / wsum, y: y / wsum, matches: scored };
-    Meaning.selected = -1;
-    Meaning.focusTab = null;
-    renderLegend();
+    }).sort(function (a, b) { return b.s - a.s; }).slice(0, NEIGHBOURS);
+    var spot = MeaningMap.placeAmong(scored, M.layout.Y);
+    M.probe = { text: text, x: spot.x, y: spot.y, matches: scored };
+    M.selected = -1;
+    M.focusKey = null;
     showProbe();
-    var r = canvas.getBoundingClientRect(), p = toScreen(Meaning.probe.x, Meaning.probe.y);
-    if (p[0] < 40 || p[0] > r.width - 40 || p[1] < 40 || p[1] > r.height - 40) {
-      view.tx += r.width / 2 - p[0]; view.ty += r.height / 2 - p[1]; userMoved = true;
-    }
-    draw();
-    setStatus('Ready · ' + Meaning.faqs.length + ' answers · ' + Meaning.clusters.length + ' meaning groups', 'ready');
+    paint();
+    map.reveal(spot.x, spot.y);
+    readyStatus();
   } catch (err) {
     console.error(err);
     setStatus('Couldn\'t read that: ' + err.message, 'error');
@@ -1307,168 +822,45 @@ $('searchForm').addEventListener('submit', function (ev) {
   ev.preventDefault();
   place($('searchInput').value);
 });
-// Start loading the model as soon as someone starts typing.
+// Start loading the model as soon as someone goes to type.
 $('searchInput').addEventListener('focus', function () {
-  if (Meaning.faqs.length) ensureModel().then(function () {
-    if (!Meaning.frame) setStatus('Ready · ' + Meaning.faqs.length + ' answers · ' + Meaning.clusters.length + ' meaning groups', 'ready');
-  }, function () {});
+  if (M.groups) ensureModel().then(function () { if (!M.stop) readyStatus(); }, function () {});
 });
 
 // ------------------------------------------------------------ controls
 
-$('modeSelect').addEventListener('change', function () { Meaning.mode = this.value; rebuild(); });
+$('modeSelect').addEventListener('change', function () { M.mode = this.value; rebuild(); });
 $('colourSelect').addEventListener('change', function () {
-  Meaning.colourBy = this.value;
-  Meaning.focusTab = null;
-  renderLegend();
-  if (Meaning.selected >= 0) showFaq(Meaning.selected); else if (!Meaning.probe) showOverview();
-  draw();
+  M.colourBy = this.value;
+  M.focusKey = null;
+  if (M.selected >= 0) showFaq(M.selected); else if (!M.probe) showOverview();
+  paint();
 });
-$('reshuffle').addEventListener('click', function () { Meaning.seed++; Meaning.selected = -1; showOverview(); runLayout(); });
-
-function zoomAt(factor, sx, sy) {
-  var before = toMap(sx, sy);
-  view.scale *= factor;
-  view.tx = sx - before[0] * view.scale;
-  view.ty = sy - before[1] * view.scale;
-  userMoved = true;
-  requestDraw();
-}
-function zoomCentre(factor) {
-  var r = canvas.getBoundingClientRect();
-  zoomAt(factor, r.width / 2, r.height / 2);
-}
-$('zoomIn').addEventListener('click', function () { zoomCentre(1.4); });
-$('zoomOut').addEventListener('click', function () { zoomCentre(1 / 1.4); });
-$('zoomFit').addEventListener('click', function () { userMoved = false; fit(); draw(); });
-
-// ------------------------------------------------------------ pointer: hover, tap, drag, pinch
-
-var pointers = {};      // pointerId -> { x, y }
-var drag = null;        // { x, y, moved }
-var pinch = null;       // { dist, cx, cy }
-
-function local(ev) {
-  var r = canvas.getBoundingClientRect();
-  return [ev.clientX - r.left, ev.clientY - r.top];
-}
-
-function hit(sx, sy) {
-  if (!Meaning.pos) return -1;
-  var best = -1, bestD = 14 * 14;
-  for (var i = 0; i < Meaning.faqs.length; i++) {
-    var p = toScreen(Meaning.pos[i * 2], Meaning.pos[i * 2 + 1]);
-    var d = (p[0] - sx) * (p[0] - sx) + (p[1] - sy) * (p[1] - sy);
-    if (d < bestD) { bestD = d; best = i; }
-  }
-  return best;
-}
-
-function showTip(i, sx, sy) {
-  var tip = $('tip');
-  if (i < 0) { tip.style.display = 'none'; return; }
-  var f = Meaning.faqs[i];
-  tip.innerHTML = esc(f.q) + '<small>' + esc(f.tabLabel + (f.group ? ' › ' + f.group : '')) + '</small>';
-  tip.style.display = 'block';
-  var r = canvas.getBoundingClientRect();
-  var w = tip.offsetWidth, h = tip.offsetHeight;
-  tip.style.left = Math.max(6, Math.min(sx + 14, r.width - w - 6)) + 'px';
-  tip.style.top = Math.max(6, Math.min(sy + 14, r.height - h - 6)) + 'px';
-}
-
-canvas.addEventListener('pointerdown', function (ev) {
-  canvas.setPointerCapture(ev.pointerId);
-  var p = local(ev);
-  pointers[ev.pointerId] = { x: p[0], y: p[1] };
-  var ids = Object.keys(pointers);
-  if (ids.length === 1) drag = { x: p[0], y: p[1], moved: false, start: p };
-  if (ids.length === 2) {
-    var a = pointers[ids[0]], b = pointers[ids[1]];
-    pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
-    drag = null;
-  }
-});
-
-canvas.addEventListener('pointermove', function (ev) {
-  var p = local(ev);
-  if (pointers[ev.pointerId]) pointers[ev.pointerId] = { x: p[0], y: p[1] };
-  var ids = Object.keys(pointers);
-
-  if (pinch && ids.length === 2) {
-    var a = pointers[ids[0]], b = pointers[ids[1]];
-    var dist = Math.hypot(a.x - b.x, a.y - b.y), cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
-    view.tx += cx - pinch.cx; view.ty += cy - pinch.cy;
-    if (pinch.dist > 0) zoomAt(dist / pinch.dist, cx, cy);
-    pinch = { dist: dist, cx: cx, cy: cy };
-    return;
-  }
-  if (drag) {
-    if (Math.hypot(p[0] - drag.start[0], p[1] - drag.start[1]) > 4) drag.moved = true;
-    if (drag.moved) {
-      view.tx += p[0] - drag.x; view.ty += p[1] - drag.y;
-      drag.x = p[0]; drag.y = p[1];
-      userMoved = true;
-      canvas.classList.add('dragging');
-      showTip(-1);
-      requestDraw();
-      return;
-    }
-  }
-  if (ev.pointerType === 'mouse') {
-    var i = hit(p[0], p[1]);
-    if (i !== Meaning.hover) { Meaning.hover = i; requestDraw(); }
-    canvas.classList.toggle('pointing', i >= 0);
-    showTip(i, p[0], p[1]);
-  }
-});
-
-function endPointer(ev) {
-  var p = local(ev);
-  var wasTap = drag && !drag.moved && Object.keys(pointers).length === 1;
-  delete pointers[ev.pointerId];
-  if (Object.keys(pointers).length < 2) pinch = null;
-  canvas.classList.remove('dragging');
-  if (wasTap && ev.type === 'pointerup') {
-    var i = hit(p[0], p[1]);
-    select(i);
-    if (ev.pointerType !== 'mouse') showTip(-1);
-  }
-  if (!Object.keys(pointers).length) drag = null;
-}
-canvas.addEventListener('pointerup', endPointer);
-canvas.addEventListener('pointercancel', endPointer);
-canvas.addEventListener('pointerleave', function () {
-  if (Meaning.hover >= 0) { Meaning.hover = -1; requestDraw(); }
-  showTip(-1);
-});
-canvas.addEventListener('wheel', function (ev) {
-  ev.preventDefault();
-  var p = local(ev);
-  zoomAt(Math.exp(-ev.deltaY * 0.0015), p[0], p[1]);
-}, { passive: false });
+$('reshuffle').addEventListener('click', function () { M.seed++; M.selected = -1; showOverview(); runLayout(); });
 
 document.addEventListener('keydown', function (ev) {
-  if (ev.key === 'Escape' && (Meaning.selected >= 0 || Meaning.probe)) { Meaning.probe = null; select(-1); }
+  if (ev.key === 'Escape' && (M.selected >= 0 || M.probe)) { M.probe = null; select(-1); }
 });
-
-window.addEventListener('resize', resize);
 
 // ------------------------------------------------------------ start
 
 async function start() {
-  resize();
+  setStatus('Checking you are signed in…');
+  await Gate.require({
+    lede: 'The meaning map is a Process Hub tool for council staff. Sign in with your GitHub access token to open it.',
+    opening: 'Signed in. Opening the meaning map…'
+  });
   try {
     setStatus('Loading the FAQ…');
-    setOverlay('Loading the FAQ…');
+    map.set({ message: 'Loading the FAQ…' });
     await Promise.all([loadFaqs(), loadFingerprints()]);
-    if (Meaning.faqs.length < 5) throw new Error('Not enough published answers to map');
-    var worked = await attachFingerprints();
-    Meaning.workedOut = worked;
+    if (M.faqs.length < 5) throw new Error('Not enough published answers to map');
+    M.workedOut = await attachFingerprints();
     rebuild();
   } catch (err) {
     console.error(err);
     setStatus('Couldn\'t start: ' + err.message, 'error');
-    setOverlay('The map couldn’t be drawn: ' + err.message);
+    map.set({ message: 'The map couldn’t be drawn: ' + err.message });
   }
 }
 

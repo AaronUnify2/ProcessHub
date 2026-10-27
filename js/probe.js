@@ -265,23 +265,31 @@
   }
 
   /**
-   * For each open content gap, the FAQ answer that now matches it best. A
-   * gap whose best match is strong has probably been answered since it was
-   * logged. Only meaningful once prepare() has resolved.
+   * For each open content gap, the FAQ answer that now matches it best (and
+   * the best three, which place it on the meaning map). A gap whose best
+   * match is strong has probably been answered since it was logged. Only
+   * meaningful once prepare() has resolved.
    */
   function gapChecks() {
     var c = build();
     return c.gaps.filter(function (g) { return !g.gap.resolved; }).map(function (g) {
       var vec = S.lookup(g.qKey);
-      if (!vec) return { gap: g.gap, best: null };
+      if (!vec) return { gap: g.gap, best: null, top: [] };
       var qTerms = S.terms(S.expand(g.q));
-      var best = null;
-      c.faqs.forEach(function (f) {
-        var s = scoreFaq(c, f, vec, qTerms);
-        if (!best || s.score > best.score) best = s;
-      });
-      return { gap: g.gap, best: best };
+      var top = c.faqs.map(function (f) { return scoreFaq(c, f, vec, qTerms); })
+        .sort(function (a, b) { return b.score - a.score; }).slice(0, 3);
+      return { gap: g.gap, best: top[0] || null, top: top };
     });
+  }
+
+  /**
+   * Resolves once every question and every answer passage has a
+   * fingerprint — what the meaning map needs to draw whole answers.
+   */
+  function whenRead() {
+    return prepare().then(function () {
+      return readPassages(build()) || null;
+    }).then(function () { return build(); });
   }
 
   /**
@@ -324,6 +332,7 @@
     prepare: prepare,
     search: search,
     gapChecks: gapChecks,
+    whenRead: whenRead,
     band: band,
     onStatus: onStatus,
     status: function () { return status; },

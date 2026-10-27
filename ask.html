@@ -3,13 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Ask Council — experimental</title>
+<link rel="stylesheet" href="css/gate.css">
 <style>
 /* ===========================================================================
    Ask — an experimental FAQ finder.
    Matches a question typed in plain words to the published FAQ answers, using
    a small sentence-embedding model (all-MiniLM-L6-v2) that runs in the browser.
    It never writes an answer of its own: it only shows the published ones.
+   For council staff while it is an experiment: it opens only once the
+   sign-in (js/gate.js) has confirmed a Process Hub token.
    =========================================================================== */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -247,7 +251,7 @@ a { color: var(--accent); }
 }
 </style>
 </head>
-<body>
+<body class="gated">
 
 <header class="ask-header">
   <a class="ask-brand" href="index.html" title="Process Hub">Ask Council</a>
@@ -1794,6 +1798,8 @@ self.onmessage = async function (ev) {
 }}
 </script>
 
+<script src="js/github.js"></script>
+<script src="js/gate.js"></script>
 <script>
 var MODEL = 'Xenova/all-MiniLM-L6-v2';
 var FAQ_URL = 'exports/FAQ.json';
@@ -2363,6 +2369,11 @@ function welcome() {
 }
 
 async function start() {
+  setStatus('Checking you are signed in…');
+  await Gate.require({
+    lede: 'Ask is an experimental Process Hub tool for council staff. Sign in with your GitHub access token to open it.',
+    opening: 'Signed in. Opening Ask…'
+  });
   welcome();
   $('askInput').focus();
   var t0 = Date.now();
