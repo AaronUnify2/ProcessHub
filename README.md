@@ -268,19 +268,6 @@ from the draft — unpublished questions included, as hollow rings:
   the answers it comes closest to; a patch of them is a topic the FAQ is thin
   on. Tap one to probe it again.
 - Tap a dot for its question, status and meaning group, with a link to it.
-- **Tap empty space** to ask *what would go here?* A target marks the spot,
-  and the caption suggests three questions that would sit there, each a link
-  that probes it. The model can only read, not write, so the suggestions are
-  made in steps (`js/spot-hint.js`): the spot's fingerprint is estimated by
-  blending the answers around it, nearest counting most; candidate questions
-  are written from the phrases those answers use most and the rest of the FAQ
-  uses least, set into everyday question shapes ("Who do I contact about …?",
-  "Is there a fee for …?"); and the model keeps the candidates closest to the
-  spot. Each shows how well it fits the spot and the nearest question the FAQ
-  already has. The wording is only ever the FAQ's own phrases, so it reads
-  stiffly — a hint to probe, not a finished question. A spot far from any dot
-  is flagged as empty ground between topics, where the hints are the most
-  likely to be gaps.
 
 The map waits until every answer has been read, lays itself out once, and
 again only when an FAQ question or answer changes.
@@ -315,6 +302,15 @@ the draft, is in the Probe section. Both use `js/meaning-map.js`.
   other tabs) — candidates for merging or cross-linking.
 - Typing a question loads the model and drops a star where it lands, with
   lines to the closest answers.
+- **Tap empty space** to ask *what would go here?* — an experiment in
+  wording. The model can only read, not write, so `js/spot-hint.js` makes
+  the suggestions in steps: the spot's fingerprint is estimated by blending
+  the answers around it, nearest counting most; candidate questions are
+  written from the phrases those answers use most and the rest of the FAQ
+  uses least, set into everyday question shapes ("Who do I contact about
+  …?"); and the model keeps the three closest to the spot. The wording is
+  stiff — a glimpse of what the model thinks belongs there, not questions
+  to use. Tap one to place it on the map.
 
 ## Running the app
 

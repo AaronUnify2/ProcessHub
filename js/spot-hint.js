@@ -12,17 +12,21 @@
      3. the model reads every candidate, and the ones whose fingerprints point
         closest to the spot's are offered
 
-   The wording is only ever built from the FAQ's own phrases, so a hint can
-   read a little stiffly; it is a starting point to probe, not an answer.
+   The wording is only ever built from the FAQ's own phrases, so it reads
+   stiffly; a curiosity for map.html, not finished questions.
 
-   SpotHint.suggest({ vec, near: [{ item, w }], corpus }) resolves to
+   SpotHint.suggest({ vec, near, corpus, embed, questionVec }) resolves to
      [{ text, fit, nearest: { item, s } | null }]  best first
    =========================================================================== */
 
 (function (global) {
   'use strict';
 
-  var S = global.Semantic;
+  function dot(a, b) {
+    var s = 0;
+    for (var i = 0; i < a.length; i++) s += a[i] * b[i];
+    return s;
+  }
 
   var TEMPLATES = [
     'Do I need approval for {p}?',
@@ -135,9 +139,11 @@
 
   /**
    * Hints for a spot. options:
-   *   vec     the spot's estimated fingerprint
-   *   near    [{ item, w }] the answers around it (corpus entries), heaviest first
-   *   corpus  every FAQ entry (Probe.corpus().faqs)
+   *   vec          the spot's estimated fingerprint
+   *   near         [{ item, w }] the answers around it, heaviest first
+   *   corpus       every FAQ entry; each has q (the question) and text (the answer, plain)
+   *   embed        function (texts) → a promise of their fingerprints, unit length
+   *   questionVec  function (item) → the fingerprint of an entry's question
    */
   function suggest(options) {
     var picked = topPhrases(options.near.slice(0, 5), options.corpus);
@@ -154,20 +160,19 @@
     }
     if (!texts.length) return Promise.resolve([]);
 
-    var jobs = texts.map(function (c) { return { key: S.hash(c.text), text: c.text }; });
-    return S.ensure(jobs, 32).then(function () {
-      var questions = options.corpus.map(function (f) { return { item: f, vec: S.lookup(f.qKey) }; })
+    return options.embed(texts.map(function (c) { return c.text; })).then(function (vecs) {
+      var questions = options.corpus.map(function (f) { return { item: f, vec: options.questionVec(f) }; })
         .filter(function (q) { return q.vec; });
       texts.forEach(function (c, i) {
-        var v = S.lookup(jobs[i].key);
+        var v = vecs[i];
         c.vec = v;
-        c.fit = v ? S.dot(options.vec, v) : -1;
+        c.fit = v ? dot(options.vec, v) : -1;
         // How close it comes to a question the FAQ already has; one that is
         // nearly an existing question ranks a little lower.
         c.nearest = null;
         if (v) {
           questions.forEach(function (q) {
-            var s = S.dot(v, q.vec);
+            var s = dot(v, q.vec);
             if (!c.nearest || s > c.nearest.s) c.nearest = { item: q.item, s: s };
           });
         }
