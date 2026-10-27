@@ -32,14 +32,14 @@ content in those older public copies was judged acceptable to leave.
 ```
   index.html         the app
   live.html          the live call view
-  ask.html           experimental: ask a question in plain words, get the matching FAQ answers
-                     (a small language model running in the browser)
-  map.html           experimental: the published FAQ laid out by meaning, with the same model
-  css/app.css · css/live.css
+  ask.html           experimental, staff only: ask a question in plain words, get the matching
+                     FAQ answers (a small language model running in the browser)
+  map.html           experimental, staff only: the published FAQ laid out by meaning
+  css/app.css · css/live.css · css/gate.css · css/meaning-map.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
                      rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
                      richtext.js · canvas.js
-                     semantic.js · semantic-worker.js · probe.js
+                     semantic.js · semantic-worker.js · probe.js · meaning-map.js · probe-map.js
                      ui-sidebar.js · ui-detail.js · ui-probe.js · app.js · live.js
   exports/
     FAQ.json         the live published FAQ content — the public FAQ page reads this
@@ -64,6 +64,15 @@ first if there are unpublished changes.
 
 If GitHub cannot be reached, a draft already on the computer still opens, so
 work can carry on offline and be published later.
+
+**`ask.html` and `map.html`** sit behind the same sign-in. They start hidden
+and run only once GitHub confirms the token kept in the browser can still read
+ProcessHub-data; anyone signed in to Process Hub on that computer goes
+straight in. They ask search engines not to index them. What they show is the
+public FAQ, so the sign-in keeps the tools to staff — it cannot hide the
+files themselves, which GitHub Pages serves to anyone who asks for them by
+name (their code, and the FAQ fingerprints in `ask.html`, can still be
+downloaded). `exports/FAQ.json` and the public FAQ page stay public.
 
 ## Sections
 
@@ -243,6 +252,25 @@ Fingerprints for the published FAQ come ready-made from `ask.html`; anything
 new or edited is read once and kept in the browser (IndexedDB), so only
 changed text is ever read again.
 
+**The meaning map.** Between the search box and the closest answers, Probe
+shows the whole FAQ laid out by meaning (see *The meaning map* below), drawn
+from the draft — unpublished questions included, as hollow rings:
+
+- A probed question is a **★**, placed among the answers Probe ranked
+  highest, with lines to them (heavier for a higher score). The caption reads
+  the picture: the closest answers sitting together means the model knows
+  what the question is about (and if none scores well, that part of the FAQ
+  has a gap); answers spread across different parts of the map means it
+  can't tell — that is when Ask picks the wrong answer, and an *Also asked
+  as* phrasing on the right answer is the fix.
+- On the dashboard, open content gaps are **◇ diamonds**, each placed among
+  the answers it comes closest to; a patch of them is a topic the FAQ is thin
+  on. Tap one to probe it again.
+- Tap a dot for its question, status and meaning group, with a link to it.
+
+The map waits until every answer has been read, lays itself out once, and
+again only when an FAQ question or answer changes.
+
 **Refreshing `ask.html`.** `ask.html` carries the fingerprints of the
 published FAQ, including each question's phrasings (as fingerprints only,
 never their text) and which are everyday questions. After phrasings change,
@@ -255,10 +283,11 @@ in `ask.html`.
 
 `map.html` lays the published FAQ out on one page by meaning: every answer is
 a dot, and answers the model reads as being about the same thing sit close
-together, whatever tab they are on. Like `ask.html` it reads only public
-files — `exports/FAQ.json`, the fingerprints in `ask.html`, and the model in
-`vendor/` — so it opens instantly and needs no sign-in:
-`https://aaronunify2.github.io/ProcessHub/map.html`.
+together, whatever tab they are on. It is behind the sign-in (see *Signing
+in*), then reads `exports/FAQ.json`, the fingerprints in `ask.html`, and the
+model in `vendor/`, so it opens in a few seconds:
+`https://aaronunify2.github.io/ProcessHub/map.html`. The same map, drawn from
+the draft, is in the Probe section. Both use `js/meaning-map.js`.
 
 - **Read: Whole answers** averages each question with every passage of its
   answer; **Questions only** uses the question as `ask.html` reads it.

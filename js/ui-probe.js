@@ -15,6 +15,10 @@
    that was logged for it, rather than inviting a second one. When an FAQ
    answer later covers a gap, Probe says so and offers to resolve it.
 
+   Between the search box and the closest answers sits the meaning map
+   (probe-map.js): the whole FAQ laid out by meaning, with the question
+   probed as a star among its matches and open gaps as diamonds.
+
    Routes:  #/probe              the dashboard: open gaps, and which now look answered
             #/probe?q=<question> the results for a question
             #/probe?gap=<id>     a logged gap, probed again
@@ -29,7 +33,7 @@
 
   // What is on screen. A redraw after an edit keeps the question, the open
   // form and what was just logged.
-  var view = { query: '', gapId: '', result: null, logging: false, logged: null, run: 0 };
+  var view = { query: '', gapId: '', result: null, checks: null, logging: false, logged: null, run: 0 };
 
   var RECENT_MAX = 12;
   var SHOWN = 6;
@@ -69,7 +73,8 @@
     view.gapId = gapId;
     view.result = null;
 
-    Detail.paint(page(query ? '<p class="empty probe-wait">Probing…</p>' : dashboardHtml(null)));
+    Detail.paint(page(query ? '<p class="empty probe-wait">Probing…</p>' : dashboardHtml(view.checks)));
+    if (!query) attachMap();
 
     var run = ++view.run;
     if (query) {
@@ -83,7 +88,8 @@
       });
     } else {
       Probe.prepare().then(function () {
-        if (run === view.run) fill(dashboardHtml(Probe.gapChecks()));
+        view.checks = Probe.gapChecks();
+        if (run === view.run) fill(dashboardHtml(view.checks));
       }).catch(function () { /* the status line says why */ });
     }
   }
@@ -111,6 +117,26 @@
     body.innerHTML = html;
     Array.prototype.forEach.call(body.querySelectorAll('[data-route]'), function (node) {
       node.addEventListener('click', function () { onNavigate(node.dataset.route); });
+    });
+    attachMap();
+  }
+
+  /** Show the meaning map in the page just drawn: the question probed, or the open gaps. */
+  function attachMap() {
+    if (!global.ProbeMap || !document.getElementById('probeMapSlot')) return;
+    var gapIds = null;
+    var checks = view.checks || [];
+    if (view.query) {
+      gapIds = {};
+      gapMatches().forEach(function (r) { gapIds[r.item.id] = true; });
+      checks = view.result ? Probe.gapChecks() : [];
+    }
+    ProbeMap.attach({
+      query: view.query,
+      result: view.result,
+      publicOnly: !prefs.probeAll,
+      checks: checks,
+      gapIds: gapIds
     });
   }
 
@@ -158,6 +184,7 @@
     var html = verdictHtml(verdict, best);
     if (gaps.length) html += gapsHtml(gaps, verdict, best);
     html += logHtml(verdict, best, gaps);
+    if (global.ProbeMap) html += ProbeMap.html();
 
     html += '<section class="block"><h2>Closest FAQ answers <span class="count">' +
       (prefs.probeAll ? 'all questions' : 'public page only') + '</span></h2>' +
@@ -330,6 +357,8 @@
       tile(checks ? answered : '…', 'may be answered now', 'an FAQ answer matches them') +
       tile(resolved.length, 'resolved gaps', 'kept as a record') +
       '</section>';
+
+    if (global.ProbeMap) html += ProbeMap.html();
 
     html += '<section class="block"><h2>Open content gaps <span class="count">' + open.length + '</span></h2>' +
       (open.length

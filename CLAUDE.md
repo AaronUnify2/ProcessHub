@@ -25,8 +25,8 @@ sense in six months. No clever abstractions, no syntax that needs tooling.
 **No external dependencies unless asked.** If a library is genuinely needed,
 load it from a CDN with a pinned version. Never a local install. The one
 exception, at Aaron's request, is `vendor/`: unmodified copies of
-Transformers.js and the all-MiniLM-L6-v2 model for `ask.html` and the Probe
-section, self-hosted so they depend on no one else's servers. Keep them as
+Transformers.js and the all-MiniLM-L6-v2 model for `ask.html`, `map.html` and
+the Probe section, self-hosted so they depend on no one else's servers. Keep them as
 they are; to change them, follow `vendor/README.md`.
 
 **Always produce complete files, not diffs or fragments.** Aaron prefers whole
@@ -49,6 +49,14 @@ API — route `https://api.github.com/**` in a headless browser to a mock that
 serves the files — never by copying real content into this repository.
 
 `exports/FAQ.json` must keep the shape the public FAQ page reads.
+
+## Staff-only pages
+
+`ask.html` and `map.html` are experiments for council staff, behind the same
+sign-in as the app (`Gate.require()` in `js/gate.js`). Keep any new page of
+that kind behind it too. The sign-in keeps the tool to staff; it does not hide
+the files, which Pages serves publicly — so never put anything in them that
+isn't already public.
 
 ## Publishing from the browser
 

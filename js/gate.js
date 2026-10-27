@@ -9,6 +9,12 @@
    be fetched without a token, and the screen explains that rather than
    leaving an empty app.
 
+   The staff-only pages (ask.html, map.html) use the same screen through
+   Gate.require(): they start hidden, and run only once GitHub confirms the
+   token in this browser can read the private repository. What they show is
+   public FAQ content, so for them the screen keeps the tools to staff; it
+   does not hide the files themselves, which GitHub Pages serves to anyone.
+
    Signing out forgets the token AND deletes the local draft, because the
    draft is a full copy of the internal content sitting on this computer.
    =========================================================================== */
@@ -22,8 +28,13 @@
     });
   }
 
-  /** Cover the page with the sign-in screen. message explains why, if known. */
-  function show(message) {
+  /**
+   * Cover the page with the sign-in screen. message explains why, if known.
+   * options (optional): { lede, opening } — the sentence under the heading,
+   * and what to say while the page reloads after signing in.
+   */
+  function show(message, options) {
+    options = options || {};
     var old = document.getElementById('gate');
     if (old) old.remove();
 
@@ -34,8 +45,8 @@
       '<div class="gate-box" role="dialog" aria-labelledby="gateTitle">' +
       '<div class="gate-brand">Process&nbsp;Hub</div>' +
       '<h1 id="gateTitle">Sign in</h1>' +
-      '<p class="gate-lede">Process Hub holds internal council content, kept in a private ' +
-      'repository. Sign in with your GitHub access token to open it.</p>' +
+      '<p class="gate-lede">' + e(options.lede || ('Process Hub holds internal council content, kept in a ' +
+        'private repository. Sign in with your GitHub access token to open it.')) + '</p>' +
       (message ? '<p class="gate-why">' + e(message) + '</p>' : '') +
       '<label for="gateToken">Access token</label>' +
       '<input type="password" id="gateToken" autocomplete="off" spellcheck="false" ' +
@@ -73,7 +84,7 @@
             'storage blocked), so it cannot keep you signed in.');
         }
         result.className = 'gate-result good';
-        result.textContent = 'Signed in. Opening Process Hub…';
+        result.textContent = options.opening || 'Signed in. Opening Process Hub…';
         location.reload();
       }).catch(function (err) {
         go.disabled = false;
@@ -87,6 +98,26 @@
       if (ev.key === 'Enter') submit();
     });
     input.focus();
+  }
+
+  /**
+   * For a staff-only page: resolves once GitHub confirms the token kept in
+   * this browser can still read the private repository. Otherwise shows the
+   * sign-in screen and never resolves. The page should start with
+   * <body class="gated"> so nothing shows before the check; this removes it.
+   */
+  function require(options) {
+    options = options || {};
+    if (!GitHub.hasToken()) {
+      show('', options);
+      return new Promise(function () {});
+    }
+    return GitHub.check(GitHub.getToken()).then(function () {
+      document.body.classList.remove('gated');
+    }, function (err) {
+      show(err.message, options);
+      return new Promise(function () {});
+    });
   }
 
   /**
@@ -107,5 +138,5 @@
     });
   }
 
-  global.Gate = { show: show, signOut: signOut };
+  global.Gate = { show: show, require: require, signOut: signOut };
 }(window));
