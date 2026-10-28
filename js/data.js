@@ -46,9 +46,11 @@
       return '<span class="var-chip missing" title="No variable with the id ' +
         escapeHtml(id) + '">' + escapeHtml(id) + '</span>';
     }
+    var def = definitionOf(v);
     var classes = 'var-chip' + (v.internal ? ' internal' : '') +
-      (v.status === 'pending' ? ' pending' : '');
+      (v.status === 'pending' ? ' pending' : '') + (def ? ' has-def' : '');
     var tip = v.question || ('Value for ' + v.id);
+    if (def) tip = def + '\n\n' + tip;
     return '<span class="' + classes + '" data-var="' + escapeHtml(v.id) +
       '" title="' + escapeHtml(tip) + '">' + escapeHtml(v.value) + '</span>';
   }
@@ -119,10 +121,12 @@
         return;
       }
 
+      var def = definitionOf(v);
       node.className = 'faq-var var-chip' +
         (v.internal ? ' internal' : '') +
-        (v.status === 'pending' ? ' pending' : '');
-      node.title = v.question || v.id;
+        (v.status === 'pending' ? ' pending' : '') +
+        (def ? ' has-def' : '');
+      node.title = def ? def + '\n\n' + (v.question || v.id) : (v.question || v.id);
       if (mode === 'edit') node.setAttribute('contenteditable', 'false');
       else node.removeAttribute('contenteditable');
     });
@@ -134,6 +138,14 @@
     });
 
     return holder.innerHTML;
+  }
+
+  /**
+   * The optional definition a reader sees when they hover over a value —
+   * a reminder of what a term means, kept out of the sentence itself.
+   */
+  function definitionOf(v) {
+    return v && typeof v.definition === 'string' ? v.definition.trim() : '';
   }
 
   /** Values baked in, for anything leaving the app (SVG, exports, email). */
@@ -1020,6 +1032,7 @@
     editableHtml: editableHtml,
     canonicalHtml: canonicalHtml,
     refreshSpans: refreshSpans,
+    definitionOf: definitionOf,
     freeze: freeze,
     variable: variable,
     search: search,

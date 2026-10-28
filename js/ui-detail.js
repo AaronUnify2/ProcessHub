@@ -1620,6 +1620,11 @@
         { placeholder: 'What you would ask the department' }) + '</div>' +
       '<div class="note">' + f('variable:' + id + ':note',
         { placeholder: 'Optional context for the department' }) + '</div>' +
+      '<div class="var-definition"><span class="var-definition-label">Definition shown on hover</span>' +
+      f('variable:' + id + ':definition', { type: 'multiline',
+        placeholder: v.internal === true
+          ? 'Optional — shown to staff only, since this value is internal'
+          : 'Optional — what this means, for readers who hover over it in an answer' }) + '</div>' +
       '<div class="row-actions">' +
       btn('verify', { variable: id }, '✓ Mark verified') +
       btn('copy-verification', { owner: v.ownerId || '' }, '⧉ Copy verification email') +
