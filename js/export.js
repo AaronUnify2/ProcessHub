@@ -40,6 +40,29 @@
       .replace(/(data-var-href=)"var_([^"]*)"/g, '$1"$2"');
   }
 
+  /**
+   * Wrap each value that has a definition in <abbr title="…">, so a reader
+   * can hover over it to see what it means. Browsers underline an abbr with
+   * a title and show the title on hover, so the public page needs no change
+   * to show it. Internal variables never carry one out. Mirrored in
+   * tools/export-faq.py — keep the two identical, or --check reports every
+   * answer that uses a definition.
+   */
+  var DEFINED_SPAN = /(<span class="faq-var" data-var="(var_[^"]*)"[^>]*>[^<]*<\/span>)/g;
+
+  function withDefinitions(html) {
+    return String(html || '').replace(DEFINED_SPAN, function (whole, span, id) {
+      var v = Data.variable(id);
+      var def = Data.definitionOf(v);
+      if (!def || v.internal) return whole;
+      return '<abbr class="faq-def" title="' + e(def) + '">' + span + '</abbr>';
+    });
+  }
+
+  function publicHtml(html) {
+    return stripPrefix(withDefinitions(html));
+  }
+
   function ownerName(id) {
     var node = Data.state.index.taxonomy[id];
     return node ? node.name : '';
@@ -57,6 +80,7 @@
         if (v.ownerId) item.owner = ownerName(v.ownerId);
         if (v.type && v.type !== 'text') item.type = v.type;
         if (v.note) item.note = v.note;
+        if (Data.definitionOf(v)) item.definition = Data.definitionOf(v);
         return item;
       });
 
@@ -70,7 +94,7 @@
     var tabs = Data.state.library.publishTabs.map(function (tab) {
       var out = { id: tab.id, label: tab.label };
       if (tab['new']) out['new'] = true;
-      if (tab.intro) out.intro = stripPrefix(tab.intro);
+      if (tab.intro) out.intro = publicHtml(tab.intro);
 
       var stepper = tab.stepper || [];
       if (tab.stepperFrom) stepper = stepperFromProcess(tab.stepperFrom) || stepper;
@@ -87,11 +111,11 @@
           group = f.publish.groupTitle;
           items.push({ type: 'group', title: group });
         }
-        items.push({ type: 'faq', q: f.q, a: stripPrefix(f.a) });
+        items.push({ type: 'faq', q: f.q, a: publicHtml(f.a) });
       });
       out.items = items;
 
-      if (tab.footer) out.footer = stripPrefix(tab.footer);
+      if (tab.footer) out.footer = publicHtml(tab.footer);
       if (tab.lastReviewed) out.lastReviewed = tab.lastReviewed;
       return out;
     });

@@ -122,6 +122,14 @@ department's values.
   when someone last checked — then **Where it's used**, by fact sheet,
   process (with the step numbers) and FAQ answer, then its **Issues**. The
   breadcrumb at the top is the same path as the sidebar.
+- A variable can carry a **definition** (on its page, under the note): a
+  short reminder of what the value means — what *NPPR* stands for, say.
+  Wherever the value appears in an FAQ answer it is underlined with dots,
+  and hovering over it shows the definition, so the sentence stays short for
+  readers who already know. On Publish, `exports/FAQ.json` wraps each such
+  value in `<abbr class="faq-def" title="…">`, which browsers show on hover
+  without any change to the public page, and lists the definition with the
+  variable. Internal variables never carry a definition out.
 - A department's page lists the **Variable sources** its values draw on.
 
 ## The FAQ section
