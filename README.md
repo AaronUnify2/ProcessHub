@@ -67,7 +67,10 @@ never needs editing.
 - Wide tables scroll sideways on a phone; printing shows every answer in the
   tab, opened.
 
-It needs no sign-in: everything on it is already public.
+It needs no sign-in: everything on it is already public. Like every page
+here, it asks search engines not to index it (`<meta name="robots"
+content="noindex, nofollow">`), so people reach it through links Council
+gives out rather than through a search.
 
 ## Signing in
 
