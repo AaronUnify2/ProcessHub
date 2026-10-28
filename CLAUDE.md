@@ -87,6 +87,12 @@ a question; links already sent out depend on both, so keep them working. The
 older copy of the page in the UnifyVersion1 repository reads the same file
 and still works, but nothing here links to it any more.
 
+Every page here carries `<meta name="robots" content="noindex, nofollow">`
+so search engines leave it out; keep it on any new page. (A `robots.txt`
+can't do this job for a Pages project site: it would have to sit at the
+root of `aaronunify2.github.io`, and blocking crawlers there would stop them
+seeing the `noindex` at all.)
+
 ## Writing FAQ content
 
 Workshopping FAQ questions and answers with Aaron is done in a separate
