@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frequently asked questions — Southern Downs Regional Council</title>
+<meta name="description" content="Answers to common questions about building, planning, rates, water, waste, animals and more in the Southern Downs.">
+<meta name="theme-color" content="#16525e">
+<style>
+/* ===========================================================================
+   FAQ.html — the public FAQ page.
+
+   Everything on it comes from exports/FAQ.json, which Process Hub's Publish
+   button writes beside this page. To change a question or answer, edit it in
+   Process Hub and publish; nothing here needs touching.
+
+   Links into the page:
+     FAQ.html#water                  opens the Water tab
+     FAQ.html#water/<question-slug>  opens that tab and that question
+   Opening a question puts its link in the address bar, so it can be copied
+   and sent to someone.
+   =========================================================================== */
+
+:root {
+  --ink: #18222b;
+  --ink-soft: #4a5862;
+  --ink-faint: #6f7d86;
+  --line: #dde3e6;
+  --line-strong: #c4ced3;
+  --paper: #ffffff;
+  --wash: #f4f7f7;
+  --accent: #16525e;
+  --accent-strong: #0e3a43;
+  --accent-wash: #e6f0f1;
+  --note-wash: #eef4fb;
+  --note-line: #3b6ea5;
+  --warn-wash: #fff6e0;
+  --warn-line: #c98a00;
+  --term-wash: #edf6ee;
+  --term-line: #3d7d47;
+  --mark: #fff0a8;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(16, 38, 46, 0.06), 0 2px 8px rgba(16, 38, 46, 0.05);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--wash);
+}
+
+a { color: var(--accent); text-underline-offset: 2px; }
+a:hover { color: var(--accent-strong); }
+
+:focus-visible { outline: 3px solid #5aa6b5; outline-offset: 2px; border-radius: 4px; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--accent); color: #fff; padding: 8px 14px; z-index: 50;
+}
+.skip:focus { left: 8px; top: 8px; }
+
+/* ---- header ------------------------------------------------------------ */
+
+.masthead {
+  background: var(--accent);
+  color: #fff;
+  padding: 28px 0 72px;
+}
+.masthead-inner { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.masthead h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 4.5vw, 2.6rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.masthead p.lede { margin: 10px 0 0; max-width: 40em; opacity: 0.92; }
+
+/* ---- search ------------------------------------------------------------ */
+
+.shell { max-width: 920px; margin: -48px auto 0; padding: 0 16px 64px; }
+
+.search {
+  position: relative;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 18px rgba(16, 38, 46, 0.12);
+}
+.search label {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
+}
+.search svg {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 20px; height: 20px; color: var(--ink-faint); pointer-events: none;
+}
+.search input {
+  width: 100%;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  padding: 16px 48px 16px 46px;
+  font: inherit;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search input:focus { outline: none; border-color: #5aa6b5; }
+.search input::-webkit-search-cancel-button { display: none; }
+.search .clear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  border: none; background: none; cursor: pointer;
+  width: 36px; height: 36px; border-radius: 50%;
+  font-size: 1.3rem; line-height: 1; color: var(--ink-faint);
+}
+.search .clear:hover { background: var(--wash); color: var(--ink); }
+
+/* ---- tabs -------------------------------------------------------------- */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 22px;
+  padding: 0;
+  list-style: none;
+}
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab:hover { border-color: var(--accent); color: var(--accent); }
+.tab[aria-selected="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.tab .new {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: #f2b632;
+  color: #3a2a00;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+/* On a phone the tabs become one row that scrolls sideways. */
+@media (max-width: 640px) {
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    margin: 16px -16px 18px;
+    padding: 2px 16px 6px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { scroll-snap-align: start; }
+}
+
+/* ---- a tab's page ------------------------------------------------------ */
+
+.panel[hidden] { display: none; }
+
+.panel-head { margin: 0 0 14px; }
+.panel-head h2 { margin: 0; font-size: 1.5rem; line-height: 1.25; }
+.panel-head .count { margin: 2px 0 0; color: var(--ink-faint); font-size: 0.9rem; }
+
+.intro {
+  background: var(--paper);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--accent);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  color: var(--ink-soft);
+}
+.intro strong { color: var(--ink); }
+.intro > :first-child { margin-top: 0; }
+.intro > :last-child { margin-bottom: 0; }
+.intro p { margin: 0 0 8px; }
+
+/* A tab's steps, and the same markup where an answer uses it. */
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+.stepper .step {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.stepper .step b {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+@media (max-width: 640px) {
+  .stepper { grid-template-columns: 1fr; gap: 0; border-left: 2px solid var(--line-strong); margin-left: 6px; padding-left: 0; }
+  .stepper .step {
+    position: relative; background: none; border: none; border-radius: 0;
+    padding: 4px 0 10px 18px;
+  }
+  .stepper .step::before {
+    content: ""; position: absolute; left: -7px; top: 8px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--paper); border: 3px solid var(--accent);
+  }
+}
+
+.group {
+  margin: 28px 0 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.list > .group:first-child { margin-top: 0; }
+
+.list { margin: 0; padding: 0; list-style: none; }
+
+/* ---- a question -------------------------------------------------------- */
+
+.qa {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  box-shadow: var(--shadow);
+  scroll-margin-top: 12px;
+}
+.qa.open { border-color: var(--line-strong); }
+
+.qa-q {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  margin: 0;
+  padding: 16px 18px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.45;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: var(--radius);
+}
+.qa-q:hover { color: var(--accent); }
+.qa-q .q-text { flex: 1; }
+.qa-q .where {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink-faint);
+}
+.qa-q .chev {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  margin-top: -1px;
+  border-radius: 50%;
+  background: var(--accent-wash);
+  color: var(--accent);
+  display: grid; place-items: center;
+  transition: transform 0.2s ease;
+}
+.qa-q .chev svg { width: 14px; height: 14px; }
+.qa.open .qa-q .chev { transform: rotate(180deg); }
+
+.qa-a {
+  padding: 0 18px 18px;
+  font-size: 0.96rem;
+  line-height: 1.65;
+  color: #26323b;
+}
+.qa-a[hidden] { display: none; }
+.qa-a > .body { border-top: 1px solid var(--line); padding-top: 14px; }
+.qa-a .body > :first-child { margin-top: 0; }
+.qa-a .body > :last-child { margin-bottom: 0; }
+
+.qa-tools {
+  display: flex; justify-content: flex-end;
+  margin-top: 14px;
+}
+.copy-link {
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.copy-link:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- answer content ---------------------------------------------------- */
+
+.body p { margin: 0 0 10px; }
+.body ul, .body ol { margin: 6px 0 12px; padding-left: 1.4em; }
+.body li { margin-bottom: 5px; }
+.body h4 { font-size: 1rem; }
+.body strong, .body b { color: var(--ink); }
+/* Sizes pasted in from other pages would make some paragraphs smaller than others. */
+.body [style*="font-size"] { font-size: inherit !important; }
+
+.body .note, .body .warn, .body .term {
+  border-radius: 8px;
+  border-left: 4px solid;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 0.93rem;
+}
+.body .note { background: var(--note-wash); border-left-color: var(--note-line); }
+.body .warn { background: var(--warn-wash); border-left-color: var(--warn-line); }
+.body .term { background: var(--term-wash); border-left-color: var(--term-line); }
+
+.table-scroll {
+  overflow-x: auto;
+  margin: 10px 0 14px;
+  -webkit-overflow-scrolling: touch;
+}
+.body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 0;
+}
+.body th, .body td {
+  border: 1px solid var(--line-strong);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.45;
+}
+.body thead th {
+  background: var(--accent-wash);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.body .setback-table tbody td:first-child,
+.body .facility-table tbody td:first-child { font-weight: 600; background: #f8fafa; }
+@media (max-width: 640px) {
+  .body table { min-width: 520px; }
+}
+
+/* ---- terms with a definition ------------------------------------------- */
+
+abbr.faq-def {
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--accent);
+  cursor: help;
+  border-radius: 3px;
+}
+abbr.faq-def:hover, abbr.faq-def[aria-expanded="true"] { background: var(--accent-wash); }
+
+.def-tip {
+  position: absolute;
+  z-index: 40;
+  max-width: min(320px, calc(100vw - 24px));
+  background: var(--ink);
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+}
+.def-tip[hidden] { display: none; }
+.def-tip .def-term { display: block; font-weight: 700; margin-bottom: 2px; }
+
+/* ---- search results ---------------------------------------------------- */
+
+.results-head { margin: 0 0 12px; color: var(--ink-soft); }
+.results-head strong { color: var(--ink); }
+mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1px; }
+.empty {
+  background: var(--paper);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  box-shadow: var(--shadow);
+  color: var(--ink-soft);
+}
+.empty p { margin: 0 0 6px; }
+
+/* ---- foot of a tab ----------------------------------------------------- */
+
+.panel-foot {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-strong);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+.panel-foot a { margin: 0 2px; }
+.reviewed { margin: 10px 0 0; font-size: 0.82rem; color: var(--ink-faint); }
+
+.status { padding: 24px 0; color: var(--ink-soft); }
+.status.error { color: #9b1c1c; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+  background: var(--ink); color: #fff; border-radius: 999px;
+  padding: 8px 16px; font-size: 0.88rem; z-index: 60;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+.toast[hidden] { display: none; }
+
+/* ---- printing ---------------------------------------------------------- */
+
+@media print {
+  body { background: #fff; font-size: 11pt; }
+  .masthead { background: none; color: #000; padding: 0 0 8pt; }
+  .shell { margin: 0; padding: 0; max-width: none; }
+  .search, .tabs, .copy-link, .skip, .def-tip, .toast, .qa-q .chev { display: none !important; }
+  .qa { box-shadow: none; break-inside: avoid; border-color: #bbb; }
+  .qa-a[hidden] { display: block !important; }
+  .intro, .stepper .step, .empty { box-shadow: none; }
+  a { color: #000; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qa-q .chev { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#content">Skip to the questions</a>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <p class="eyebrow">Southern Downs Regional Council</p>
+    <h1>Frequently asked questions</h1>
+    <p class="lede">Answers about building, planning, rates, water, waste, animals and more. Pick a topic, or search every question at once.</p>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="search" role="search">
+    <label for="q">Search all questions</label>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+    <input id="q" type="search" placeholder="Search all questions — e.g. shed, bins, Form 21" autocomplete="off" enterkeyhint="search">
+    <button class="clear" type="button" id="clear" aria-label="Clear search" hidden>×</button>
+  </div>
+
+  <ul class="tabs" id="tabs" role="tablist" aria-label="Topics"></ul>
+
+  <div id="content" tabindex="-1">
+    <p class="status" id="status">Loading the questions…</p>
+    <noscript><p class="status error">This page needs JavaScript turned on to show the questions.</p></noscript>
+  </div>
+</main>
+
+<div class="def-tip" id="defTip" role="tooltip" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Process Hub's Publish button writes this file beside the page.
+  var DATA_URL = 'exports/FAQ.json';
+
+  var data = null;
+  var tabs = [];          // [{ id, label, plain, panel, button, items: [question] }]
+  var questions = [];     // every question: { tab, slug, q, a, plainQ, plainA, node }
+  var currentTab = null;
+  var tabsEl = document.getElementById('tabs');
+  var contentEl = document.getElementById('content');
+  var searchEl = document.getElementById('q');
+  var clearEl = document.getElementById('clear');
+  var resultsEl = null;
+
+  // ---- small helpers -------------------------------------------------------
+
+  function el(tag, className, html) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (html != null) node.innerHTML = html;
+    return node;
+  }
+
+  /** The text of a piece of HTML, without running anything in it. */
+  var scratch = document.implementation.createHTMLDocument('');
+  function plain(html) {
+    var div = scratch.createElement('div');
+    div.innerHTML = html || '';
+    return (div.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function slugify(text) {
+    return text.toLowerCase()
+      .replace(/['’]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 70)
+      .replace(/-+$/g, '');
+  }
+
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  var CHEVRON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>';
+
+  // ---- building the page ---------------------------------------------------
+
+  function render(json) {
+    data = json;
+    var values = variableMap(json.variables || []);
+    contentEl.innerHTML = '';
+
+    (json.tabs || []).forEach(function (tab, index) {
+      var entry = { id: tab.id, label: tab.label, plain: plain(tab.label), items: [] };
+      entry.button = buildTabButton(tab, index);
+      entry.panel = buildPanel(tab, entry, values);
+      tabs.push(entry);
+      tabsEl.appendChild(entry.button.parentNode);
+      contentEl.appendChild(entry.panel);
+    });
+
+    resultsEl = el('section', 'panel');
+    resultsEl.hidden = true;
+    resultsEl.setAttribute('aria-live', 'polite');
+    contentEl.appendChild(resultsEl);
+
+    resolveVariables(contentEl, values);
+    prepareContent(contentEl);
+
+    if (!tabs.length) {
+      contentEl.innerHTML = '<p class="status">There are no questions published yet.</p>';
+      return;
+    }
+    if (!followHash(false)) showTab(tabs[0].id, false);
+  }
+
+  function buildTabButton(tab, index) {
+    var li = el('li');
+    li.setAttribute('role', 'presentation');
+    var button = el('button', 'tab', tab.label + (tab['new'] ? ' <span class="new">NEW</span>' : ''));
+    button.type = 'button';
+    button.id = 'tab-' + tab.id;
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-controls', 'panel-' + tab.id);
+    button.setAttribute('aria-selected', 'false');
+    button.tabIndex = index === 0 ? 0 : -1;
+    button.addEventListener('click', function () {
+      clearSearch();
+      showTab(tab.id, true);
+    });
+    button.addEventListener('keydown', onTabKey);
+    li.appendChild(button);
+    return button;
+  }
+
+  function buildPanel(tab, entry, values) {
+    var panel = el('section', 'panel');
+    panel.id = 'panel-' + tab.id;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', 'tab-' + tab.id);
+    panel.hidden = true;
+
+    var count = (tab.items || []).filter(function (i) { return i.type !== 'group'; }).length;
+    var head = el('div', 'panel-head');
+    head.appendChild(el('h2', null, tab.label));
+    head.appendChild(el('p', 'count', count + (count === 1 ? ' question' : ' questions')));
+    panel.appendChild(head);
+
+    if (tab.intro) panel.appendChild(el('div', 'intro body', tab.intro));
+
+    if (tab.stepper && tab.stepper.length) {
+      var steps = el('ol', 'stepper');
+      tab.stepper.forEach(function (s) {
+        steps.appendChild(el('li', 'step', '<b>' + s.label + '</b>' + s.text));
+      });
+      panel.appendChild(steps);
+    }
+
+    var list = el('ul', 'list');
+    var used = {};
+    var group = '';
+    (tab.items || []).forEach(function (item) {
+      if (item.type === 'group') {
+        group = plain(item.title);
+        var heading = el('li', 'group', item.title);
+        heading.setAttribute('role', 'heading');
+        heading.setAttribute('aria-level', '3');
+        list.appendChild(heading);
+        return;
+      }
+      var slug = slugify(plain(item.q)) || 'question';
+      var unique = slug, n = 2;
+      while (used[unique]) unique = slug + '-' + n++;
+      used[unique] = true;
+
+      var question = {
+        tab: entry, slug: unique, q: item.q, a: item.a || '', group: group,
+        plainQ: plain(item.q), plainA: plain(item.a)
+      };
+      question.node = buildQuestion(question, false);
+      entry.items.push(question);
+      questions.push(question);
+      list.appendChild(question.node);
+    });
+    panel.appendChild(list);
+
+    if (tab.footer) panel.appendChild(el('div', 'panel-foot body', tab.footer));
+    if (tab.lastReviewed) panel.appendChild(el('p', 'reviewed', 'Last reviewed: ' + escapeHtml(tab.lastReviewed)));
+    return panel;
+  }
+
+  var nextId = 1;
+  function buildQuestion(question, inResults, highlight) {
+    var li = el('li', 'qa');
+    var answerId = 'a' + nextId++;
+    li.id = inResults ? '' : 'q-' + question.tab.id + '-' + question.slug;
+
+    var button = el('button', 'qa-q');
+    button.type = 'button';
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', answerId);
+    var text = el('span', 'q-text', highlight ? highlight(question.q) : question.q);
+    if (inResults) {
+      text.appendChild(el('span', 'where', escapeHtml(question.tab.plain) +
+        (question.group ? ' · ' + escapeHtml(question.group) : '')));
+    }
+    button.appendChild(text);
+    button.appendChild(el('span', 'chev', CHEVRON));
+
+    var answer = el('div', 'qa-a');
+    answer.id = answerId;
+    answer.hidden = true;
+    answer.appendChild(el('div', 'body', question.a));
+    var tools = el('div', 'qa-tools');
+    var copy = el('button', 'copy-link', 'Copy link to this question');
+    copy.type = 'button';
+    copy.addEventListener('click', function () { copyLink(question); });
+    tools.appendChild(copy);
+    answer.appendChild(tools);
+
+    button.addEventListener('click', function () {
+      var opening = button.getAttribute('aria-expanded') !== 'true';
+      setOpen(li, opening);
+      if (opening && !inResults) setHash(question.tab.id + '/' + question.slug);
+      if (!opening && !inResults) setHash(question.tab.id);
+    });
+
+    li.appendChild(button);
+    li.appendChild(answer);
+    return li;
+  }
+
+  function setOpen(li, open) {
+    li.classList.toggle('open', open);
+    li.querySelector('.qa-q').setAttribute('aria-expanded', open ? 'true' : 'false');
+    li.querySelector('.qa-a').hidden = !open;
+    if (!open) hideDefinition();
+  }
+
+  // ---- variables and definitions -------------------------------------------
+
+  function variableMap(list) {
+    var map = {};
+    list.forEach(function (v) { if (v && v.id != null) map[v.id] = v; });
+    return map;
+  }
+
+  /**
+   * Fill in values from the variables list: a <span data-var> gets its text,
+   * a link with data-var-href its address. Ids not in the list keep the text
+   * already in the answer. A value with a definition that the answer does not
+   * already wrap gets one, so definitions show even in an older FAQ.json.
+   */
+  function resolveVariables(root, values) {
+    Array.prototype.forEach.call(root.querySelectorAll('[data-var]'), function (node) {
+      var v = values[node.getAttribute('data-var')];
+      if (!v) return;
+      if (v.value != null) node.textContent = v.value;
+      if (v.definition && !node.closest('abbr')) {
+        var abbr = document.createElement('abbr');
+        abbr.className = 'faq-def';
+        abbr.title = v.definition;
+        node.parentNode.insertBefore(abbr, node);
+        abbr.appendChild(node);
+      }
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-var-href]'), function (node) {
+      var v = values[node.getAttribute('data-var-href')];
+      if (v && v.value != null) node.setAttribute('href', v.value);
+    });
+  }
+
+  /** Definitions become tappable, wide tables scroll, outside links open apart. */
+  function prepareContent(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('abbr.faq-def'), function (abbr) {
+      // The page shows its own box, which also works on a phone; the browser's
+      // own tooltip would show the same words a second time.
+      if (abbr.title) {
+        abbr.setAttribute('data-def', abbr.title);
+        abbr.removeAttribute('title');
+      }
+      abbr.tabIndex = 0;
+      abbr.setAttribute('role', 'button');
+      abbr.setAttribute('aria-expanded', 'false');
+      abbr.setAttribute('aria-label', abbr.textContent + ': ' + abbr.getAttribute('data-def'));
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('.body table'), function (table) {
+      if (table.parentNode.classList.contains('table-scroll')) return;
+      var wrap = el('div', 'table-scroll');
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('.body a[target="_blank"]'), function (a) {
+      a.setAttribute('rel', 'noopener');
+    });
+  }
+
+  var tipEl = document.getElementById('defTip');
+  var tipFor = null;
+  var hoverTimer = null;
+
+  function showDefinition(abbr) {
+    clearTimeout(hoverTimer);
+    if (tipFor === abbr) return;
+    hideDefinition();
+    tipFor = abbr;
+    tipEl.innerHTML = '<span class="def-term">' + escapeHtml(abbr.textContent) + '</span>' +
+      escapeHtml(abbr.getAttribute('data-def'));
+    tipEl.hidden = false;
+    abbr.setAttribute('aria-expanded', 'true');
+    abbr.setAttribute('aria-describedby', 'defTip');
+    placeDefinition(abbr);
+  }
+
+  function placeDefinition(abbr) {
+    var r = abbr.getBoundingClientRect();
+    var tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+    var vw = document.documentElement.clientWidth;
+    var left = Math.min(Math.max(12, r.left + r.width / 2 - tw / 2), vw - tw - 12);
+    var top = r.bottom + 8;
+    if (top + th > window.innerHeight - 8 && r.top - th - 8 > 0) top = r.top - th - 8;
+    tipEl.style.left = (left + window.pageXOffset) + 'px';
+    tipEl.style.top = (top + window.pageYOffset) + 'px';
+  }
+
+  function hideDefinition() {
+    clearTimeout(hoverTimer);
+    if (!tipFor) return;
+    tipFor.setAttribute('aria-expanded', 'false');
+    tipFor.removeAttribute('aria-describedby');
+    tipFor = null;
+    tipEl.hidden = true;
+  }
+
+  function defAt(target) {
+    return target && target.closest ? target.closest('abbr.faq-def[data-def]') : null;
+  }
+
+  // Pressing a term focuses it, and focus shows its definition, so by the
+  // time the click arrives the box is already open. Whether a tap opens or
+  // closes it depends on what was open when the press began.
+  var openAtPress = null;
+  document.addEventListener('pointerdown', function () { openAtPress = tipFor; }, true);
+
+  document.addEventListener('click', function (event) {
+    var abbr = defAt(event.target);
+    if (abbr) {
+      var wasOpen = openAtPress === abbr;
+      openAtPress = null;
+      // A definition inside a link should not follow the link on first tap.
+      if (abbr.closest('a') && !wasOpen) event.preventDefault();
+      // With a mouse, hovering already shows it; a click keeps it showing.
+      if (wasOpen && lastPointer !== 'mouse' && !abbr.closest('a')) hideDefinition();
+      else showDefinition(abbr);
+      return;
+    }
+    openAtPress = null;
+    if (!tipEl.contains(event.target)) hideDefinition();
+  });
+  // A tap on a phone also sends a pretend hover just before its click. Hover
+  // is for a mouse only, or the tap would open the box and close it again.
+  var lastPointer = 'mouse';
+  document.addEventListener('pointerdown', function (event) {
+    lastPointer = event.pointerType || 'mouse';
+  }, true);
+  document.addEventListener('mouseover', function (event) {
+    if (lastPointer === 'touch' || lastPointer === 'pen') return;
+    var abbr = defAt(event.target);
+    if (abbr) showDefinition(abbr);
+  });
+  document.addEventListener('pointermove', function (event) {
+    if (event.pointerType === 'mouse') lastPointer = 'mouse';
+  }, { passive: true });
+  document.addEventListener('mouseout', function (event) {
+    if (lastPointer === 'touch' || lastPointer === 'pen') return;
+    var abbr = defAt(event.target);
+    if (abbr && abbr === tipFor && !abbr.contains(event.relatedTarget)) {
+      hoverTimer = setTimeout(hideDefinition, 150);
+    }
+  });
+  document.addEventListener('focusin', function (event) {
+    var abbr = defAt(event.target);
+    if (abbr) showDefinition(abbr);
+    else if (tipFor) hideDefinition();
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') hideDefinition();
+    var abbr = defAt(event.target);
+    if (abbr && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      if (tipFor === abbr) hideDefinition(); else showDefinition(abbr);
+    }
+  });
+  window.addEventListener('resize', hideDefinition);
+  window.addEventListener('scroll', function () { if (tipFor) placeDefinition(tipFor); }, { passive: true });
+
+  // ---- tabs ----------------------------------------------------------------
+
+  function findTab(id) {
+    for (var i = 0; i < tabs.length; i++) if (tabs[i].id === id) return tabs[i];
+    return null;
+  }
+
+  function showTab(id, updateHash) {
+    var tab = findTab(id) || tabs[0];
+    currentTab = tab;
+    resultsEl.hidden = true;
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.panel.hidden = !on;
+      t.button.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.button.tabIndex = on ? 0 : -1;
+    });
+    hideDefinition();
+    revealTabButton(tab.button);
+    if (updateHash) setHash(tab.id);
+    return tab;
+  }
+
+  /** On a phone the tab row scrolls; keep the chosen tab in view. */
+  function revealTabButton(button) {
+    var row = tabsEl;
+    if (row.scrollWidth <= row.clientWidth) return;
+    var li = button.parentNode;
+    var left = li.offsetLeft - 16;
+    var right = li.offsetLeft + li.offsetWidth - row.clientWidth + 16;
+    if (row.scrollLeft > left) row.scrollLeft = left;
+    else if (row.scrollLeft < right) row.scrollLeft = right;
+  }
+
+  function onTabKey(event) {
+    var index = tabs.indexOf(currentTab);
+    var next = null;
+    if (event.key === 'ArrowRight') next = tabs[(index + 1) % tabs.length];
+    if (event.key === 'ArrowLeft') next = tabs[(index - 1 + tabs.length) % tabs.length];
+    if (event.key === 'Home') next = tabs[0];
+    if (event.key === 'End') next = tabs[tabs.length - 1];
+    if (!next) return;
+    event.preventDefault();
+    clearSearch();
+    showTab(next.id, true);
+    next.button.focus();
+  }
+
+  // ---- links into the page -------------------------------------------------
+
+  var settingHash = false;
+
+  function setHash(value) {
+    var hash = '#' + value;
+    if (location.hash === hash) return;
+    if (history.replaceState) {
+      history.replaceState(null, '', hash);
+    } else {
+      settingHash = true;
+      location.hash = hash;
+    }
+  }
+
+  /** Open whatever #tab or #tab/question names. Returns false if it names nothing. */
+  function followHash(scroll) {
+    var raw = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim();
+    if (!raw) return false;
+    var parts = raw.split('/');
+    var tab = findTab(parts[0]);
+    if (!tab) return false;
+    clearSearch();
+    showTab(tab.id, false);
+    if (parts[1]) {
+      var match = tab.items.filter(function (q) { return q.slug === parts[1]; })[0];
+      if (match) {
+        setOpen(match.node, true);
+        setTimeout(function () { match.node.scrollIntoView({ block: 'start' }); }, 0);
+        return true;
+      }
+    }
+    if (scroll) tabsEl.scrollIntoView({ block: 'start' });
+    return true;
+  }
+
+  window.addEventListener('hashchange', function () {
+    if (settingHash) { settingHash = false; return; }
+    if (tabs.length) followHash(true);
+  });
+
+  function copyLink(question) {
+    var url = location.href.replace(/#.*$/, '') + '#' + question.tab.id + '/' + question.slug;
+    var done = function () { toast('Link copied'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, function () { fallbackCopy(url); });
+    } else {
+      fallbackCopy(url);
+    }
+  }
+
+  function fallbackCopy(url) {
+    var input = el('textarea');
+    input.value = url;
+    input.setAttribute('readonly', '');
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    document.body.appendChild(input);
+    input.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    input.remove();
+    toast(ok ? 'Link copied' : url);
+  }
+
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function toast(text) {
+    toastEl.textContent = text;
+    toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.hidden = true; }, 2200);
+  }
+
+  // ---- search --------------------------------------------------------------
+
+  var searchTimer = null;
+
+  searchEl.addEventListener('input', function () {
+    clearEl.hidden = !searchEl.value;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(runSearch, 120);
+  });
+  searchEl.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') { clearSearch(); showTab(currentTab ? currentTab.id : tabs[0].id, false); }
+  });
+  clearEl.addEventListener('click', function () {
+    clearSearch();
+    showTab(currentTab ? currentTab.id : tabs[0].id, false);
+    searchEl.focus();
+  });
+
+  function clearSearch() {
+    if (!searchEl.value && (!resultsEl || resultsEl.hidden)) return;
+    searchEl.value = '';
+    clearEl.hidden = true;
+    if (resultsEl) { resultsEl.hidden = true; resultsEl.innerHTML = ''; }
+  }
+
+  function words(text) {
+    return text.toLowerCase().split(/\s+/).filter(function (w) { return w.length > 0; });
+  }
+
+  function runSearch() {
+    if (!tabs.length) return;
+    var terms = words(searchEl.value);
+    if (!terms.length || (terms.length === 1 && terms[0].length < 2)) {
+      resultsEl.hidden = true;
+      resultsEl.innerHTML = '';
+      showTab(currentTab ? currentTab.id : tabs[0].id, false);
+      return;
+    }
+
+    var scored = [];
+    questions.forEach(function (q) {
+      var inQ = q.plainQ.toLowerCase(), inA = q.plainA.toLowerCase();
+      var score = 0;
+      for (var i = 0; i < terms.length; i++) {
+        var t = terms[i];
+        var hitQ = inQ.indexOf(t) !== -1, hitA = inA.indexOf(t) !== -1;
+        if (!hitQ && !hitA) return;          // every word has to appear somewhere
+        score += (hitQ ? 3 : 0) + (hitA ? 1 : 0);
+      }
+      scored.push({ q: q, score: score, order: scored.length });
+    });
+    scored.sort(function (a, b) { return b.score - a.score || a.order - b.order; });
+
+    tabs.forEach(function (t) {
+      t.panel.hidden = true;
+      t.button.setAttribute('aria-selected', 'false');
+    });
+    hideDefinition();
+
+    resultsEl.innerHTML = '';
+    var shown = escapeHtml(searchEl.value.trim());
+    resultsEl.appendChild(el('p', 'results-head', scored.length
+      ? '<strong>' + scored.length + '</strong> ' + (scored.length === 1 ? 'question matches' : 'questions match') +
+        ' “' + shown + '”'
+      : ''));
+
+    if (!scored.length) {
+      resultsEl.innerHTML = '<div class="empty"><p><strong>No questions match “' + shown + '”.</strong></p>' +
+        '<p>Try fewer or different words, or pick a topic above. You can also call Council on ' +
+        councilPhone() + '.</p></div>';
+    } else {
+      var list = el('ul', 'list');
+      var mark = highlighter(terms);
+      scored.forEach(function (s) {
+        var node = buildQuestion(s.q, true, mark);
+        list.appendChild(node);
+      });
+      resultsEl.appendChild(list);
+      resolveVariables(resultsEl, variableMap(data.variables || []));
+      prepareContent(resultsEl);
+    }
+    resultsEl.hidden = false;
+  }
+
+  /** Mark the search words in a question's text, leaving its markup alone. */
+  function highlighter(terms) {
+    var pattern = new RegExp('(' + terms.map(function (t) {
+      return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }).join('|') + ')', 'gi');
+    return function (html) {
+      var holder = el('div', null, html);
+      var walker = document.createTreeWalker(holder, NodeFilter.SHOW_TEXT, null, false);
+      var nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(function (node) {
+        if (!pattern.test(node.nodeValue)) return;
+        pattern.lastIndex = 0;
+        var span = document.createElement('span');
+        span.innerHTML = escapeHtml(node.nodeValue).replace(pattern, '<mark>$1</mark>');
+        node.parentNode.replaceChild(span, node);
+      });
+      return holder.innerHTML;
+    };
+  }
+
+  /** Council's main number, from the variables list when it is loaded. */
+  function councilPhone() {
+    var v = data && variableMap(data.variables || [])['phone_1300_697_372'];
+    var number = (v && v.value) || '1300 697 372';
+    return '<a href="tel:' + number.replace(/[^0-9+]/g, '') + '">' + escapeHtml(number) + '</a>';
+  }
+
+  // ---- loading -------------------------------------------------------------
+
+  fetch(DATA_URL, { cache: 'no-cache' })
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(render)
+    .catch(function (err) {
+      var status = document.getElementById('status') || contentEl.appendChild(el('p', 'status'));
+      status.className = 'status error';
+      status.innerHTML = 'The questions could not be loaded just now. Please try again in a moment, ' +
+        'or call Council on ' + councilPhone() + '.';
+      console.error('Could not load ' + DATA_URL + ':', err);
+    });
+})();
+</script>
+</body>
+</html>

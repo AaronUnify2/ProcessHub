@@ -31,6 +31,7 @@ content in those older public copies was judged acceptable to leave.
 
 ```
   index.html         the app
+  FAQ.html           the public FAQ page, built from exports/FAQ.json (below)
   live.html          the live call view
   ask.html           experimental, staff only: ask a question in plain words, get the matching
                      FAQ answers (a small language model running in the browser)
@@ -47,6 +48,26 @@ content in those older public copies was judged acceptable to leave.
   vendor/            self-hosted copies of Transformers.js and the model for ask.html
                      and the Probe section — see vendor/README.md
 ```
+
+## The public FAQ page
+
+**https://aaronunify2.github.io/ProcessHub/FAQ.html** — what the public sees.
+It reads `exports/FAQ.json` from beside it each time it opens, so pressing
+**Publish** in Process Hub updates it within a minute or two; the page itself
+never needs editing.
+
+- A topic per tab, with its intro, steps, sections and questions. On a phone
+  the tabs become one row that scrolls sideways.
+- **Search** looks through every question and answer at once.
+- **Links**: `FAQ.html#water` opens a tab; `FAQ.html#water/<question>` opens a
+  question. Opening a question puts its link in the address bar, and **Copy
+  link to this question** copies it, to send to a customer.
+- **Definitions**: a value with a definition is underlined with dots; hover,
+  tap or tab to it to read the definition.
+- Wide tables scroll sideways on a phone; printing shows every answer in the
+  tab, opened.
+
+It needs no sign-in: everything on it is already public.
 
 ## Signing in
 

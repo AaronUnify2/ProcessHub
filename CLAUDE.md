@@ -79,9 +79,13 @@ they are, without running Jekyll over them:
 https://aaronunify2.github.io/ProcessHub/
 ```
 
-The public FAQ page, `FAQ.html` in the UnifyVersion1 repository, reads
-`https://aaronunify2.github.io/ProcessHub/exports/FAQ.json`. Changing the shape
-of that file breaks the public page.
+The public FAQ page is `FAQ.html` here, at
+`https://aaronunify2.github.io/ProcessHub/FAQ.html`. It reads
+`exports/FAQ.json` beside it, so changing the shape of that file breaks the
+public page. `FAQ.html#<tab>` opens a tab and `FAQ.html#<tab>/<question-slug>`
+a question; links already sent out depend on both, so keep them working. The
+older copy of the page in the UnifyVersion1 repository reads the same file
+and still works, but nothing here links to it any more.
 
 ## Writing FAQ content
 

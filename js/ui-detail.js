@@ -1045,7 +1045,7 @@
 
   // ---- FAQ -----------------------------------------------------------------
 
-  var PUBLIC_FAQ = 'https://aaronunify2.github.io/UnifyVersion1/FAQ.html';
+  var PUBLIC_FAQ = 'https://aaronunify2.github.io/ProcessHub/FAQ.html';
 
   function renderFaq(id) {
     var q = Data.state.index.faqs[id];

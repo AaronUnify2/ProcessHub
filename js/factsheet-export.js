@@ -24,7 +24,7 @@
 (function (global) {
   'use strict';
 
-  var PUBLIC_FAQ = 'https://aaronunify2.github.io/UnifyVersion1/FAQ.html';
+  var PUBLIC_FAQ = 'https://aaronunify2.github.io/ProcessHub/FAQ.html';
   var WITHHELD = '[internal value withheld]';
 
   function e(text) { return Data.escapeHtml(text); }
