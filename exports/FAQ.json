@@ -2828,7 +2828,7 @@
         {
           "type": "faq",
           "q": "Where is my water meter?",
-          "a": "<p>Water meters are usually near the front boundary of the property, close to the street. They are often in a small covered box set into the ground. If you cannot find yours, call <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> and we can look up exactly where it is.</p>"
+          "a": "<p>Water meters are usually near the front boundary of the property, close to the street. They are often in a small, covered box set into the ground.&nbsp;<span style=\"font-size: 0.92rem;\">If you cannot find yours,</span><span style=\"font-size: 0.92rem;\">&nbsp;</span><span style=\"font-size: 0.92rem;\">you can use the Underground Infrastructure Module on the&nbsp;</span><a href=\"https://sdrc.spatial.t1cloud.com/spatial/intramaps/?configId=15145eaf-c419-4c91-aa46-f0b9d5637836&amp;project=Online%20Mapping\" target=\"_blank\" data-var-href=\"url_sdrc_spatial_t1cloud_com\" style=\"font-size: 0.92rem; color: rgb(10, 102, 194);\">Online Mapping</a><span style=\"font-size: 0.92rem;\"> tool to see the exact location it was installed.&nbsp;</span></p><p>Alternatively,&nbsp;<span style=\"font-size: 0.92rem;\">call </span><span class=\"faq-var\" data-var=\"phone_1300_697_372\" style=\"font-size: 0.92rem; background: none 0% 0% / auto repeat scroll padding-box border-box rgb(234, 242, 251); color: rgb(10, 102, 194);\">1300 697 372</span><span style=\"font-size: 0.92rem;\"> and we can look up exactly where it is.&nbsp;</span><br></p>"
         },
         {
           "type": "faq",
