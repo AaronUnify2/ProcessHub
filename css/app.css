@@ -18,6 +18,12 @@
   --warn: #B45309;
   --warn-soft: #FEF6E7;
   --good: #2E7D53;
+  /* the two sides of the line of visibility */
+  --front: #0E7C86;
+  --front-soft: #E8F4F5;
+  --back: #52606D;
+  --back-soft: #EDF0F4;
+  --unsorted: #B8C0CA;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   --sidebar-w: 330px;
   --header-h: 52px;
@@ -882,7 +888,8 @@ select.edit-input { padding: 0.3rem 0.4rem; }
    Process map
    =========================================================================== */
 
-.view-toggle { display: inline-flex; gap: 2px; margin-bottom: 1.1rem;
+.view-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.8rem; margin-bottom: 1.1rem; }
+.view-toggle { display: inline-flex; gap: 2px;
   background: var(--bg); border-radius: 8px; padding: 2px; }
 .view-toggle .vt {
   font: inherit; font-size: 0.78rem; font-weight: 600;
@@ -2253,3 +2260,110 @@ a.source-title:hover { color: var(--accent); text-decoration: underline; }
 @media (max-width: 1100px) { .issue-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .issue-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 h2.group .btn { margin-left: 0.4rem; vertical-align: 1px; text-transform: none; letter-spacing: 0; }
+
+/* ===========================================================================
+   Service blueprint: the line of visibility
+   The customer journey (front) above it, back of house (back) below it.
+   A step's edge shows its side; its number shows its type.
+   =========================================================================== */
+
+/* -- the filter, shared by the step list and the map ----------------------- */
+
+.stage-filter { display: inline-flex; flex-wrap: wrap; gap: 2px;
+  background: var(--bg); border-radius: 8px; padding: 2px; }
+.stage-filter .sf {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font: inherit; font-size: 0.76rem; font-weight: 600;
+  padding: 0.25rem 0.75rem; border: none; border-radius: 6px;
+  background: none; color: var(--text-soft); cursor: pointer;
+}
+.stage-filter .sf.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.stage-filter .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.stage-filter .sf-front .dot { background: var(--front); }
+.stage-filter .sf-back .dot { background: var(--back); }
+.stage-filter .sf-front.on { color: var(--front); }
+.stage-filter .sf-back.on { color: var(--back); }
+
+.badge.stage-count.front { background: var(--front-soft); color: var(--front); }
+.badge.stage-count.back { background: var(--back-soft); color: var(--back); }
+
+/* -- the step list ---------------------------------------------------------- */
+
+.step { border-left-width: 5px; }
+.step.stage-front { border-left-color: var(--front); }
+.step.stage-back { border-left-color: var(--back); }
+.step.stage-none { border-left-color: var(--unsorted); border-left-style: dashed; }
+
+.step-entry .step-n, .node-entry .node-n { background: var(--good); color: #fff; }
+.step-decision .step-n, .node-decision .node-n { background: var(--warn); color: #fff; }
+.step-resolution .step-n, .node-resolution .node-n { background: #5B3FA8; color: #fff; }
+
+.step-stage { margin-top: 0.45rem; }
+.stage-pick { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+.stage-pick .sp {
+  font: inherit; font-size: 0.7rem; font-weight: 600;
+  padding: 1px 10px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-soft);
+}
+.stage-pick .sp:hover { border-color: currentColor; }
+.stage-pick .sp-front:hover { color: var(--front); }
+.stage-pick .sp-back:hover { color: var(--back); }
+.stage-pick .sp-front.on { background: var(--front); border-color: var(--front); color: #fff; }
+.stage-pick .sp-back.on { background: var(--back); border-color: var(--back); color: #fff; }
+.sp-unsorted { font-size: 0.68rem; color: var(--warn); font-weight: 600; }
+
+.stage-gap {
+  font-size: 0.74rem; color: var(--text-soft);
+  margin: 0 0 0.55rem 0.9rem; padding: 0.15rem 0.7rem;
+  border-left: 3px dotted var(--border-strong);
+}
+.stage-gap-front { border-left-color: var(--front); }
+.stage-gap-back { border-left-color: var(--back); }
+
+/* -- the map ---------------------------------------------------------------- */
+
+.canvas-viewport { background-image: none; }
+.canvas-lanes { position: absolute; top: 0; left: 0; }
+.bp-lane { position: absolute; left: 0; transition: background-color 0.12s, opacity 0.12s; }
+.bp-front { background: rgba(14, 124, 134, 0.07); }
+.bp-back { background: rgba(82, 96, 109, 0.07); }
+.bp-unsorted { background: rgba(255, 255, 255, 0.6); outline: 1.5px dashed var(--unsorted); outline-offset: -1px; }
+.bp-lane.faded { opacity: 0.45; }
+.bp-front.drop-target { background: rgba(14, 124, 134, 0.18); }
+.bp-back.drop-target { background: rgba(82, 96, 109, 0.18); }
+.bp-unsorted.drop-target { background: rgba(184, 192, 202, 0.25); }
+
+.bp-lane-label {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 0.15rem; line-height: 1.25;
+}
+.bp-lane-label strong { font-size: 0.9rem; font-weight: 700; }
+.bp-lane-label span { font-size: 0.72rem; color: var(--text-soft); }
+.bp-front .bp-lane-label strong { color: var(--front); }
+.bp-back .bp-lane-label strong { color: var(--back); }
+.bp-unsorted .bp-lane-label strong { color: var(--warn); }
+
+.bp-line {
+  position: absolute; left: 0; height: 0;
+  border-top: 2px dashed #334155;
+}
+.bp-line span {
+  position: absolute; left: 18px; top: 0; transform: translateY(-50%);
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: #334155; background: var(--surface); border: 1px solid #334155;
+  border-radius: 999px; padding: 1px 9px; white-space: nowrap;
+}
+
+.node { border-left-width: 5px; }
+.node.stage-front { border-left-color: var(--front); }
+.node.stage-back { border-left-color: var(--back); }
+.node.stage-none { border-left-color: var(--unsorted); border-left-style: dashed; }
+.node.faded { opacity: 0.3; pointer-events: none; }
+.canvas-wires g.faded { opacity: 0.25; }
+.canvas-wires g.faded .wire-hit, .canvas-wires g.faded .wire-label { pointer-events: none; }
+
+@media (max-width: 800px) {
+  .stage-filter .sf { padding: 0.25rem 0.55rem; font-size: 0.72rem; }
+}
+
+.badge.stage-count.unsorted { background: var(--warn-soft); color: var(--warn); }
