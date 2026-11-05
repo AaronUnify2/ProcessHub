@@ -317,9 +317,11 @@
               'step ' + number[c.to] + (to ? ': ' + e(Data.freeze(to.title)) : '') + '</li>';
           }).join('') + '</ul>'
         : '';
-      return handoff + '<div class="step ' + e(s.type) + '">' +
+      var stage = global.Blueprint ? Blueprint.stageOf(s) : '';
+      return handoff + '<div class="step ' + e(s.type) + ' stage-' + (stage || 'none') + '">' +
         '<div class="step-head"><span class="n">' + (i + 1) + '</span>' +
         '<span class="type">' + e(s.type) + '</span>' +
+        (global.Blueprint ? '<span class="stage">' + e(Blueprint.LABEL[stage]) + '</span>' : '') +
         '<h3>' + e(Data.freeze(s.title)) + '</h3></div>' +
         '<div class="meta"><span class="dept">' + e(Data.taxonomyName(s.departmentId)) + '</span>' +
         (s.responsibleRole ? '<span>' + e(s.responsibleRole) + '</span>' : '') +
@@ -339,6 +341,12 @@
         '</div>';
     }).join('');
 
+    // The blueprint, drawn as on the map, above the step-by-step detail.
+    var drawing = blueprintSvg(p, 'simple');
+    var blueprint = drawing
+      ? '<h2>Service blueprint</h2><div class="blueprint">' + drawing + '</div>'
+      : '';
+
     var open = Data.openIssues(p);
     var issues = open.length
       ? '<h2>Issues</h2>' + open.map(function (i) {
@@ -354,14 +362,16 @@
       '<p class="stamp">' + p.steps.length + ' steps · ' + flow.handoffs + ' handoff' +
       (flow.handoffs === 1 ? '' : 's') + ' · status: ' + e(p.status) +
       ' · exported ' + e(today()) + '</p>' +
-      steps + issues), 'text/html');
+      blueprint + '<h2>Steps</h2>' + steps + issues), 'text/html');
   }
 
   // ---- the process map as SVG ----------------------------------------------
   // Real vector output rather than a screenshot, so it scales and stays
-  // readable when someone drops it into a report. Geometry is shared with the
-  // canvas so the file matches what was on screen, and variables are frozen
-  // because an SVG cannot resolve anything at view time.
+  // readable when someone drops it into a report. The layout is the map's own
+  // (blueprint.js through canvas.js), so the file matches what was on screen:
+  // the customer journey above the line of visibility, back of house below
+  // it. Variables are frozen because an SVG cannot resolve anything at view
+  // time.
 
   var HEADER_H = 86;
 
@@ -383,33 +393,53 @@
     return lines.filter(function (l) { return l.length; });
   }
 
+  // A step's number is coloured by its type; its card's edge by its stage.
   var NODE_COLOUR = {
-    entry: '#2E7D53', action: '#0A66C2', decision: '#B45309', resolution: '#5B3FA8'
+    entry: '#2E7D53', action: '#6E6E73', decision: '#B45309', resolution: '#5B3FA8'
   };
+  var STAGE_COLOUR = { front: '#0E7C86', back: '#52606D', '': '#B8C0CA' };
+  var LANE_FILL = { front: '#E8F4F5', back: '#EDF0F4', '': '#FFFFFF' };
 
-  function processSvg(processId, detail) {
-    var p = Data.state.index.processes[processId];
-    if (!p) return;
+  /**
+   * The blueprint as SVG markup, without the XML declaration so it can sit
+   * inside an HTML page as well as stand alone. Empty if the map code is not
+   * loaded (the live call page has no map).
+   */
+  function blueprintSvg(p, detail) {
+    if (!global.Canvas || !global.Blueprint) return '';
     detail = detail || 'default';
-
     var W = Canvas.CARD_W;
-    var bounds = { width: 0, height: 0 };
-    p.steps.forEach(function (s) {
-      bounds.width = Math.max(bounds.width, (s.x || 0) + W);
-      bounds.height = Math.max(bounds.height, (s.y || 0) + Canvas.cardHeight(s));
-    });
-    bounds.width += 80;
-    bounds.height += 80;
-
+    var plan = Canvas.plan(p, detail);
+    var width = Math.max(plan.width + 40, 760);
     var parts = [];
 
-    // wires first, so cards sit on top of them
+    // lanes, their titles and the line, behind everything
+    plan.lanes.forEach(function (lane) {
+      parts.push('<rect x="0" y="' + lane.top + '" width="' + width + '" height="' + lane.height +
+        '" fill="' + LANE_FILL[lane.stage] + '"' +
+        (lane.stage ? '' : ' stroke="#C9D0D8" stroke-dasharray="6 4"') + '/>');
+      var labelY = lane.top + lane.height / 2 - 8;
+      parts.push('<text x="20" y="' + labelY + '" font-size="12.5" font-weight="700" fill="' +
+        STAGE_COLOUR[lane.stage] + '">' + e(lane.label) + '</text>');
+      wrapText(lane.hint, plan.gutter - 44, 10).slice(0, 3).forEach(function (line, n) {
+        parts.push('<text x="20" y="' + (labelY + 16 + n * 13) + '" font-size="10" fill="#6E6E73">' +
+          e(line) + '</text>');
+      });
+    });
+    parts.push('<line x1="0" y1="' + plan.lineY + '" x2="' + width + '" y2="' + plan.lineY +
+      '" stroke="#334155" stroke-width="2" stroke-dasharray="8 5"/>');
+    parts.push('<rect x="' + (width - 156) + '" y="' + (plan.lineY - 9) +
+      '" width="140" height="18" rx="9" fill="#FFFFFF" stroke="#334155"/>' +
+      '<text x="' + (width - 86) + '" y="' + (plan.lineY + 3.5) + '" text-anchor="middle" ' +
+      'font-size="9" font-weight="700" letter-spacing="0.6" fill="#334155">LINE OF VISIBILITY</text>');
+
+    // wires next, so cards sit on top of them
     var byId = {};
     p.steps.forEach(function (s) { byId[s.id] = s; });
     (p.connections || []).forEach(function (conn) {
       var a = byId[conn.from], b = byId[conn.to];
-      if (!a || !b) return;
-      var wire = Canvas.wirePath(a, b);
+      if (!a || !b || !plan.pos[a.id] || !plan.pos[b.id]) return;
+      var wire = Canvas.wirePath(plan.pos[a.id], plan.pos[b.id]);
       var crosses = a.departmentId !== b.departmentId;
       parts.push('<path d="' + wire.d + '" fill="none" stroke="' +
         (crosses ? '#B45309' : '#8A93A0') + '" stroke-width="' + (crosses ? 2.2 : 1.6) + '"' +
@@ -425,20 +455,19 @@
     });
 
     p.steps.forEach(function (step, i) {
-      var x = step.x || 0, y = step.y || 0;
-      var h = Canvas.cardHeight(step);
-      var colour = NODE_COLOUR[step.type] || '#8A93A0';
+      var at = plan.pos[step.id];
+      var x = at.x, y = at.y, h = at.h;
+      var edge = STAGE_COLOUR[Blueprint.stageOf(step)];
 
       parts.push('<rect x="' + x + '" y="' + y + '" width="' + W + '" height="' + h +
         '" rx="9" fill="#FFFFFF" stroke="#DDE2E9"/>');
-      parts.push('<path d="M ' + (x + 3) + ' ' + y + ' h -0 a 9 9 0 0 0 -3 9 v ' + (h - 18) +
-        ' a 9 9 0 0 0 3 9 z" fill="' + colour + '"/>');
-      parts.push('<rect x="' + x + '" y="' + y + '" width="3.5" height="' + h +
-        '" fill="' + colour + '"/>');
+      parts.push('<rect x="' + x + '" y="' + (y + 4) + '" width="4" height="' + (h - 8) +
+        '" rx="2" fill="' + edge + '"/>');
 
-      parts.push('<circle cx="' + (x + 24) + '" cy="' + (y + 20) + '" r="9" fill="#F0F3F7"/>' +
+      parts.push('<circle cx="' + (x + 24) + '" cy="' + (y + 20) + '" r="9" fill="' +
+        (NODE_COLOUR[step.type] || '#6E6E73') + '"/>' +
         '<text x="' + (x + 24) + '" y="' + (y + 23.5) + '" text-anchor="middle" font-size="10" ' +
-        'font-weight="700" fill="#6E6E73">' + (i + 1) + '</text>');
+        'font-weight="700" fill="#FFFFFF">' + (i + 1) + '</text>');
 
       var titleLines = wrapText(Data.freeze(step.title), W - 56, 12.5).slice(0, 2);
       titleLines.forEach(function (line, n) {
@@ -484,40 +513,51 @@
     });
 
     var flow = Data.flow(p);
+    var count = Blueprint.counts(p);
     var departments = flow.departments.map(Data.taxonomyName);
+    var legendX = width - 36;
     var header =
-      '<rect x="0" y="0" width="' + bounds.width + '" height="' + HEADER_H + '" fill="#FFFFFF"/>' +
-      '<text x="36" y="34" font-size="19" font-weight="700" fill="#1D1D1F">' +
+      '<rect x="0" y="0" width="' + width + '" height="' + HEADER_H + '" fill="#FFFFFF"/>' +
+      '<text x="20" y="34" font-size="19" font-weight="700" fill="#1D1D1F">' +
       e(p.name) + '</text>' +
-      '<text x="36" y="54" font-size="11" fill="#6E6E73">' +
-      e(Data.taxonomyPath(p.taxonomyId)) + '  ·  ' + p.steps.length + ' steps  ·  ' +
+      '<text x="20" y="54" font-size="11" fill="#6E6E73">' +
+      e(Data.taxonomyPath(p.taxonomyId)) + '  ·  ' + p.steps.length + ' steps (' +
+      count.front + ' customer journey, ' + count.back + ' back of house' +
+      (count.unsorted ? ', ' + count.unsorted + ' not sorted' : '') + ')  ·  ' +
       flow.handoffs + ' handoff' + (flow.handoffs === 1 ? '' : 's') + '  ·  ' + e(p.status) + '</text>' +
-      '<text x="36" y="71" font-size="10" fill="#8A93A0">' +
+      '<text x="20" y="71" font-size="10" fill="#8A93A0">' +
       e(departments.join('  →  ')) + '</text>' +
-      '<text x="' + (bounds.width - 36) + '" y="34" text-anchor="end" font-size="10" ' +
+      '<text x="' + legendX + '" y="30" text-anchor="end" font-size="10" ' +
       'fill="#8A93A0">Exported ' + e(today()) + '</text>' +
       (flow.handoffs
-        ? '<line x1="' + (bounds.width - 128) + '" y1="52" x2="' + (bounds.width - 100) +
+        ? '<line x1="' + (legendX - 120) + '" y1="52" x2="' + (legendX - 92) +
           '" y2="52" stroke="#B45309" stroke-width="2.2" stroke-dasharray="6 4"/>' +
-          '<text x="' + (bounds.width - 94) + '" y="55" font-size="10" fill="#B45309">' +
+          '<text x="' + (legendX - 86) + '" y="55" font-size="10" fill="#B45309">' +
           'crosses departments</text>'
         : '') +
-      '<line x1="0" y1="' + HEADER_H + '" x2="' + bounds.width + '" y2="' + HEADER_H +
+      '<line x1="0" y1="' + HEADER_H + '" x2="' + width + '" y2="' + HEADER_H +
       '" stroke="#E4E8EE"/>';
 
-    var total = bounds.height + HEADER_H;
-    var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-      '<svg xmlns="http://www.w3.org/2000/svg" width="' + bounds.width + '" height="' + total +
-      '" viewBox="0 0 ' + bounds.width + ' ' + total + '" ' +
+    var total = plan.height + 20 + HEADER_H;
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + total +
+      '" viewBox="0 0 ' + width + ' ' + total + '" ' +
       'font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif">\n' +
       '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" ' +
       'markerHeight="7" orient="auto-start-reverse">' +
       '<path d="M 0 0 L 10 5 L 0 10 z" fill="#8A93A0"/></marker></defs>\n' +
       '<rect width="100%" height="100%" fill="#F5F7FA"/>\n' + header + '\n' +
       '<g transform="translate(0,' + HEADER_H + ')">\n' + parts.join('\n') + '\n</g>\n</svg>\n';
-
-    download(safeName(p.name) + '-map.svg', svg, 'image/svg+xml');
   }
+
+  function processSvg(processId, detail) {
+    var p = Data.state.index.processes[processId];
+    if (!p) return;
+    var svg = blueprintSvg(p, detail);
+    if (!svg) return;
+    download(safeName(p.name) + '-blueprint.svg',
+      '<?xml version="1.0" encoding="UTF-8"?>\n' + svg, 'image/svg+xml');
+  }
+
   // ---- issues register -----------------------------------------------------
 
   /** What an issue is about, and where that sits, for a report row. */
@@ -721,6 +761,14 @@
     'border-radius:9px;padding:.8rem 1rem;margin-bottom:.5rem}',
     '.step.entry{border-left-color:#2E7D53}.step.resolution{border-left-color:#5B3FA8}',
     '.step.decision{border-left-color:#B45309}',
+    '.step.stage-front{border-left-color:#0E7C86}.step.stage-back{border-left-color:#52606D}',
+    '.step.stage-none{border-left-color:#B8C0CA}',
+    '.stage{font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;',
+    'border-radius:999px;padding:1px 8px;background:#F5F7FA;color:#6E6E73}',
+    '.stage-front .stage{background:#E8F4F5;color:#0E7C86}.stage-back .stage{background:#EDF0F4;color:#52606D}',
+    '.blueprint{overflow-x:auto;background:#fff;border:1px solid rgba(0,0,0,.09);border-radius:9px}',
+    '.blueprint svg{display:block;max-width:none;height:auto}',
+    '@media print{.blueprint{overflow:visible}.blueprint svg{width:100%}}',
     '.step-head{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}',
     '.n{font-size:.7rem;font-weight:700;background:#F5F7FA;border-radius:999px;padding:1px 7px;color:#6E6E73}',
     '.type{font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;color:#6E6E73;font-weight:700}',
@@ -771,6 +819,7 @@
     processJson: processJson,
     processHtml: processHtml,
     processSvg: processSvg,
+    blueprintSvg: blueprintSvg,
     wrapText: wrapText,
     issuesHtml: issuesHtml,
     coverageHtml: coverageHtml,

@@ -1,16 +1,20 @@
 /* ===========================================================================
-   canvas.js — the draggable process map.
+   canvas.js — the process map, drawn as a service blueprint.
 
-   Cards are absolutely positioned HTML using each step's stored x and y, with
-   the arrows drawn in an SVG layer underneath. Dragging moves the card live
-   and writes the new position once on release, so a drag is one change rather
-   than one per pixel.
+   The customer journey runs left to right above the line of visibility; the
+   work behind the scenes runs below it. Where each card goes is worked out
+   from the arrows and the step's stage (blueprint.js), not placed by hand,
+   so every map reads the same way.
 
-   Arrows are edited here too:
+   On the map:
+     - drag a card across the line to move it between the customer journey
+       and back of house (or out of "Not sorted yet")
      - drag from the round handle on a card's right edge to another card to
        draw a route
      - click an arrow (or its label) to select it, then label or delete it in
        the bar above the map
+     - the stage filter (above the map, shared with the step list) fades the
+       side you are not looking at, so the flow still reads
 
    Pointer events are used throughout, so the same code handles mouse, trackpad
    and touch.
@@ -27,6 +31,7 @@
   var el = {};
   var drag = null;
   var callbacks = {};
+  var plan = null;
 
   function e(text) { return Data.escapeHtml(text); }
 
@@ -56,7 +61,6 @@
       '</div>' +
       '<span class="spacer"></span>' +
       '<button class="btn small primary-soft" data-canvas="add-step">+ Step</button>' +
-      '<button class="btn small" data-canvas="tidy">Tidy layout</button>' +
       '<button class="btn small" data-canvas="zoom-out" aria-label="Zoom out">−</button>' +
       '<span class="zoom-level" id="zoomLevel">100%</span>' +
       '<button class="btn small" data-canvas="zoom-in" aria-label="Zoom in">+</button>' +
@@ -66,6 +70,7 @@
       '<div class="canvas-selbar" id="canvasSel"></div>' +
       '<div class="canvas-viewport" id="canvasViewport">' +
       '<div class="canvas-stage" id="canvasStage">' +
+      '<div class="canvas-lanes" id="canvasLanes"></div>' +
       '<svg class="canvas-wires" id="canvasWires"></svg>' +
       '<div class="canvas-cards" id="canvasCards"></div>' +
       '</div></div>';
@@ -73,6 +78,7 @@
     el.host = host;
     el.viewport = host.querySelector('#canvasViewport');
     el.stage = host.querySelector('#canvasStage');
+    el.lanes = host.querySelector('#canvasLanes');
     el.wires = host.querySelector('#canvasWires');
     el.cards = host.querySelector('#canvasCards');
     el.sel = host.querySelector('#canvasSel');
@@ -85,19 +91,34 @@
     el.viewport.addEventListener('wheel', onWheel, { passive: false });
 
     draw();
+    sizeViewport();
     // Coming back to the same map (after an edit redraws the page, say)
-    // keeps the zoom and pan; a different process starts fitted.
+    // keeps the zoom and pan; a different process starts at a size you can
+    // read, at the start of the journey.
     if (view.fitted === processId) {
       applyTransform();
     } else {
-      fit();
+      readable();
       view.fitted = processId;
     }
+  }
+
+  /**
+   * A blueprint is wide and not very tall, so the map is only as tall as it
+   * needs to be (up to the usual limit) rather than a big empty box.
+   */
+  function sizeViewport() {
+    var limit = Math.min(window.innerHeight * 0.7, 620);
+    el.viewport.style.height = Math.round(Math.max(260, Math.min(limit, contentBounds().height + 40))) + 'px';
   }
 
   /** Redraw the whole page after a change; the zoom and pan survive it. */
   function remount() {
     if (global.App) global.App.route();
+  }
+
+  function filter() {
+    return (el.prefs && el.prefs.stageFilter) || 'both';
   }
 
   function onToolbar(event) {
@@ -118,7 +139,6 @@
     if (action === 'zoom-out') setZoom(view.zoom / 1.2);
     if (action === 'fit') fit();
     if (action === 'add-step') addStepAfter(null);
-    if (action === 'tidy') { tidy(); draw(); fit(); }
     if (action === 'svg') Exporter.processSvg(view.processId, view.detail);
   }
 
@@ -126,8 +146,8 @@
 
   /**
    * Add a step after a card (or, with no card, after the last step). It takes
-   * over where that step led and is placed beside it — the same rules as
-   * adding a step in the Steps view.
+   * over where that step led and starts on the same side of the line — the
+   * same rules as adding a step in the Steps view.
    */
   function addStepAfter(stepId) {
     var name = prompt('What happens at the new step?', '');
@@ -151,8 +171,9 @@
     var p = process();
     var conn = selectedConnection();
     if (!conn) {
-      el.sel.innerHTML = '<span class="selbar-hint">Drag from a card’s ● handle to another card ' +
-        'to add a route. Click an arrow to label or remove it.</span>';
+      el.sel.innerHTML = '<span class="selbar-hint">Drag a card across the line to move it ' +
+        'between the customer journey and back of house. Drag from a card’s ● handle to ' +
+        'another card to add a route; click an arrow to label or remove it.</span>';
       return;
     }
     var number = {};
@@ -188,14 +209,16 @@
     drawWires();
   }
 
-  // ---- drawing -------------------------------------------------------------
+  // ---- geometry --------------------------------------------------------------
 
   function process() { return Data.state.index.processes[view.processId]; }
 
-  function cardHeight(step) {
-    if (view.detail === 'simple') return 66;
+  /** A card's height at a detail level (the one on screen if none is given). */
+  function cardHeight(step, detail) {
+    detail = detail || view.detail;
+    if (detail === 'simple') return 66;
     var height = 92;
-    if (view.detail === 'context') {
+    if (detail === 'context') {
       height += 18;
       if (step.sop) height += Math.min(5, step.sop.split('\n').length) * 15;
       if (step.completionTrigger) height += 26;
@@ -203,12 +226,54 @@
     return height;
   }
 
+  /** The blueprint layout of a process at a detail level. */
+  function planFor(p, detail) {
+    return Blueprint.layout(p, CARD_W, function (s) { return cardHeight(s, detail); });
+  }
+
+  /** Anchor on whichever edge faces the other card, so arrows never cross it. */
+  function anchors(a, b) {
+    var dx = (b.x + CARD_W / 2) - (a.x + CARD_W / 2);
+    var dy = (b.y + b.h / 2) - (a.y + a.h / 2);
+
+    if (Math.abs(dx) >= Math.abs(dy) * 0.6) {
+      return dx >= 0
+        ? { from: [a.x + CARD_W, a.y + a.h / 2], to: [b.x, b.y + b.h / 2], axis: 'x' }
+        : { from: [a.x, a.y + a.h / 2], to: [b.x + CARD_W, b.y + b.h / 2], axis: 'x' };
+    }
+    return dy >= 0
+      ? { from: [a.x + CARD_W / 2, a.y + a.h], to: [b.x + CARD_W / 2, b.y], axis: 'y' }
+      : { from: [a.x + CARD_W / 2, a.y], to: [b.x + CARD_W / 2, b.y + b.h], axis: 'y' };
+  }
+
+  function curve(x1, y1, x2, y2, axis) {
+    var bend = Math.max(40, Math.abs(axis === 'x' ? x2 - x1 : y2 - y1) / 2);
+    var c1 = axis === 'x' ? [x1 + (x2 > x1 ? bend : -bend), y1] : [x1, y1 + (y2 > y1 ? bend : -bend)];
+    var c2 = axis === 'x' ? [x2 - (x2 > x1 ? bend : -bend), y2] : [x2, y2 - (y2 > y1 ? bend : -bend)];
+    return 'M ' + x1 + ' ' + y1 + ' C ' + c1[0] + ' ' + c1[1] + ', ' +
+      c2[0] + ' ' + c2[1] + ', ' + x2 + ' ' + y2;
+  }
+
+  /** An arrow between two placed cards ({ x, y, h }). */
+  function wirePath(a, b) {
+    var pt = anchors(a, b);
+    return {
+      d: curve(pt.from[0], pt.from[1], pt.to[0], pt.to[1], pt.axis),
+      mid: [(pt.from[0] + pt.to[0]) / 2, (pt.from[1] + pt.to[1]) / 2]
+    };
+  }
+
+  // ---- drawing -------------------------------------------------------------
+
   function draw() {
     var p = process();
     if (!p) return;
+    plan = planFor(p);
+
+    drawLanes();
 
     el.cards.innerHTML = p.steps.map(function (step, i) {
-      return card(step, i, p);
+      return card(step, i);
     }).join('');
 
     Array.prototype.forEach.call(el.cards.querySelectorAll('.node'), function (node) {
@@ -240,8 +305,25 @@
     }
   }
 
-  function card(step, i, p) {
-    var height = cardHeight(step);
+  /** The lanes, their titles and the line of visibility, behind everything. */
+  function drawLanes() {
+    var width = plan.width + 40;
+    var showing = filter();
+    var html = plan.lanes.map(function (lane) {
+      var faded = showing !== 'both' && lane.stage && lane.stage !== showing;
+      return '<div class="bp-lane bp-' + (lane.stage || 'unsorted') + (faded ? ' faded' : '') +
+        '" data-lane="' + lane.stage + '" style="top:' + lane.top + 'px; height:' + lane.height +
+        'px; width:' + width + 'px">' +
+        '<div class="bp-lane-label" style="width:' + (plan.gutter - 30) + 'px">' +
+        '<strong>' + e(lane.label) + '</strong><span>' + e(lane.hint) + '</span></div></div>';
+    }).join('');
+    html += '<div class="bp-line" style="top:' + plan.lineY + 'px; width:' + width + 'px">' +
+      '<span>Line of visibility</span></div>';
+    el.lanes.innerHTML = html;
+  }
+
+  function card(step, i) {
+    var at = plan.pos[step.id];
     var body = '';
 
     if (view.detail !== 'simple') {
@@ -261,12 +343,15 @@
       }
     }
 
+    var stage = Blueprint.stageOf(step);
+    var faded = !Blueprint.shows(filter(), step);
     var fresh = view.justAdded === step.id;
-    return '<div class="node node-' + e(step.type) + (fresh ? ' just-added' : '') + '" data-step="' + e(step.id) + '"' +
-      ' style="left:' + (step.x || 0) + 'px; top:' + (step.y || 0) + 'px;' +
-      ' width:' + CARD_W + 'px; min-height:' + height + 'px">' +
+    return '<div class="node node-' + e(step.type) + ' stage-' + (stage || 'none') +
+      (faded ? ' faded' : '') + (fresh ? ' just-added' : '') + '" data-step="' + e(step.id) + '"' +
+      ' style="left:' + at.x + 'px; top:' + at.y + 'px;' +
+      ' width:' + CARD_W + 'px; min-height:' + at.h + 'px">' +
       '<div class="node-head">' +
-      '<span class="node-n">' + (i + 1) + '</span>' +
+      '<span class="node-n" title="' + e(TYPE_LABEL[step.type] || '') + '">' + (i + 1) + '</span>' +
       '<span class="node-title">' + e(Data.freeze(step.title) || 'Untitled step') + '</span>' +
       '<button class="node-add" data-add-after="' + e(step.id) + '" title="Add a step after this one" ' +
       'aria-label="Add a step after this one">+</button>' +
@@ -280,38 +365,7 @@
       '</div>';
   }
 
-  /** Anchor on whichever edge faces the other card, so arrows never cross it. */
-  function anchors(a, b) {
-    var ah = cardHeight(a), bh = cardHeight(b);
-    var ax = a.x || 0, ay = a.y || 0, bx = b.x || 0, by = b.y || 0;
-    var dx = (bx + CARD_W / 2) - (ax + CARD_W / 2);
-    var dy = (by + bh / 2) - (ay + ah / 2);
-
-    if (Math.abs(dx) >= Math.abs(dy)) {
-      return dx >= 0
-        ? { from: [ax + CARD_W, ay + ah / 2], to: [bx, by + bh / 2], axis: 'x' }
-        : { from: [ax, ay + ah / 2], to: [bx + CARD_W, by + bh / 2], axis: 'x' };
-    }
-    return dy >= 0
-      ? { from: [ax + CARD_W / 2, ay + ah], to: [bx + CARD_W / 2, by], axis: 'y' }
-      : { from: [ax + CARD_W / 2, ay], to: [bx + CARD_W / 2, by + bh], axis: 'y' };
-  }
-
-  function curve(x1, y1, x2, y2, axis) {
-    var bend = Math.max(40, Math.abs(axis === 'x' ? x2 - x1 : y2 - y1) / 2);
-    var c1 = axis === 'x' ? [x1 + (x2 > x1 ? bend : -bend), y1] : [x1, y1 + (y2 > y1 ? bend : -bend)];
-    var c2 = axis === 'x' ? [x2 - (x2 > x1 ? bend : -bend), y2] : [x2, y2 - (y2 > y1 ? bend : -bend)];
-    return 'M ' + x1 + ' ' + y1 + ' C ' + c1[0] + ' ' + c1[1] + ', ' +
-      c2[0] + ' ' + c2[1] + ', ' + x2 + ' ' + y2;
-  }
-
-  function wirePath(a, b) {
-    var pt = anchors(a, b);
-    return {
-      d: curve(pt.from[0], pt.from[1], pt.to[0], pt.to[1], pt.axis),
-      mid: [(pt.from[0] + pt.to[0]) / 2, (pt.from[1] + pt.to[1]) / 2]
-    };
-  }
+  var TYPE_LABEL = { entry: 'Start', action: 'Step', decision: 'Decision', resolution: 'End' };
 
   var MARKERS = '<defs>' +
     '<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" ' +
@@ -319,6 +373,15 @@
     '<marker id="arrowSel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" ' +
     'orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0A66C2"/></marker>' +
     '</defs>';
+
+  /** Where a card is now: mid-drag, the dragged card is where the pointer has it. */
+  function placed(step) {
+    var at = plan.pos[step.id];
+    if (drag && drag.kind === 'card' && drag.step === step) {
+      return { x: drag.x, y: drag.y, h: at.h };
+    }
+    return at;
+  }
 
   function drawWires(extra) {
     var p = process();
@@ -328,29 +391,33 @@
 
     var byId = {};
     p.steps.forEach(function (s) { byId[s.id] = s; });
+    var showing = filter();
 
     var parts = [MARKERS];
 
     (p.connections || []).forEach(function (conn) {
       var a = byId[conn.from], b = byId[conn.to];
-      if (!a || !b) return;
-      var wire = wirePath(a, b);
+      if (!a || !b || !plan.pos[a.id] || !plan.pos[b.id]) return;
+      var wire = wirePath(placed(a), placed(b));
       var crosses = a.departmentId !== b.departmentId;
       var selected = conn.id === view.selected;
+      var faded = !selected && (!Blueprint.shows(showing, a) || !Blueprint.shows(showing, b));
       var colour = selected ? '#0A66C2' : (crosses ? '#B45309' : '#8A93A0');
+      var group = '<g' + (faded ? ' class="faded"' : '') + '>';
       // A wide invisible stroke underneath makes a thin arrow easy to hit,
       // on a phone as much as with a mouse.
-      parts.push('<path class="wire-hit" data-conn="' + e(conn.id) + '" d="' + wire.d +
-        '" fill="none" stroke="transparent" stroke-width="16"/>');
-      parts.push('<path d="' + wire.d + '" fill="none" stroke="' + colour +
+      group += '<path class="wire-hit" data-conn="' + e(conn.id) + '" d="' + wire.d +
+        '" fill="none" stroke="transparent" stroke-width="16"/>';
+      group += '<path d="' + wire.d + '" fill="none" stroke="' + colour +
         '" stroke-width="' + (selected ? 2.8 : crosses ? 2.2 : 1.6) +
         '" marker-end="url(#' + (selected ? 'arrowSel' : 'arrow') + ')"' +
-        (crosses && !selected ? ' stroke-dasharray="6 4"' : '') + ' pointer-events="none"/>');
+        (crosses && !selected ? ' stroke-dasharray="6 4"' : '') + ' pointer-events="none"/>';
       if (conn.condition) {
-        parts.push('<text x="' + wire.mid[0] + '" y="' + (wire.mid[1] - 6) +
+        group += '<text x="' + wire.mid[0] + '" y="' + (wire.mid[1] - 6) +
           '" class="wire-label' + (selected ? ' selected' : '') + '" data-conn="' + e(conn.id) +
-          '" text-anchor="middle">' + e(Data.freeze(conn.condition)) + '</text>');
+          '" text-anchor="middle">' + e(Data.freeze(conn.condition)) + '</text>';
       }
+      parts.push(group + '</g>');
     });
 
     if (extra) parts.push(extra);
@@ -358,13 +425,7 @@
   }
 
   function contentBounds() {
-    var p = process();
-    var maxX = 0, maxY = 0;
-    p.steps.forEach(function (s) {
-      maxX = Math.max(maxX, (s.x || 0) + CARD_W);
-      maxY = Math.max(maxY, (s.y || 0) + cardHeight(s));
-    });
-    return { width: maxX + 80, height: maxY + 80 };
+    return { width: plan.width + 40, height: plan.height + 20 };
   }
 
   // ---- transform, pan and zoom --------------------------------------------
@@ -389,22 +450,50 @@
     applyTransform();
   }
 
+  /**
+   * Full height at up to full size, from the start of the journey. If the
+   * whole width fits at that size it is centred; otherwise you pan along it.
+   */
+  function readable() {
+    var bounds = contentBounds();
+    var box = el.viewport.getBoundingClientRect();
+    view.zoom = Math.max(0.5, Math.min(1, (box.height - 40) / bounds.height));
+    var wide = bounds.width * view.zoom;
+    view.panX = wide + 40 <= box.width ? (box.width - wide) / 2 : 20;
+    view.panY = Math.max(20, (box.height - bounds.height * view.zoom) / 2);
+    applyTransform();
+  }
+
+  /** The whole blueprint in view, however small that makes it. */
   function fit() {
     var bounds = contentBounds();
     var box = el.viewport.getBoundingClientRect();
     var scale = Math.min((box.width - 40) / bounds.width, (box.height - 40) / bounds.height, 1);
     view.zoom = Math.max(MIN_ZOOM, scale);
     view.panX = Math.max(20, (box.width - bounds.width * view.zoom) / 2);
-    view.panY = 20;
+    view.panY = Math.max(20, (box.height - bounds.height * view.zoom) / 2);
     applyTransform();
   }
 
+  /**
+   * Ctrl or Cmd with the wheel (or a pinch on a trackpad) zooms. A sideways
+   * swipe, or Shift with the wheel, pans along the journey; an ordinary
+   * scroll is left to the page.
+   */
   function onWheel(event) {
-    if (!(event.ctrlKey || event.metaKey)) return;
-    event.preventDefault();
-    var box = el.viewport.getBoundingClientRect();
-    setZoom(view.zoom * (event.deltaY < 0 ? 1.1 : 1 / 1.1),
-      event.clientX - box.left, event.clientY - box.top);
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      var box = el.viewport.getBoundingClientRect();
+      setZoom(view.zoom * (event.deltaY < 0 ? 1.1 : 1 / 1.1),
+        event.clientX - box.left, event.clientY - box.top);
+      return;
+    }
+    var sideways = event.shiftKey ? event.deltaY : event.deltaX;
+    if (Math.abs(sideways) > Math.abs(event.shiftKey ? 0 : event.deltaY)) {
+      event.preventDefault();
+      view.panX -= sideways;
+      applyTransform();
+    }
   }
 
   /** A pointer position in map coordinates. */
@@ -431,10 +520,12 @@
       return;
     }
 
+    var at = plan.pos[step.id];
     drag = {
       kind: 'card', node: node, step: step,
       startX: event.clientX, startY: event.clientY,
-      originX: step.x || 0, originY: step.y || 0, moved: false
+      originX: at.x, originY: at.y, x: at.x, y: at.y,
+      lane: at.stage, moved: false
     };
     capture(node, event);
     node.classList.add('dragging');
@@ -488,6 +579,13 @@
     return node && node !== except ? node : null;
   }
 
+  /** Light up the lane a dragged card would land in. */
+  function markLane(stage) {
+    Array.prototype.forEach.call(el.lanes.querySelectorAll('.bp-lane'), function (lane) {
+      lane.classList.toggle('drop-target', stage !== null && lane.dataset.lane === stage);
+    });
+  }
+
   function onDragMove(event) {
     if (!drag) return;
     var dx = event.clientX - drag.startX;
@@ -506,23 +604,21 @@
       if (drag.over && drag.over !== over) drag.over.classList.remove('link-target');
       if (over) over.classList.add('link-target');
       drag.over = over;
-      var s = drag.step;
-      var from = [(s.x || 0) + CARD_W, (s.y || 0) + cardHeight(s) / 2];
+      var from = plan.pos[drag.step.id];
       var to = toStage(event);
-      drawWires('<path d="' + curve(from[0], from[1], to[0], to[1], 'x') +
+      drawWires('<path d="' + curve(from.x + CARD_W, from.y + from.h / 2, to[0], to[1], 'x') +
         '" fill="none" stroke="#0A66C2" stroke-width="2" stroke-dasharray="4 3" ' +
         'marker-end="url(#arrowSel)" pointer-events="none"/>');
       return;
     }
 
-    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) drag.moved = true;
-    // Snap to a 20px grid so hand-placed cards still line up.
-    var x = Math.max(0, Math.round((drag.originX + dx / view.zoom) / 20) * 20);
-    var y = Math.max(0, Math.round((drag.originY + dy / view.zoom) / 20) * 20);
-    drag.step.x = x;
-    drag.step.y = y;
-    drag.node.style.left = x + 'px';
-    drag.node.style.top = y + 'px';
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) drag.moved = true;
+    drag.x = drag.originX + dx / view.zoom;
+    drag.y = drag.originY + dy / view.zoom;
+    drag.node.style.left = drag.x + 'px';
+    drag.node.style.top = drag.y + 'px';
+    drag.lane = Blueprint.laneAt(plan, drag.y + plan.pos[drag.step.id].h / 2);
+    markLane(drag.lane);
     drawWires();
   }
 
@@ -558,104 +654,27 @@
     }
 
     finished.node.classList.remove('dragging');
-    if (finished.moved) {
-      // The live drag already moved the object; record it as one change.
-      var x = finished.step.x, y = finished.step.y;
-      finished.step.x = finished.originX;
-      finished.step.y = finished.originY;
-      Edit.moveCard(view.processId, finished.step.id, x, y);
-      applyTransform();
+    markLane(null);
+    var was = Blueprint.stageOf(finished.step);
+    var landed = event.type === 'pointerup' && finished.moved ? finished.lane : was;
+    if (landed !== was) {
+      // Dropped on the other side of the line: the step changes stage, and
+      // the layout puts it in its column there.
+      Edit.set('step:' + view.processId + ':' + finished.step.id + ':stage', landed);
+      remount();
+      return;
     }
-  }
-
-  // ---- tidy layout ---------------------------------------------------------
-
-  var MAX_COLUMNS = 5;
-
-  /**
-   * Lay the map out in columns by distance from the entry step, stacking
-   * anything that shares a column and wrapping to a new band every few
-   * columns. Without the wrap a ten step process is three and a half metres
-   * wide and only readable at a quarter scale.
-   */
-  function tidy() {
-    var p = process();
-    if (!p || !p.steps.length) return;
-
-    var outgoing = {};
-    var hasIncoming = {};
-    (p.connections || []).forEach(function (c) {
-      (outgoing[c.from] = outgoing[c.from] || []).push(c.to);
-      hasIncoming[c.to] = true;
-    });
-
-    // Longest path from an entry, capped so a loop cannot run forever. A
-    // step reached two ways sits after the later of them.
-    var depth = {};
-    var roots = p.steps.filter(function (s) { return !hasIncoming[s.id]; });
-    if (!roots.length) roots = [p.steps[0]];
-
-    var queue = roots.map(function (s) { return { id: s.id, d: 0 }; });
-    var guard = 0;
-    var limit = p.steps.length;
-    while (queue.length && guard++ < 5000) {
-      var item = queue.shift();
-      if (item.d > limit) continue;
-      if (depth[item.id] != null && depth[item.id] >= item.d) continue;
-      depth[item.id] = item.d;
-      (outgoing[item.id] || []).forEach(function (next) {
-        queue.push({ id: next, d: item.d + 1 });
-      });
-    }
-
-    var columns = {};
-    p.steps.forEach(function (s, i) {
-      var column = depth[s.id] != null ? depth[s.id] : i;
-      (columns[column] = columns[column] || []).push(s);
-    });
-
-    // How tall each band has to be: the deepest stack in any of its columns.
-    var bandRows = {};
-    Object.keys(columns).forEach(function (key) {
-      var band = Math.floor(Number(key) / MAX_COLUMNS);
-      bandRows[band] = Math.max(bandRows[band] || 1, columns[key].length);
-    });
-
-    var bandTop = {};
-    var y = 80;
-    Object.keys(bandRows).map(Number).sort(function (a, b) { return a - b; })
-      .forEach(function (band) {
-        bandTop[band] = y;
-        y += bandRows[band] * 180 + 60;
-      });
-
-    Object.keys(columns).forEach(function (key) {
-      var column = Number(key);
-      var band = Math.floor(column / MAX_COLUMNS);
-      var slot = column % MAX_COLUMNS;
-      // Alternate bands run right to left, so the wrap between them is a short
-      // hop down rather than a long line back across the whole map.
-      if (band % 2) slot = MAX_COLUMNS - 1 - slot;
-      columns[key].forEach(function (step, row) {
-        step.x = 80 + slot * (CARD_W + 90);
-        step.y = bandTop[band] + row * 180;
-      });
-    });
-
-    Edit.touch();
+    // Anywhere else on its own side: back to where the layout has it.
+    finished.node.style.left = finished.originX + 'px';
+    finished.node.style.top = finished.originY + 'px';
+    drawWires();
   }
 
   global.Canvas = {
     mount: mount,
     CARD_W: CARD_W,
     cardHeight: cardHeight,
-    wirePath: wirePath,
-    contentBounds: function (processId) {
-      var saved = view.processId;
-      view.processId = processId;
-      var bounds = contentBounds();
-      view.processId = saved;
-      return bounds;
-    }
+    plan: planFor,
+    wirePath: wirePath
   };
 }(window));

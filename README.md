@@ -39,7 +39,7 @@ content in those older public copies was judged acceptable to leave.
   css/app.css · css/live.css · css/gate.css · css/meaning-map.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
                      rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
-                     richtext.js · canvas.js
+                     richtext.js · blueprint.js · canvas.js
                      semantic.js · semantic-worker.js · probe.js · meaning-map.js · probe-map.js
                      spot-hint.js
                      ui-sidebar.js · ui-detail.js · ui-probe.js · app.js · live.js
@@ -518,37 +518,69 @@ self-contained report. The old Coverage addresses (`#/coverage`,
 decision step can lead to several places, each route with a label ("Yes",
 "Over $500"). On the Steps view every step shows where it leads: click a label
 to edit it, `×` to remove a route, and *+ Add a route to…* to draw a new one.
-Adding, deleting or reordering steps never rebuilds the arrows or moves cards
-on the map:
+Adding, deleting or reordering steps never rebuilds the arrows:
 
 - a step inserted after another takes over where that step led, and the
   earlier step now leads to it
 - a deleted step's incoming arrows are joined to wherever it led
-- in a straight-line process ↑ ↓ reorder the flow and swap the two cards;
-  once a process branches, the list is reading order only and the arrows are
-  left as you drew them
+- in a straight-line process ↑ ↓ reorder the flow; once a process branches,
+  the list is reading order only and the arrows are left as you drew them
 
 Handoffs are counted along the arrows, so each branch into another
 department counts.
 
-**The map.** Every process has a Steps view and a Map view. On the map, cards
-drag on a 20px grid, the background pans, Ctrl and the wheel zooms, and
-**Tidy layout** arranges the process into columns by depth — wrapping every
-five columns and running alternate rows backwards, so a ten step process reads
-as two rows rather than one very long line. Arrows that cross a department
-boundary are drawn dashed and orange.
+**The service blueprint.** Every process is mapped as a service blueprint:
+the customer journey and the work behind it on one diagram, divided by the
+**line of visibility**.
 
-Drag from the round handle on a card's right edge to another card to draw a
-route. Click an arrow or its label to select it, then label or remove it in the
-bar above the map. `✎` on a card opens that step in the Steps view.
+- **Customer journey** (above the line, teal): what the customer sees and
+  does — the form, the call, the payment, the confirmation.
+- **Back of house** (below the line, slate): what we do that they never
+  see — the checks, the payment matching, the record updates.
+
+Each step records its side as `stage` (`front` or `back`). A step nobody has
+sorted yet has neither: it is drawn with a dashed grey edge, sits in a *Not
+sorted yet* band under the blueprint, and the process header counts it. Nothing
+guesses a side, because the same action can be either depending on whether the
+customer is watching. A new step starts on the same side as the step before it.
+
+On the **Steps** view each step has a *Customer journey | Back of house* switch
+under its title, and its left edge takes the colour of its side. The number's
+colour shows its type (green start, purple end, amber decision).
+
+The **Both / Customer journey / Back of house** filter beside the view switch
+works on both views and is remembered. On the Steps view it hides the other
+side and leaves a quiet line where it was ("⋯ 3 back of house steps here"), so
+the journey still reads in order. On the Blueprint it fades the other side, so
+the arrows still make sense. Steps not sorted yet always show.
+
+**The Blueprint view** lays itself out left to right, so every map reads the
+same way. A step's column is how far it is from the start along the arrows:
+alternatives (the answers to a decision) share a column, stacked, and an arrow
+that loops back is left out of the count. The customer journey hugs the line
+from above and back of house from below, so an arrow across the line is short.
+Cards are no longer placed by hand (`x` and `y` stay in the data, unused).
+
+- **Drag a card across the line** to change its side, or out of *Not sorted
+  yet*. Dropped on its own side it springs back.
+- Drag from the round handle on a card's right edge to another card to draw a
+  route. Click an arrow or its label to select it, then label or remove it in
+  the bar above the map. `+` adds a step after a card; `✎` opens it in the
+  Steps view.
+- The map opens at a readable size at the start of the journey: drag the
+  background, swipe sideways or use Shift and the wheel to move along it;
+  Ctrl and the wheel zooms; **Fit** shows the whole blueprint. Arrows that
+  cross a department boundary are drawn dashed and orange.
 
 Three card detail levels (Simple / Default / Context) control how much each
 card shows, and the same setting drives the SVG.
 
-**⤓ SVG** exports the map as real vector output — not a screenshot — with a
-header carrying the process name, department path, step and handoff counts,
-and a legend. Variables are frozen to their values, since an SVG cannot
-resolve anything when it is opened.
+**⤓ SVG** exports the blueprint as real vector output — not a screenshot —
+with the lanes, the line of visibility, and a header carrying the process
+name, department path, step counts on each side and handoffs. Variables are
+frozen to their values, since an SVG cannot resolve anything when it is
+opened. **⤓ HTML** on the process puts the same drawing above the steps, each
+labelled with its side.
 
 ## Publishing
 

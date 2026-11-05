@@ -454,6 +454,9 @@
    * Insert a step after another. The new step takes over where the previous
    * one led, and the previous one now leads to it — so a branch that left
    * the previous step still leaves it, now from the new one.
+   *
+   * (x and y are still kept, from the days of the hand-arranged map, but the
+   * map now lays itself out as a service blueprint and does not read them.)
    */
   function addStep(processId, afterStepId) {
     var p = proc(processId);
@@ -465,6 +468,11 @@
     var spot = freeSpot(p, previous);
     step.x = spot.x;
     step.y = spot.y;
+    // It starts on the same side of the line of visibility as the step
+    // before it, which is usually right and is one click to change.
+    if (previous && (previous.stage === 'front' || previous.stage === 'back')) {
+      step.stage = previous.stage;
+    }
 
     var at = previous ? p.steps.indexOf(previous) + 1 : p.steps.length;
     p.steps.splice(at, 0, step);

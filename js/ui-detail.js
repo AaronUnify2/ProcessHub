@@ -100,6 +100,19 @@
       refresh();
       return;
     }
+    // Which side of the line of visibility the steps list and map show.
+    if (act === 'stage-filter') {
+      prefs.stageFilter = d.filter;
+      Storage.savePrefs(prefs);
+      refresh();
+      return;
+    }
+    // Which side of the line a step sits on.
+    if (act === 'stage') {
+      Edit.set('step:' + d.process + ':' + d.step + ':stage', d.stage);
+      refresh();
+      return;
+    }
 
     // -- steps, routes and checks
     if (act === 'add-step') { Edit.addStep(d.process, d.step); refresh(); }
@@ -598,6 +611,7 @@
         : '') +
       (flow.branches ? '<span class="badge quiet">⑂ branches</span>' : '') +
       '<span class="badge quiet">' + plural(p.steps.length, 'step') + '</span>' +
+      stageBadges(p) +
       '</div>' +
       '<div class="lede">' + f('process:' + pid + ':purpose',
         { placeholder: 'What this process is for' }) + '</div>' +
@@ -609,11 +623,12 @@
       btn('del-process', { process: pid }, 'Delete process', 'small danger') +
       '</div></header>';
 
-    html += '<div class="view-toggle">' +
+    html += '<div class="view-row"><div class="view-toggle">' +
       '<button class="vt' + (processView === 'steps' ? ' on' : '') +
       '" data-act="view" data-view="steps">Steps</button>' +
       '<button class="vt' + (processView === 'map' ? ' on' : '') +
-      '" data-act="view" data-view="map">Map</button></div>';
+      '" data-act="view" data-view="map">Blueprint</button></div>' +
+      stageFilter() + '</div>';
 
     if (processView === 'map') {
       html += '<section class="canvas-host" id="canvasHost"></section>';
@@ -622,8 +637,7 @@
         html += '<p class="flow-note">This process branches, so the list below is reading ' +
           'order only. Each step shows where it leads; change the routes there or on the Map.</p>';
       }
-      html += '<section class="flow">' +
-        p.steps.map(function (step, i) { return renderStep(step, i, p, flow); }).join('') +
+      html += '<section class="flow">' + renderSteps(p, flow) +
         '<div class="add-step-row">' +
         btn('add-step', { process: pid }, '+ Add step at the end') +
         '</div></section>';
@@ -671,6 +685,82 @@
     }
   }
 
+  // ---- the line of visibility ------------------------------------------------
+
+  var STAGE_FILTERS = [
+    { value: 'both', label: 'Both' },
+    { value: 'front', label: Blueprint.LABEL.front },
+    { value: 'back', label: Blueprint.LABEL.back }
+  ];
+
+  function currentFilter() {
+    var chosen = prefs.stageFilter;
+    return chosen === 'front' || chosen === 'back' ? chosen : 'both';
+  }
+
+  /** Both / Customer journey / Back of house — for the step list and the map alike. */
+  function stageFilter() {
+    var showing = currentFilter();
+    return '<div class="stage-filter" role="group" aria-label="Show steps from">' +
+      STAGE_FILTERS.map(function (f) {
+        return '<button class="sf sf-' + f.value + (f.value === showing ? ' on' : '') +
+          '" data-act="stage-filter" data-filter="' + f.value + '" aria-pressed="' +
+          (f.value === showing) + '">' +
+          (f.value === 'both' ? '' : '<i class="dot"></i>') + e(f.label) + '</button>';
+      }).join('') + '</div>';
+  }
+
+  /** How the steps split across the line, and how many still need a side. */
+  function stageBadges(p) {
+    if (!p.steps.length) return '';
+    var count = Blueprint.counts(p);
+    return '<span class="badge stage-count front">' + count.front + ' customer journey</span>' +
+      '<span class="badge stage-count back">' + count.back + ' back of house</span>' +
+      (count.unsorted
+        ? '<span class="badge stage-count unsorted">' + count.unsorted + ' not sorted yet</span>'
+        : '');
+  }
+
+  /**
+   * The step list, with the stage filter applied. Steps it hides are not
+   * simply dropped: a quiet line says how many are hidden there, so the
+   * journey still reads as a sequence with work happening in between.
+   */
+  function renderSteps(p, flow) {
+    var showing = currentFilter();
+    var html = '';
+    var hidden = 0;
+
+    function gap() {
+      if (!hidden) return '';
+      var line = '<div class="stage-gap stage-gap-' + (showing === 'front' ? 'back' : 'front') + '">' +
+        '⋯ ' + plural(hidden, (showing === 'front' ? 'back of house' : 'customer journey') + ' step') +
+        ' here</div>';
+      hidden = 0;
+      return line;
+    }
+
+    p.steps.forEach(function (step, i) {
+      if (!Blueprint.shows(showing, step)) { hidden++; return; }
+      html += gap() + renderStep(step, i, p, flow);
+    });
+    return html + gap();
+  }
+
+  /** Customer journey | Back of house, for one step. */
+  function stagePicker(p, step) {
+    var stage = Blueprint.stageOf(step);
+    return '<span class="stage-pick" role="group" aria-label="Which side of the line of visibility">' +
+      Blueprint.STAGES.map(function (value) {
+        return '<button class="sp sp-' + value + (stage === value ? ' on' : '') +
+          '" data-act="stage" data-process="' + e(p.id) + '" data-step="' + e(step.id) +
+          '" data-stage="' + value + '" aria-pressed="' + (stage === value) + '" title="' +
+          e(Blueprint.HINT[value]) + '">' + e(Blueprint.LABEL[value]) + '</button>';
+      }).join('') +
+      (stage ? '' : '<span class="sp-unsorted">Not sorted yet</span>') +
+      '</span>';
+  }
+
   function renderStep(step, i, p, flow) {
     var spec = 'step:' + p.id + ':' + step.id + ':';
     var html = '';
@@ -681,7 +771,8 @@
         e(Data.taxonomyName(step.departmentId)) + '</div>';
     }
 
-    html += '<div class="step step-' + e(step.type) + '" id="step-' + e(step.id) + '">' +
+    html += '<div class="step step-' + e(step.type) + ' stage-' + (Blueprint.stageOf(step) || 'none') +
+      '" id="step-' + e(step.id) + '">' +
       '<div class="step-head">' +
       '<span class="step-n">' + (i + 1) + '</span>' +
       '<span class="step-type">' + f(spec + 'type',
@@ -696,6 +787,7 @@
       btn('del-step', { process: p.id, step: step.id }, '×', 'small danger', 'Delete this step') +
       '</span></div>' +
 
+      '<div class="step-stage">' + stagePicker(p, step) + '</div>' +
       '<div class="step-meta">' +
       '<span class="pill dept">' + f(spec + 'departmentId',
         { type: 'select', options: departmentOptions() }) + '</span>' +
