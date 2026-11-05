@@ -1726,7 +1726,7 @@
 
   /** "Steps 2, 5" — the steps of a process whose text uses a variable. */
   function stepsUsing(p, id) {
-    var ref = new RegExp('(\\{\\{|data-var(-href)?=")' + id + '(\\}\\}|")');
+    var ref = new RegExp('(\\{\\{|data-var(-href|-mailto)?=")' + id + '(\\}\\}|")');
     var numbers = [];
     p.steps.forEach(function (step, i) {
       var text = [step.title, step.sop, step.script, step.completionTrigger, step.timeframe]

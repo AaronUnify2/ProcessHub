@@ -101,9 +101,9 @@
 <!-- Link builder, with the option to point at a URL variable -->
 <div class="modal" id="linkModal" hidden>
   <div class="modal-box">
-    <h3>Insert link</h3>
+    <h3 id="lmTitle">Insert link</h3>
     <div class="fm-field">
-      <label>Link text</label>
+      <label for="lmText">Link text</label>
       <input type="text" id="lmText" placeholder="Text to show">
     </div>
     <div class="fm-field">
@@ -111,9 +111,25 @@
       <div class="lm-choice">
         <label><input type="radio" name="lmMode" value="url" checked> Type a URL</label>
         <label><input type="radio" name="lmMode" value="var"> Use a URL variable</label>
+        <label><input type="radio" name="lmMode" value="email"> Email</label>
       </div>
       <input type="text" id="lmUrl" placeholder="https://…">
       <select id="lmVar"></select>
+    </div>
+    <div id="lmEmail" hidden>
+      <div class="fm-field">
+        <label for="lmEmailVar">Send to</label>
+        <select id="lmEmailVar"></select>
+      </div>
+      <div class="fm-field">
+        <label for="lmSubject">Subject</label>
+        <input type="text" id="lmSubject" placeholder="For example: Bond refund request">
+      </div>
+      <div class="fm-field">
+        <label for="lmBody">Message</label>
+        <textarea id="lmBody" rows="6" placeholder="Hello,&#10;&#10;I would like a refund of my bond.&#10;Application number: [your application number]"></textarea>
+      </div>
+      <p class="lm-hint" id="lmEmailHint"></p>
     </div>
     <div class="modal-actions">
       <button class="btn" id="lmCancel">Cancel</button>

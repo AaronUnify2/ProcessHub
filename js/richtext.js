@@ -185,8 +185,53 @@
     }
 
     toolbar.appendChild(separator());
-    toolbar.appendChild(button('🔗 Link', 'Insert a link', function () {
-      openLinkModal(selectionText(), insertHtml);
+    // An email link already in the text is edited in the same box: click
+    // into it, then press Link. The caret cannot rest inside a chip, so the
+    // last link clicked counts as well as the one around the caret.
+    var clickedLink = null;
+    area.addEventListener('click', function (ev) {
+      var link = ev.target.closest ? ev.target.closest('a') : null;
+      clickedLink = link && area.contains(link) ? link : null;
+    });
+    area.addEventListener('keydown', function () { clickedLink = null; });
+
+    function isEmailLink(at) {
+      return at && at.nodeType === 1 && at.tagName === 'A' &&
+        /^mailto:/i.test(at.getAttribute('href') || '');
+    }
+
+    function emailLinkAtCaret() {
+      if (isEmailLink(clickedLink) && area.contains(clickedLink)) return clickedLink;
+      var at = savedRange ? savedRange.startContainer : null;
+      while (at && at !== area) {
+        if (isEmailLink(at)) return at;
+        at = at.parentNode;
+      }
+      return null;
+    }
+
+    /** Put new markup where an existing link was. */
+    function replaceLink(link, html) {
+      var holder = document.createElement('div');
+      holder.innerHTML = html;
+      var parent = link.parentNode;
+      while (holder.firstChild) parent.insertBefore(holder.firstChild, link);
+      parent.removeChild(link);
+      clickedLink = null;
+      savedRange = null;
+      sync();
+    }
+
+    toolbar.appendChild(button('🔗 Link', 'Insert a link — or click into an email link first to edit it', function () {
+      var link = emailLinkAtCaret();
+      if (link) {
+        openLinkModal('', null, {
+          link: link,
+          onReplace: function (html) { replaceLink(link, html); }
+        });
+      } else {
+        openLinkModal(selectionText(), insertHtml);
+      }
     }));
     toolbar.appendChild(button('＋Var', 'Insert a reusable value (fee, URL, phone…)', function () {
       openVariablePicker(function (v) {
@@ -365,15 +410,65 @@
 
   // ---- link modal ----------------------------------------------------------
 
-  function openLinkModal(selectedText, onInsert) {
+  // Some email apps cut off a link much longer than this, losing the end of
+  // the message.
+  var LONG_MAILTO = 1800;
+
+  /** Public email variables: an internal address must never reach the page. */
+  function emailVariables() {
+    return Data.state.variables.variables.filter(function (v) {
+      return v.type === 'email' && !v.internal;
+    });
+  }
+
+  /**
+   * The email variable an existing link sends to: the one it is tied to, else
+   * one whose value is its address, else the one shown as its text.
+   */
+  function emailVariableOf(link) {
+    var tied = Data.variable(link.getAttribute('data-var-mailto'));
+    if (tied) return tied;
+    var address = Data.mailtoParts(link.getAttribute('href')).address.toLowerCase();
+    var list = emailVariables();
+    for (var i = 0; i < list.length; i++) {
+      if (String(list[i].value).trim().toLowerCase() === address) return list[i];
+    }
+    var chip = link.querySelector('[data-var]');
+    var shown = chip ? Data.variable(chip.getAttribute('data-var')) : null;
+    return shown && shown.type === 'email' ? shown : null;
+  }
+
+  /** True when a link shows nothing but its own address, as a variable. */
+  function showsOnlyAddress(link) {
+    var chips = link.querySelectorAll('[data-var]');
+    if (chips.length !== 1) return false;
+    var v = Data.variable(chips[0].getAttribute('data-var'));
+    return !!v && v.type === 'email' && link.textContent.trim() === chips[0].textContent.trim();
+  }
+
+  /**
+   * selectedText  the text selected when the box opened, as the link text
+   * onInsert      called with the new link's markup
+   * editing       { link, onReplace } to edit an email link already in the text
+   */
+  function openLinkModal(selectedText, onInsert, editing) {
     var modal = document.getElementById('linkModal');
+    var title = document.getElementById('lmTitle');
     var text = document.getElementById('lmText');
     var url = document.getElementById('lmUrl');
     var picker = document.getElementById('lmVar');
+    var emailBox = document.getElementById('lmEmail');
+    var emailPicker = document.getElementById('lmEmailVar');
+    var subject = document.getElementById('lmSubject');
+    var body = document.getElementById('lmBody');
+    var hint = document.getElementById('lmEmailHint');
+    var insert = document.getElementById('lmInsert');
     var modeInputs = modal.querySelectorAll('input[name="lmMode"]');
 
     text.value = selectedText || '';
     url.value = '';
+    subject.value = '';
+    body.value = '';
 
     // Only URL variables make sense as a link address.
     picker.innerHTML = Data.state.variables.variables
@@ -382,24 +477,91 @@
         return '<option value="' + e(v.id) + '">' + e(v.question || v.value) + '</option>';
       }).join('');
 
+    var emails = emailVariables();
+    emailPicker.innerHTML = emails.length
+      ? emails.map(function (v) {
+        return '<option value="' + e(v.id) + '">' + e(v.value) + '</option>';
+      }).join('')
+      : '<option value="">No public email variables yet</option>';
+
+    var mode = 'url';
+    if (editing) {
+      var parts = Data.mailtoParts(editing.link.getAttribute('href'));
+      var v = emailVariableOf(editing.link);
+      if (v) emailPicker.value = v.id;
+      subject.value = parts.subject;
+      body.value = parts.body;
+      text.value = showsOnlyAddress(editing.link) ? '' : editing.link.textContent.trim();
+      mode = 'email';
+    }
+    title.textContent = editing ? 'Edit email link' : 'Insert link';
+    insert.textContent = editing ? 'Update link' : 'Insert link';
+
+    function currentMode() {
+      return modal.querySelector('input[name="lmMode"]:checked').value;
+    }
+
+    function emailHref() {
+      var v = Data.variable(emailPicker.value);
+      if (!v) return '';
+      return Data.mailtoHref(v.value, subject.value.trim(), body.value.replace(/\s+$/, ''));
+    }
+
+    function updateHint() {
+      var href = emailHref();
+      if (!href) {
+        hint.className = 'lm-hint warn';
+        hint.textContent = 'Add the address as an email variable first, so a change to it is one edit.';
+        return;
+      }
+      var long = href.length > LONG_MAILTO;
+      hint.className = 'lm-hint' + (long ? ' warn' : '');
+      hint.innerHTML = (long
+        ? 'This message is long. Some email apps cut off long links, so keep it shorter. '
+        : 'Opens the reader’s email app with this subject and message, ready to fill in and send. ') +
+        '<a href="' + e(href) + '">Try it</a>';
+    }
+
     function applyMode() {
-      var useVar = modal.querySelector('input[name="lmMode"]:checked').value === 'var';
-      url.style.display = useVar ? 'none' : 'block';
-      picker.style.display = useVar ? 'block' : 'none';
+      mode = currentMode();
+      url.style.display = mode === 'url' ? 'block' : 'none';
+      picker.style.display = mode === 'var' ? 'block' : 'none';
+      emailBox.hidden = mode !== 'email';
+      text.placeholder = mode === 'email' ? 'Leave blank to show the email address' : 'Text to show';
+      if (mode === 'email') updateHint();
     }
     Array.prototype.forEach.call(modeInputs, function (input) {
-      input.checked = input.value === 'url';
+      input.checked = input.value === mode;
+      // Editing changes an email link; it does not turn it into another kind.
+      input.disabled = !!editing && input.value !== 'email';
       input.onchange = applyMode;
     });
+    emailPicker.onchange = updateHint;
+    subject.oninput = updateHint;
+    body.oninput = updateHint;
     applyMode();
 
-    document.getElementById('lmInsert').onclick = function () {
-      var label = text.value.trim() || 'link';
-      var useVar = modal.querySelector('input[name="lmMode"]:checked').value === 'var';
+    insert.onclick = function () {
+      var label = text.value.trim();
       var html;
-      if (useVar && picker.value) {
-        var v = Data.variable(picker.value);
-        html = '<a href="' + e(v ? v.value : '#') + '" target="_blank" data-var-href="' +
+      if (mode === 'email') {
+        var v = Data.variable(emailPicker.value);
+        if (!v) return;
+        // With no link text the link shows the address itself, as a
+        // variable, so the text and the address change together.
+        var inner = label ? e(label)
+          : '<span class="faq-var" data-var="' + e(v.id) + '">' + e(v.value) + '</span>';
+        html = Data.editableHtml('<a href="' + e(emailHref()) + '" data-var-mailto="' +
+          e(v.id) + '">' + inner + '</a>');
+        modal.hidden = true;
+        if (editing) editing.onReplace(html);
+        else onInsert(html + '&nbsp;');
+        return;
+      }
+      label = label || 'link';
+      if (mode === 'var' && picker.value) {
+        var target = Data.variable(picker.value);
+        html = '<a href="' + e(target ? target.value : '#') + '" target="_blank" data-var-href="' +
           e(picker.value) + '">' + e(label) + '</a>&nbsp;';
       } else {
         var address = url.value.trim();
@@ -412,7 +574,8 @@
 
     document.getElementById('lmCancel').onclick = function () { modal.hidden = true; };
     modal.hidden = false;
-    (text.value ? url : text).focus();
+    if (editing) subject.focus();
+    else (text.value ? url : text).focus();
   }
 
   global.RichText = { mount: mount, flush: flush };

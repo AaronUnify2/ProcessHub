@@ -37,7 +37,8 @@
   function stripPrefix(html) {
     return String(html || '')
       .replace(/(data-var=)"var_([^"]*)"/g, '$1"$2"')
-      .replace(/(data-var-href=)"var_([^"]*)"/g, '$1"$2"');
+      .replace(/(data-var-href=)"var_([^"]*)"/g, '$1"$2"')
+      .replace(/(data-var-mailto=)"var_([^"]*)"/g, '$1"$2"');
   }
 
   /**

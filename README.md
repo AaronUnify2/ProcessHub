@@ -62,6 +62,9 @@ never needs editing.
 - **Links**: `FAQ.html#water` opens a tab; `FAQ.html#water/<question>` opens a
   question. Opening a question puts its link in the address bar, and **Copy
   link to this question** copies it, to send to a customer.
+- **Email links** open the reader's email app; one written with a template
+  starts the message for them, subject and all. A **Copy** button beside
+  each email link is there for anyone without an email app set up.
 - **Definitions**: a value with a definition is underlined with dots; hover,
   tap or tab to it to read the definition.
 - Wide tables scroll sideways on a phone; printing shows every answer in the
@@ -443,6 +446,16 @@ the preview, which is what a member of the public sees.
 A chip is `contenteditable="false"`, so a reference can be deleted whole but
 never half-edited into nonsense. The link builder can point at a URL variable
 instead of a typed address, so a changed web address is still one edit.
+
+Its **Email** option makes a link that opens the reader's email app with a
+message started: pick an email variable, then write a subject and a message
+template (placeholders such as `[your application number]` show the reader
+what to fill in). The address stays tied to the variable
+(`data-var-mailto`); the subject and message are kept in the link. Leave the
+link text blank and the link shows the address itself. To change a template
+later, click into the link and press **Link** again; this also adds a template
+to an older email link that has none. Keep the message short: some email apps
+cut off very long links, and the box warns when it gets near that.
 
 **Rules.** The Rules tab has two parts.
 

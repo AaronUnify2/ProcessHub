@@ -57,6 +57,10 @@
       var v = Data.variable(node.getAttribute('data-var-href'));
       if (v && v.internal === true) node.replaceWith(document.createTextNode(node.textContent));
     });
+    Array.prototype.forEach.call(holder.querySelectorAll('[data-var-mailto]'), function (node) {
+      var v = Data.variable(node.getAttribute('data-var-mailto'));
+      if (v && v.internal === true) node.replaceWith(document.createTextNode(node.textContent));
+    });
     return Data.freeze(holder.innerHTML);
   }
 
