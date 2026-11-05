@@ -90,7 +90,8 @@
   }
 
   /**
-   * Update <span data-var> text and <a data-var-href> addresses in place.
+   * Update <span data-var> text and <a data-var-href> / <a data-var-mailto>
+   * addresses in place.
    *
    *   view       chip styling, for reading
    *   edit       chip styling plus contenteditable="false", so the caret
@@ -137,7 +138,55 @@
       if (mode === 'bake') node.removeAttribute('data-var-href');
     });
 
+    // An email link: the address follows the variable, the subject and
+    // message written for this link stay as they are.
+    Array.prototype.forEach.call(holder.querySelectorAll('[data-var-mailto]'), function (node) {
+      var v = variable(node.getAttribute('data-var-mailto'));
+      if (v) {
+        var parts = mailtoParts(node.getAttribute('href'));
+        node.setAttribute('href', mailtoHref(v.value, parts.subject, parts.body));
+      }
+      if (mode === 'bake') node.removeAttribute('data-var-mailto');
+    });
+
     return holder.innerHTML;
+  }
+
+  // ---- email links ---------------------------------------------------------
+  //
+  // An email link opens the reader's email app with a message started for
+  // them: <a href="mailto:address?subject=…&body=…" data-var-mailto="var_…">.
+  // The whole address is kept in href, so anything that does not know the
+  // attribute — an older copy of the FAQ page, Word — still has a working
+  // link. Line breaks travel as CRLF (%0D%0A), as RFC 6068 asks.
+
+  function mailtoHref(address, subject, body) {
+    var query = [];
+    if (subject) query.push('subject=' + encodeURIComponent(subject));
+    if (body) {
+      query.push('body=' + encodeURIComponent(String(body).replace(/\r?\n/g, '\r\n')));
+    }
+    return 'mailto:' + String(address || '').trim() + (query.length ? '?' + query.join('&') : '');
+  }
+
+  function decodePart(text) {
+    try { return decodeURIComponent(text); } catch (err) { return text; }
+  }
+
+  /** { address, subject, body } from a mailto: address; '' for what is missing. */
+  function mailtoParts(href) {
+    var out = { address: '', subject: '', body: '' };
+    var match = /^mailto:([^?]*)(?:\?(.*))?$/i.exec(String(href || '').trim());
+    if (!match) return out;
+    out.address = decodePart(match[1]);
+    (match[2] || '').split('&').forEach(function (pair) {
+      var at = pair.indexOf('=');
+      if (at === -1) return;
+      var key = pair.slice(0, at).toLowerCase();
+      var value = decodePart(pair.slice(at + 1)).replace(/\r\n/g, '\n');
+      if (key === 'subject' || key === 'body') out[key] = value;
+    });
+    return out;
   }
 
   /**
@@ -295,7 +344,7 @@
     });
   }
 
-  var SPAN_PATTERN = /data-var(?:-href)?="(var_[a-z0-9_]+)"/gi;
+  var SPAN_PATTERN = /data-var(?:-href|-mailto)?="(var_[a-z0-9_]+)"/gi;
 
   /**
    * Count both reference styles. Process text uses {{var_id}}; content from
@@ -694,7 +743,7 @@
 
   var STATUSES = ['draft', 'mapped', 'reviewed', 'published', 'needs_rework'];
 
-  var ANSWER_VARS = /data-var(?:-href)?="(var_[a-z0-9_]+)"|\{\{(var_[a-z0-9_]+)\}\}/gi;
+  var ANSWER_VARS = /data-var(?:-href|-mailto)?="(var_[a-z0-9_]+)"|\{\{(var_[a-z0-9_]+)\}\}/gi;
 
   /**
    * The facts about one FAQ question that the dashboards count: is it on the
@@ -1034,6 +1083,8 @@
     refreshSpans: refreshSpans,
     definitionOf: definitionOf,
     freeze: freeze,
+    mailtoHref: mailtoHref,
+    mailtoParts: mailtoParts,
     variable: variable,
     search: search,
     suggest: suggest,
