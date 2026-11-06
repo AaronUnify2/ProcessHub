@@ -39,7 +39,7 @@ content in those older public copies was judged acceptable to leave.
   css/app.css · css/live.css · css/gate.css · css/meaning-map.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
                      rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
-                     richtext.js · blueprint.js · canvas.js
+                     richtext.js · blueprint.js · branches.js · canvas.js
                      semantic.js · semantic-worker.js · probe.js · meaning-map.js · probe-map.js
                      spot-hint.js
                      ui-sidebar.js · ui-detail.js · ui-probe.js · app.js · live.js
@@ -525,6 +525,21 @@ Adding, deleting or reordering steps never rebuilds the arrows:
 - a deleted step's incoming arrows are joined to wherever it led
 - in a straight-line process ↑ ↓ reorder the flow; once a process branches,
   the list is reading order only and the arrows are left as you drew them
+
+**Paths side by side.** When a process branches, the Steps view follows the
+arrows rather than the list (`js/branches.js`). After a step that leads to
+more than one place, its paths sit side by side, each boxed under its route's
+label (*Path 1 — Yes*, *Path 2 — No*; click the label to change it), until
+they meet again ("The paths meet again at step 8") or end ("This path ends
+here"). A route that goes straight to the meeting step shows as "Goes straight
+on to step 8". Paths can branch again inside a path. On a phone, or when there
+is not room, the paths sit one under the other. Step numbers stay the list's
+numbers, and the stage filter works inside each path.
+
+Where the arrows cannot be read as clean paths — an arrow loops back, there is
+more than one start, a step is reached from two paths other than where they
+meet, or a step has no arrows — the Steps view says so and stays in reading
+order. Nothing is stored for this: it is only a way of showing the arrows.
 
 Handoffs are counted along the arrows, so each branch into another
 department counts.
