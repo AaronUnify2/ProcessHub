@@ -2367,3 +2367,65 @@ h2.group .btn { margin-left: 0.4rem; vertical-align: 1px; text-transform: none; 
 }
 
 .badge.stage-count.unsorted { background: var(--warn-soft); color: var(--warn); }
+
+/* ===========================================================================
+   Steps view: a branching process as paths
+   After a step that leads to more than one place, its paths sit side by
+   side where there is room, one under the other where there is not.
+   =========================================================================== */
+
+.pane.wide .flow > .step,
+.pane.wide .flow > .stage-gap,
+.pane.wide .flow > .handoff-marker,
+.pane.wide .flow > .add-step-row,
+.pane.wide .flow-note,
+.pane.wide .view-row { max-width: 860px; }
+
+.fork {
+  margin: 0.2rem 0 0.9rem;
+  padding: 0.7rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+}
+.fork-head, .fork-meet {
+  font-size: 0.74rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--warn);
+}
+.fork-head { margin: 0 0 0.6rem 0.2rem; }
+.fork-meet { margin: 0.6rem 0 0 0.2rem; }
+.fork-meet::before { content: '↓ '; }
+
+.fork-paths {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 0.7rem;
+  align-items: start;
+}
+.fork-path {
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--warn);
+  border-radius: 10px;
+  padding: 0.55rem;
+}
+.path-head {
+  display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
+  margin: 0 0.15rem 0.55rem;
+}
+.path-n {
+  font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-soft);
+}
+.path-label { font-size: 0.95rem; font-weight: 700; color: var(--text); flex: 1; min-width: 8ch; }
+.path-note { font-size: 0.85rem; color: var(--text-soft); margin: 0.2rem 0.2rem 0.4rem; }
+.path-foot { font-size: 0.78rem; color: var(--text-soft); margin: 0.1rem 0.2rem 0; }
+.fork-path .step:last-of-type { margin-bottom: 0.4rem; }
+/* a fork inside a path */
+.fork-path .fork { margin: 0.2rem 0 0.5rem; padding: 0.5rem; }
+
+@media (max-width: 800px) {
+  .fork { padding: 0.45rem; }
+  .fork-paths { grid-template-columns: minmax(0, 1fr); }
+}

@@ -596,9 +596,12 @@
     if (!p) return paint(notFound('process', id));
     var pid = p.id;
     var flow = Data.flow(p);
+    // How the steps branch, if they do so cleanly enough to show as paths.
+    var shape = processView === 'steps' ? Branches.outline(p) : null;
 
-    // The map wants the whole window; the step list wants a reading width.
-    var html = '<article class="pane' + (processView === 'map' ? ' wide' : '') + '">' +
+    // The map wants the whole window, and so do paths side by side; a plain
+    // step list wants a reading width.
+    var html = '<article class="pane' + (processView === 'map' || shape ? ' wide' : '') + '">' +
       '<header class="pane-head">' +
       '<div class="crumbs">' + e(Data.taxonomyPath(p.taxonomyId)) + '</div>' +
       '<h1 class="editable-h1">' + f('process:' + pid + ':name') + '</h1>' +
@@ -633,11 +636,18 @@
     if (processView === 'map') {
       html += '<section class="canvas-host" id="canvasHost"></section>';
     } else {
-      if (!flow.linear) {
-        html += '<p class="flow-note">This process branches, so the list below is reading ' +
-          'order only. Each step shows where it leads; change the routes there or on the Map.</p>';
+      if (shape) {
+        html += '<p class="flow-note">This process branches. After a step that leads to more ' +
+          'than one place, its paths are shown side by side, each under its route’s label — ' +
+          'click a label to change it. Each step’s <em>Leads to</em> still shows and changes ' +
+          'its routes.</p>';
+      } else if (!flow.linear) {
+        html += '<p class="flow-note">The arrows in this process do not follow the list, and ' +
+          'they cannot be shown as clean paths (an arrow loops back, a step is reached from ' +
+          'two paths, or a step has no arrows), so the list below is reading order only. Each ' +
+          'step shows where it leads; change the routes there or on the Blueprint.</p>';
       }
-      html += '<section class="flow">' + renderSteps(p, flow) +
+      html += '<section class="flow' + (shape ? ' branched' : '') + '">' + renderSteps(p, flow, shape) +
         '<div class="add-step-row">' +
         btn('add-step', { process: pid }, '+ Add step at the end') +
         '</div></section>';
@@ -722,29 +732,84 @@
   }
 
   /**
-   * The step list, with the stage filter applied. Steps it hides are not
-   * simply dropped: a quiet line says how many are hidden there, so the
-   * journey still reads as a sequence with work happening in between.
+   * The step list, with the stage filter applied.
+   *
+   * Where the process branches cleanly (branches.js), the steps follow the
+   * arrows: after a step that leads to more than one place, its paths sit
+   * side by side, each under its route's label, until they meet again.
+   * Otherwise they are listed in reading order.
+   *
+   * Steps the filter hides are not simply dropped: a quiet line says how
+   * many are hidden there, so the journey still reads as a sequence with
+   * work happening in between.
    */
-  function renderSteps(p, flow) {
-    var showing = currentFilter();
+  function renderSteps(p, flow, shape) {
+    var number = {};
+    p.steps.forEach(function (s, i) { number[s.id] = i; });
+    var ctx = { p: p, flow: flow, number: number, showing: currentFilter() };
+    var items = shape || p.steps.map(function (s) { return { step: s }; });
+    return renderSequence(items, ctx);
+  }
+
+  function renderSequence(items, ctx) {
     var html = '';
     var hidden = 0;
 
     function gap() {
       if (!hidden) return '';
-      var line = '<div class="stage-gap stage-gap-' + (showing === 'front' ? 'back' : 'front') + '">' +
-        '⋯ ' + plural(hidden, (showing === 'front' ? 'back of house' : 'customer journey') + ' step') +
+      var other = ctx.showing === 'front' ? 'back' : 'front';
+      var line = '<div class="stage-gap stage-gap-' + other + '">' +
+        '⋯ ' + plural(hidden, (other === 'back' ? 'back of house' : 'customer journey') + ' step') +
         ' here</div>';
       hidden = 0;
       return line;
     }
 
-    p.steps.forEach(function (step, i) {
-      if (!Blueprint.shows(showing, step)) { hidden++; return; }
-      html += gap() + renderStep(step, i, p, flow);
+    items.forEach(function (item) {
+      if (item.fork) {
+        html += gap() + renderFork(item, ctx);
+        return;
+      }
+      if (!Blueprint.shows(ctx.showing, item.step)) { hidden++; return; }
+      html += gap() + renderStep(item.step, ctx.number[item.step.id], ctx.p, ctx.flow);
     });
     return html + gap();
+  }
+
+  /** "4. Check the payment" — a step named by its number and title. */
+  function stepName(step, ctx) {
+    return (ctx.number[step.id] + 1) + '. ' + e(Data.freeze(step.title) || 'Untitled step');
+  }
+
+  /** The paths out of a step that leads to more than one place, side by side. */
+  function renderFork(item, ctx) {
+    var p = ctx.p;
+    var count = item.paths.length;
+    var html = '<div class="fork">' +
+      '<div class="fork-head">⑂ After step ' + (ctx.number[item.fork.id] + 1) + ', one of ' +
+      count + ' paths</div><div class="fork-paths">';
+
+    html += item.paths.map(function (path, n) {
+      var target = p.steps[ctx.number[path.conn.to]];
+      var head = '<div class="path-head">' +
+        '<span class="path-n">Path ' + (n + 1) + '</span>' +
+        '<span class="path-label">' + f('connection:' + p.id + ':' + path.conn.id + ':condition',
+          { placeholder: 'Label this path, e.g. Yes' }) + '</span>' +
+        '</div>';
+      var body = path.items.length
+        ? renderSequence(path.items, ctx)
+        : '<p class="path-note">Goes straight on to step ' + stepName(target, ctx) + '.</p>';
+      var foot = item.meet
+        ? '<div class="path-foot">↓ Then step ' + stepName(item.meet, ctx) + '</div>'
+        : '<div class="path-foot">This path ends here.</div>';
+      return '<div class="fork-path">' + head + body + foot + '</div>';
+    }).join('');
+
+    html += '</div>';
+    if (item.meet) {
+      html += '<div class="fork-meet">The paths meet again at step ' + stepName(item.meet, ctx) + '</div>';
+    }
+    return html + '</div>';
   }
 
   /** Customer journey | Back of house, for one step. */
