@@ -177,6 +177,27 @@
   </div>
 </div>
 
+<!-- Starting a new process from the Processes dashboard: it needs a name and
+     the department it sits under -->
+<div class="modal" id="newProcessModal" hidden>
+  <div class="modal-box">
+    <h3>New process</h3>
+    <p class="modal-sub">It starts as a draft, with an entry step and a resolution.</p>
+    <div class="fm-field">
+      <label for="npName">Name of the process</label>
+      <input type="text" id="npName" autocomplete="off">
+    </div>
+    <div class="fm-field">
+      <label for="npDept">Department</label>
+      <select id="npDept"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="npCancel">Cancel</button>
+      <button class="btn primary" id="npSave">Create process</button>
+    </div>
+  </div>
+</div>
+
 <!-- Attaching a fact sheet or FAQ answer to a step or process, or relating
      FAQ answers to a fact sheet -->
 <div class="modal" id="attachModal" hidden>

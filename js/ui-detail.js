@@ -25,6 +25,7 @@
     host.addEventListener('change', handleChange);
     wireIssueModal();
     wireAttachModal();
+    wireNewProcessModal();
   }
 
   function e(text) { return Data.escapeHtml(text); }
@@ -143,6 +144,7 @@
     if (act === 'detach') { Edit.detach(d.process, d.step || null, d.kind, d.ref); refresh(); }
 
     // -- creating and deleting
+    if (act === 'new-process' && !d.taxonomy) { openNewProcess(); return; }
     if (act === 'new-process') {
       name = ask('Name of the new process:');
       if (name) {
@@ -489,6 +491,55 @@
       refresh();
     });
     document.getElementById('imBy').value = prefs.raisedBy || '';
+  }
+
+  // ---- a new process, from the Processes dashboard -------------------------
+  // The tree's + buttons already know the department; the dashboard button
+  // asks for it, with the departments listed in tree order.
+
+  function openNewProcess() {
+    var modal = document.getElementById('newProcessModal');
+    var index = Data.state.index;
+    var options = [];
+    (function walk(nodes, depth) {
+      (nodes || []).forEach(function (node) {
+        options.push('<option value="' + e(node.id) + '">' +
+          new Array(depth + 1).join('\u00a0\u00a0\u00a0') + e(node.name) + '</option>');
+        walk(index.children[node.id], depth + 1);
+      });
+    })(index.children.__root__, 0);
+    var select = document.getElementById('npDept');
+    select.innerHTML = options.join('');
+    // The department used last time, if it still exists.
+    select.value = prefs.newProcessDept || '';
+    if (select.selectedIndex < 0) select.selectedIndex = 0;
+    document.getElementById('npName').value = '';
+    modal.hidden = false;
+    document.getElementById('npName').focus();
+  }
+
+  function wireNewProcessModal() {
+    var modal = document.getElementById('newProcessModal');
+    if (!modal) return;
+    var nameBox = document.getElementById('npName');
+    var save = function () {
+      var name = nameBox.value.trim();
+      var dept = document.getElementById('npDept').value;
+      if (!name) { nameBox.focus(); return; }
+      if (!dept) return;
+      prefs.newProcessDept = dept;
+      Storage.savePrefs(prefs);
+      modal.hidden = true;
+      onNavigate('#/process/' + Edit.createProcess(dept, name));
+    };
+    document.getElementById('npCancel').addEventListener('click', function () { modal.hidden = true; });
+    document.getElementById('npSave').addEventListener('click', save);
+    nameBox.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') { ev.preventDefault(); save(); }
+    });
+    modal.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape') modal.hidden = true;
+    });
   }
 
   // ---- attaching fact sheets and FAQ answers -------------------------------
@@ -2405,7 +2456,11 @@
     var housekeeping = builtIns.filter(function (r) { return !Rules.isWriting(r); });
 
     // Writing first: how the public wording reads is the day-to-day work.
-    var html = '<p class="hint-block">The built-in checks each go through all of Process Hub at ' +
+    var html = '<div class="row-actions">' + btn('add-rule', {}, '+ New rule') +
+      '<span class="spacer"></span>' +
+      '<button class="btn small" data-route="#/issues">Issues register →</button>' +
+      '</div>' +
+      '<p class="hint-block">The built-in checks each go through all of Process Hub at ' +
       'once. Open one to see what it finds, by type and department. They can be switched off, ' +
       'not changed.</p>' +
       '<h2 class="group">Writing</h2>' +
@@ -2418,11 +2473,7 @@
       '<div class="chk-cards">' + housekeeping.map(card).join('') + '</div>';
 
     html += '<h2 class="group">Your rules</h2>' +
-      '<div class="row-actions">' +
-      btn('add-rule', {}, '+ Text that should no longer appear') +
-      '<span class="spacer"></span>' +
-      '<button class="btn small" data-route="#/issues">Issues register →</button>' +
-      '</div>';
+      '<p class="hint-block">Text that should no longer appear. Add one with <strong>+ New rule</strong>.</p>';
     if (!mine.length) {
       html += '<p class="empty">No rules yet. Add one whenever something changes — a system ' +
         'renamed, a form retired, a team now called something else.</p>';
@@ -2934,6 +2985,7 @@
       '<p class="lede">Process maps, public FAQ content and fact sheets, built from ' +
       'one set of variables. Pick a process from the tree, or press ' +
       '<kbd>/</kbd> to search. Click any field to edit it.</p></header>' +
+      '<div class="row-actions">' + btn('new-process', {}, '+ New process') + '</div>' +
       '<section class="tiles">' +
       tile(processes.length, 'processes', drafts.length + ' still draft', '#/departments') +
       tile(crossing.length, 'cross departments',

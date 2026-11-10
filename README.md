@@ -372,8 +372,10 @@ browser only asks "leave site?" if something typed has not reached the draft
 yet.
 
 **Creating and deleting.** The `+` beside any department in the tree starts a
-new process there (an entry step joined to a resolution step). The fact sheet,
-FAQ and variable lists each have a `+ New` button, and every item has a
+new process there (an entry step joined to a resolution step); **+ New
+process** on the Processes dashboard does the same, asking for the name and the
+department. The fact sheet, FAQ and variable lists each have a `+ New` button,
+and the Rules dashboard has **+ New rule**. Every item has a
 delete button on its own page. Deleting a fact sheet or FAQ detaches it from
 every step first; a variable can only be deleted once nothing uses it.
 Departments are managed on each department's own page: rename, move under a
