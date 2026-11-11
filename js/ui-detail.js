@@ -444,10 +444,11 @@
     var stepField = document.getElementById('imStepField');
     var stepSelect = document.getElementById('imStep');
     if (owner && owner.kind === 'process') {
+      var nb = Branches.numbering(owner.obj);
       stepSelect.innerHTML = '<option value="">The process as a whole</option>' +
-        owner.obj.steps.map(function (st, i) {
+        nb.order.map(function (st) {
           return '<option value="' + e(st.id) + '"' + (st.id === stepId ? ' selected' : '') + '>' +
-            (i + 1) + '. ' + e(Data.freeze(st.title)) + '</option>';
+            e(nb.label[st.id]) + '. ' + e(Data.freeze(st.title)) + '</option>';
         }).join('');
       stepField.hidden = false;
     } else {
@@ -802,9 +803,12 @@
    * work happening in between.
    */
   function renderSteps(p, flow, shape) {
-    var number = {};
-    p.steps.forEach(function (s, i) { number[s.id] = i; });
-    var ctx = { p: p, flow: flow, number: number, showing: currentFilter() };
+    // Numbered by the branch shape (1, 2, 3a, 3b, 4…), the same numbers the
+    // map, the routes and the exports use.
+    var label = Branches.numbering(p).label;
+    var byId = {};
+    p.steps.forEach(function (s) { byId[s.id] = s; });
+    var ctx = { p: p, flow: flow, label: label, byId: byId, showing: currentFilter() };
     var items = shape || p.steps.map(function (s) { return { step: s }; });
     return renderSequence(items, ctx);
   }
@@ -829,14 +833,14 @@
         return;
       }
       if (!Blueprint.shows(ctx.showing, item.step)) { hidden++; return; }
-      html += gap() + renderStep(item.step, ctx.number[item.step.id], ctx.p, ctx.flow);
+      html += gap() + renderStep(item.step, ctx.label[item.step.id], ctx.p, ctx.flow);
     });
     return html + gap();
   }
 
   /** "4. Check the payment" — a step named by its number and title. */
   function stepName(step, ctx) {
-    return (ctx.number[step.id] + 1) + '. ' + e(Data.freeze(step.title) || 'Untitled step');
+    return ctx.label[step.id] + '. ' + e(Data.freeze(step.title) || 'Untitled step');
   }
 
   /** The paths out of a step that leads to more than one place, side by side. */
@@ -844,11 +848,11 @@
     var p = ctx.p;
     var count = item.paths.length;
     var html = '<div class="fork">' +
-      '<div class="fork-head">⑂ After step ' + (ctx.number[item.fork.id] + 1) + ', one of ' +
+      '<div class="fork-head">⑂ After step ' + ctx.label[item.fork.id] + ', one of ' +
       count + ' paths</div><div class="fork-paths">';
 
     html += item.paths.map(function (path, n) {
-      var target = p.steps[ctx.number[path.conn.to]];
+      var target = ctx.byId[path.conn.to];
       var head = '<div class="path-head">' +
         '<span class="path-n">Path ' + (n + 1) + '</span>' +
         '<span class="path-label">' + f('connection:' + p.id + ':' + path.conn.id + ':condition',
@@ -884,7 +888,8 @@
       '</span>';
   }
 
-  function renderStep(step, i, p, flow) {
+  /** n is the step's number as shown: "4", or "3a" on a path. */
+  function renderStep(step, n, p, flow) {
     var spec = 'step:' + p.id + ':' + step.id + ':';
     var html = '';
 
@@ -897,7 +902,7 @@
     html += '<div class="step step-' + e(step.type) + ' stage-' + (Blueprint.stageOf(step) || 'none') +
       '" id="step-' + e(step.id) + '">' +
       '<div class="step-head">' +
-      '<span class="step-n">' + (i + 1) + '</span>' +
+      '<span class="step-n">' + e(n) + '</span>' +
       '<span class="step-type">' + f(spec + 'type',
         { type: 'select', options: STEP_TYPES.map(function (t) {
           return { value: t, label: STEP_LABEL[t] }; }) }) + '</span>' +
@@ -942,7 +947,7 @@
       f(spec + 'completionTrigger', { placeholder: 'What signals this step is finished' }) +
       '</div>';
 
-    html += renderRoutes(step, i, p, flow);
+    html += renderRoutes(step, p, flow);
 
     return html + '</div>';
   }
@@ -951,10 +956,12 @@
    * Where a step leads. Each route's label is what the live call view shows
    * as a button, so a decision step reads as a question with answers.
    */
-  function renderRoutes(step, i, p, flow) {
+  function renderRoutes(step, p, flow) {
     var out = flow.outgoing[step.id] || [];
-    var number = {};
-    p.steps.forEach(function (s, n) { number[s.id] = n + 1; });
+    var numbering = Branches.numbering(p);
+    var number = numbering.label;
+    var byId = {};
+    p.steps.forEach(function (s) { byId[s.id] = s; });
 
     var html = '<div class="routes"><span class="routes-label">Leads to</span>';
     if (!out.length) {
@@ -962,11 +969,11 @@
         (step.type === 'resolution' ? 'Nothing — the process ends here.' : 'Nothing yet.') + '</span>';
     }
     html += out.map(function (c) {
-      var to = p.steps[number[c.to] - 1];
+      var to = byId[c.to];
       return '<div class="route">' +
         '<span class="route-cond">' + f('connection:' + p.id + ':' + c.id + ':condition',
           { placeholder: out.length > 1 ? 'Label, e.g. Yes' : 'Label (optional)' }) + '</span>' +
-        '<button class="route-to" data-jump="step-' + e(c.to) + '">→ ' + number[c.to] + '. ' +
+        '<button class="route-to" data-jump="step-' + e(c.to) + '">→ ' + e(number[c.to]) + '. ' +
         e(to ? Data.freeze(to.title) : c.to) + '</button>' +
         btn('del-route', { process: p.id, conn: c.id }, '×', 'tiny danger', 'Remove this route') +
         '</div>';
@@ -974,13 +981,13 @@
 
     var linked = {};
     out.forEach(function (c) { linked[c.to] = true; });
-    var choices = p.steps.filter(function (s) { return s.id !== step.id && !linked[s.id]; });
+    var choices = numbering.order.filter(function (s) { return s.id !== step.id && !linked[s.id]; });
     if (choices.length) {
       html += '<select class="route-add" data-add-route="' + e(step.id) + '" data-process="' +
         e(p.id) + '" aria-label="Add a route from this step">' +
         '<option value="">+ Add a route to…</option>' +
         choices.map(function (s) {
-          return '<option value="' + e(s.id) + '">' + number[s.id] + '. ' +
+          return '<option value="' + e(s.id) + '">' + e(number[s.id]) + '. ' +
             e(Data.freeze(s.title)) + '</option>';
         }).join('') + '</select>';
     }
@@ -1945,10 +1952,11 @@
   function stepsUsing(p, id) {
     var ref = new RegExp('(\\{\\{|data-var(-href|-mailto)?=")' + id + '(\\}\\}|")');
     var numbers = [];
-    p.steps.forEach(function (step, i) {
+    var nb = Branches.numbering(p);
+    nb.order.forEach(function (step) {
       var text = [step.title, step.sop, step.script, step.completionTrigger, step.timeframe]
         .concat((step.checks || []).map(function (c) { return c.text; })).join('\n');
-      if (ref.test(text)) numbers.push(i + 1);
+      if (ref.test(text)) numbers.push(nb.label[step.id]);
     });
     if (!numbers.length) return 'in the purpose or a route';
     return (numbers.length === 1 ? 'Step ' : 'Steps ') + numbers.join(', ');
@@ -2293,8 +2301,9 @@
     if (owner.kind === 'gap') return renderGap(owner, issue);
     if (owner.kind === 'process') {
       var p = owner.obj;
-      var steps = [{ value: '', label: 'The process as a whole' }].concat(p.steps.map(function (st, i) {
-        return { value: st.id, label: (i + 1) + '. ' + Data.freeze(st.title) };
+      var nb = Branches.numbering(p);
+      var steps = [{ value: '', label: 'The process as a whole' }].concat(nb.order.map(function (st) {
+        return { value: st.id, label: nb.label[st.id] + '. ' + Data.freeze(st.title) };
       }));
       details = '<dt>About</dt><dd>' + f(spec + 'stepId', { type: 'select', options: steps,
           placeholder: 'The process as a whole' }) + '</dd>' +

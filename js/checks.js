@@ -77,9 +77,10 @@
   function steps() {
     var out = [];
     Data.state.processes.processes.forEach(function (p) {
+      var number = global.Branches ? Branches.numbering(p).label : {};
       p.steps.forEach(function (s, i) {
         out.push({ type: 'process', step: true, id: s.id, obj: s, process: p,
-          label: p.name + ' › ' + (i + 1) + '. ' + Data.freeze(s.title || 'Untitled step'),
+          label: p.name + ' › ' + (number[s.id] || i + 1) + '. ' + Data.freeze(s.title || 'Untitled step'),
           sub: 'Step · ' + (s.type || 'action'), dept: department(p.taxonomyId),
           route: '#/process/' + p.id });
       });

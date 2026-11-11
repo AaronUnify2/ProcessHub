@@ -454,27 +454,36 @@
     if (!p) return;
 
     var flow = Data.flow(p);
+    // Numbered and ordered by the branch shape, as in the Steps view:
+    // 1, 2, 3a, 4a, 3b, 5…
+    var numbering = global.Branches ? Branches.numbering(p) : null;
+    var ordered = numbering ? numbering.order : p.steps;
     var number = {};
-    p.steps.forEach(function (s, i) { number[s.id] = i + 1; });
+    var byId = {};
+    ordered.forEach(function (s, i) {
+      number[s.id] = numbering ? numbering.label[s.id] : String(i + 1);
+      byId[s.id] = s;
+    });
 
-    var steps = p.steps.map(function (s, i) {
+    var steps = ordered.map(function (s, i) {
       var handoff = flow.handoffSteps[s.id]
         ? '<div class="handoff">Handoff to ' + e(Data.taxonomyName(s.departmentId)) + '</div>'
         : '';
       // Where the arrows go, when it is anything other than simply the next
       // step down the page.
       var out = flow.outgoing[s.id] || [];
-      var plain = out.length === 1 && !out[0].condition && number[out[0].to] === i + 2;
+      var next = ordered[i + 1];
+      var plain = out.length === 1 && !out[0].condition && next && out[0].to === next.id;
       var routes = out.length && !plain
         ? '<ul class="routes">' + out.map(function (c) {
-            var to = p.steps[number[c.to] - 1];
+            var to = byId[c.to];
             return '<li>' + (c.condition ? e(Data.freeze(c.condition)) + ' → ' : '→ ') +
-              'step ' + number[c.to] + (to ? ': ' + e(Data.freeze(to.title)) : '') + '</li>';
+              'step ' + e(number[c.to]) + (to ? ': ' + e(Data.freeze(to.title)) : '') + '</li>';
           }).join('') + '</ul>'
         : '';
       var stage = global.Blueprint ? Blueprint.stageOf(s) : '';
       return handoff + '<div class="step ' + e(s.type) + ' stage-' + (stage || 'none') + '">' +
-        '<div class="step-head"><span class="n">' + (i + 1) + '</span>' +
+        '<div class="step-head"><span class="n">' + e(number[s.id]) + '</span>' +
         '<span class="type">' + e(s.type) + '</span>' +
         (global.Blueprint ? '<span class="stage">' + e(Blueprint.LABEL[stage]) + '</span>' : '') +
         '<h3>' + e(Data.freeze(s.title)) + '</h3></div>' +
@@ -609,6 +618,7 @@
       }
     });
 
+    var label = global.Branches ? Branches.numbering(p).label : {};
     p.steps.forEach(function (step, i) {
       var at = plan.pos[step.id];
       var x = at.x, y = at.y, h = at.h;
@@ -619,10 +629,13 @@
       parts.push('<rect x="' + x + '" y="' + (y + 4) + '" width="4" height="' + (h - 8) +
         '" rx="2" fill="' + edge + '"/>');
 
-      parts.push('<circle cx="' + (x + 24) + '" cy="' + (y + 20) + '" r="9" fill="' +
-        (NODE_COLOUR[step.type] || '#6E6E73') + '"/>' +
+      // A round badge for "4", stretched into a pill for "3a" or "5b1".
+      var n = label[step.id] || String(i + 1);
+      var badgeW = Math.max(18, n.length * 6 + 8);
+      parts.push('<rect x="' + (x + 24 - badgeW / 2) + '" y="' + (y + 11) + '" width="' + badgeW +
+        '" height="18" rx="9" fill="' + (NODE_COLOUR[step.type] || '#6E6E73') + '"/>' +
         '<text x="' + (x + 24) + '" y="' + (y + 23.5) + '" text-anchor="middle" font-size="10" ' +
-        'font-weight="700" fill="#FFFFFF">' + (i + 1) + '</text>');
+        'font-weight="700" fill="#FFFFFF">' + e(n) + '</text>');
 
       var titleLines = wrapText(Data.freeze(step.title), W - 56, 12.5).slice(0, 2);
       titleLines.forEach(function (line, n) {

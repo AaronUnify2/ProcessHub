@@ -24,6 +24,19 @@
      - a step is reached from two paths other than where they meet
      - any step is left out (it has no arrows to place it by)
    Nothing is stored: this is only a way of showing the arrows.
+
+   numbering(p) numbers the steps by that shape, so the numbers read in
+   order down the Steps view however the steps are stored:
+
+     1. 2. 3a. 3b. 4. 5a. 6a. 5b. 6b. 5c. 7.
+
+   Steps on the main line count up. Where the paths split, each path gets
+   a letter and its steps carry on the count, so the first step on every
+   path has the same number: 3a, 3b. A longer path runs on (5a, 6a) while a
+   shorter one stops (5c), and the step where they meet takes the next
+   number after the longest. A path inside a path adds a digit: 4b1, 4b2.
+   Without a clean shape (outline gives null) the steps are numbered 1, 2,
+   3 in the order they are stored.
    =========================================================================== */
 
 (function (global) {
@@ -125,5 +138,51 @@
     return items;
   }
 
-  global.Branches = { outline: outline };
+  /**
+   * { label: { stepId: '3a' }, order: [steps in the order they are numbered] }
+   * label is always a string; order always holds every step once.
+   */
+  function numbering(p) {
+    var steps = (p && p.steps) || [];
+    var label = {};
+    var order = [];
+    var items = outline(p);
+
+    if (!items) {
+      steps.forEach(function (s, i) { label[s.id] = String(i + 1); order.push(s); });
+      return { label: label, order: order };
+    }
+
+    var LETTERS = 'abcdefghijklmnopqrstuvwxyz';
+
+    /** Numbers a list of items from `start`; gives how many numbers it used. */
+    function count(list, start, suffix, depth) {
+      var at = start;
+      list.forEach(function (item) {
+        if (item.step) {
+          label[item.step.id] = at + suffix;
+          order.push(item.step);
+          at++;
+          return;
+        }
+        // A fork: its paths all start at the same number. Paths at the top
+        // level are lettered, paths inside them numbered, and so on.
+        var longest = 0;
+        item.paths.forEach(function (path, k) {
+          var mark = depth % 2 === 0
+            ? (LETTERS.charAt(k) || String(k + 1))
+            : String(k + 1);
+          var used = count(path.items, at, suffix + mark, depth + 1);
+          if (used > longest) longest = used;
+        });
+        at += longest;
+      });
+      return at - start;
+    }
+
+    count(items, 1, '', 0);
+    return { label: label, order: order };
+  }
+
+  global.Branches = { outline: outline, numbering: numbering };
 }(window));

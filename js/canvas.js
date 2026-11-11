@@ -176,8 +176,7 @@
         'another card to add a route; click an arrow to label or remove it.</span>';
       return;
     }
-    var number = {};
-    p.steps.forEach(function (s, i) { number[s.id] = i + 1; });
+    var number = Branches.numbering(p).label;
     el.sel.innerHTML =
       '<span class="selbar-what">Route ' + number[conn.from] + ' → ' + number[conn.to] + '</span>' +
       '<span class="selbar-field">' + Edit.field('connection:' + p.id + ':' + conn.id + ':condition',
@@ -272,8 +271,10 @@
 
     drawLanes();
 
-    el.cards.innerHTML = p.steps.map(function (step, i) {
-      return card(step, i);
+    // The same numbers as the Steps view: 1, 2, 3a, 3b, 4…
+    var number = Branches.numbering(p).label;
+    el.cards.innerHTML = p.steps.map(function (step) {
+      return card(step, number[step.id]);
     }).join('');
 
     Array.prototype.forEach.call(el.cards.querySelectorAll('.node'), function (node) {
@@ -322,7 +323,8 @@
     el.lanes.innerHTML = html;
   }
 
-  function card(step, i) {
+  /** n is the step's number as shown: "4", or "3a" on a path. */
+  function card(step, n) {
     var at = plan.pos[step.id];
     var body = '';
 
@@ -351,7 +353,7 @@
       ' style="left:' + at.x + 'px; top:' + at.y + 'px;' +
       ' width:' + CARD_W + 'px; min-height:' + at.h + 'px">' +
       '<div class="node-head">' +
-      '<span class="node-n" title="' + e(TYPE_LABEL[step.type] || '') + '">' + (i + 1) + '</span>' +
+      '<span class="node-n" title="' + e(TYPE_LABEL[step.type] || '') + '">' + e(n) + '</span>' +
       '<span class="node-title">' + e(Data.freeze(step.title) || 'Untitled step') + '</span>' +
       '<button class="node-add" data-add-after="' + e(step.id) + '" title="Add a step after this one" ' +
       'aria-label="Add a step after this one">+</button>' +

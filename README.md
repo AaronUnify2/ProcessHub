@@ -536,8 +536,25 @@ label (*Path 1 — Yes*, *Path 2 — No*; click the label to change it), until
 they meet again ("The paths meet again at step 8") or end ("This path ends
 here"). A route that goes straight to the meeting step shows as "Goes straight
 on to step 8". Paths can branch again inside a path. On a phone, or when there
-is not room, the paths sit one under the other. Step numbers stay the list's
-numbers, and the stage filter works inside each path.
+is not room, the paths sit one under the other. The stage filter works inside
+each path.
+
+**Step numbers follow the paths.** In a branching process the steps are
+numbered by the shape, not by the order they are stored in, and renumber
+themselves whenever a route or step changes:
+
+```
+1.  2.  3a. 3b.  4.  5a. 6a.  5b. 6b.  5c.  5d.  7.
+```
+
+Steps on the main line count up. Where the paths split, each path gets a
+letter and its first step takes the next number (3a, 3b); a longer path runs
+on (5a, 6a) while a shorter one stops (5c), and the step where they meet takes
+the number after the longest path. A path inside a path adds a digit (4b1,
+4b2). The same numbers appear everywhere a step is named: the Steps view and
+its routes, the map, the live call view, the issue pickers and the exports.
+A process that does not branch, or whose arrows cannot be read as clean paths,
+is numbered 1, 2, 3 in list order.
 
 Where the arrows cannot be read as clean paths — an arrow loops back, there is
 more than one start, a step is reached from two paths other than where they

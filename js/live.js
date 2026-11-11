@@ -167,15 +167,22 @@
       '</div>';
   }
 
+  /** The step's number as Process Hub shows it: "4", or "3a" on a path. */
+  function numberOf(p, step, i) {
+    var label = global.Branches ? Branches.numbering(p).label[step.id] : '';
+    return label || String(i + 1);
+  }
+
   function renderStep(step, i, p) {
     var isCurrent = i === call.stepIndex;
+    var n = e(numberOf(p, step, i));
     var attachedSheets = step.factSheetRefs || [];
     var attachedFaqs = step.faqRefs || [];
 
     if (!isCurrent) {
       var ticks = (step.checks || []).filter(function (c) { return call.ticked[c.id]; }).length;
       return '<button class="run-step collapsed" data-goto="' + i + '">' +
-        '<span class="run-n">' + (i + 1) + '</span>' +
+        '<span class="run-n">' + n + '</span>' +
         '<span class="run-title">' + e(Data.freeze(step.title)) + '</span>' +
         (attachedSheets.length + attachedFaqs.length
           ? '<span class="run-badge">' + (attachedSheets.length + attachedFaqs.length) + '</span>'
@@ -186,7 +193,7 @@
 
     var html = '<div class="run-step current" data-goto="' + i + '">' +
       '<div class="run-step-head">' +
-      '<span class="run-n">' + (i + 1) + '</span>' +
+      '<span class="run-n">' + n + '</span>' +
       '<h2>' + e(Data.freeze(step.title)) + '</h2>' +
       '<span class="run-dept">' + e(Data.taxonomyName(step.departmentId)) + '</span>' +
       '</div>';
@@ -221,7 +228,7 @@
       html += '<div class="run-label">Which way?</div><div class="run-choices">' +
         routes.map(function (r, n) {
           return '<button class="lbtn choice" data-choose="' + r.index + '">' +
-            '<kbd>' + (n + 1) + '</kbd> ' + e(r.label || 'Step ' + (r.index + 1)) +
+            '<kbd>' + (n + 1) + '</kbd> ' + e(r.label || 'Step ' + numberOf(p, p.steps[r.index], r.index)) +
             ' <span class="choice-to">→ ' + e(Data.freeze(p.steps[r.index].title)) + '</span></button>';
         }).join('') + '</div>';
     }
