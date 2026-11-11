@@ -194,6 +194,161 @@
     download('FAQ.json', json(faqProjection()));
   }
 
+  // ---- the FAQ as one HTML page, to email ----------------------------------
+  // Built from faqProjection(), so it holds exactly what Publish would send
+  // to the public page: published tabs only, nothing internal, variables
+  // frozen. Every answer is shown open, with a contents list at the top, so
+  // the file reads and prints well when someone opens it from an email.
+  // Section ids follow the public page's links: #<tab> for a tab and
+  // #<tab>/<question-slug> for a question.
+
+  /** The same slugs FAQ.html makes, so the anchors match its links. */
+  function faqSlug(text) {
+    return String(text).toLowerCase()
+      .replace(/['’]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 70)
+      .replace(/-+$/g, '');
+  }
+
+  function longDate() {
+    return new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  /** tabId: one tab only; leave it out for the whole FAQ. */
+  function faqHtml(tabId) {
+    var faq = faqProjection();
+    var tabs = faq.tabs.filter(function (t) {
+      return (tabId ? t.id === tabId : true) && t.items.some(function (i) { return i.type === 'faq'; });
+    });
+
+    // Slugs first, so the contents list and the answers agree.
+    tabs.forEach(function (tab) {
+      var used = {};
+      tab.items.forEach(function (item) {
+        if (item.type !== 'faq') return;
+        var slug = faqSlug(Data.plainText(item.q)) || 'question';
+        var unique = slug, n = 2;
+        while (used[unique]) unique = slug + '-' + n++;
+        used[unique] = true;
+        item.anchor = tab.id + '/' + unique;
+      });
+    });
+
+    var count = function (tab) { return tab.items.filter(function (i) { return i.type === 'faq'; }).length; };
+    var total = tabs.reduce(function (n, t) { return n + count(t); }, 0);
+    var single = tabId && tabs.length === 1;
+    var title = single ? Data.plainText(tabs[0].label) + ' — frequently asked questions'
+      : 'Frequently asked questions';
+
+    var contents = '<nav class="contents" aria-label="Contents"><h2>Contents</h2>' +
+      (single ? '' : '<ol class="toc-tabs">') +
+      tabs.map(function (tab) {
+        var list = '<ol class="toc-qs">' + tab.items.filter(function (i) { return i.type === 'faq'; })
+          .map(function (item) {
+            return '<li><a href="#' + e(item.anchor) + '">' + e(Data.plainText(item.q)) + '</a></li>';
+          }).join('') + '</ol>';
+        if (single) return list;
+        return '<li><a class="toc-tab" href="#' + e(tab.id) + '">' + e(Data.plainText(tab.label)) +
+          '</a> <span class="count">' + count(tab) + '</span>' + list + '</li>';
+      }).join('') +
+      (single ? '' : '</ol>') + '</nav>';
+
+    var sections = tabs.map(function (tab) {
+      var html = '<section class="tab" id="' + e(tab.id) + '">' +
+        '<h2 class="tab-title">' + e(Data.plainText(tab.label)) + '</h2>';
+      if (tab.intro) html += '<div class="intro body">' + tab.intro + '</div>';
+      if (tab.stepper && tab.stepper.length) {
+        html += '<ol class="stepper">' + tab.stepper.map(function (st) {
+          return '<li class="step"><b>' + st.label + '</b>' + st.text + '</li>';
+        }).join('') + '</ol>';
+      }
+      tab.items.forEach(function (item) {
+        if (item.type === 'group') {
+          html += '<h3 class="group">' + item.title + '</h3>';
+          return;
+        }
+        html += '<article class="qa" id="' + e(item.anchor) + '">' +
+          '<h4 class="q">' + item.q + '</h4>' +
+          '<div class="body">' + (item.a || '') + '</div></article>';
+      });
+      if (tab.footer) html += '<div class="foot body">' + tab.footer + '</div>';
+      if (tab.lastReviewed) html += '<p class="reviewed">Last reviewed: ' + e(tab.lastReviewed) + '</p>';
+      if (!single) html += '<p class="top"><a href="#top">Back to contents ↑</a></p>';
+      return html + '</section>';
+    }).join('');
+
+    var body = '<header id="top"><h1>' + e(title) + '</h1>' +
+      '<p class="stamp">' + (single ? '' : tabs.length + ' topics · ') +
+      total + ' question' + (total === 1 ? '' : 's') + ' · ' + e(longDate()) + '</p></header>' +
+      contents + sections;
+
+    var doc = '<!DOCTYPE html>\n<html lang="en-AU">\n<head>\n<meta charset="UTF-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+      '<meta name="robots" content="noindex, nofollow">\n' +
+      '<title>' + e(title) + '</title>\n<style>\n' + FAQ_PAGE_CSS + '\n</style>\n</head>\n' +
+      '<body>\n<main>\n' + body + '\n</main>\n</body>\n</html>\n';
+
+    download((single ? 'faq-' + safeName(tabs[0].id) : 'faq') + '-' + today() + '.html', doc, 'text/html');
+    return { tabs: tabs.length, questions: total };
+  }
+
+  var FAQ_PAGE_CSS = [
+    '*,*::before,*::after{box-sizing:border-box}',
+    'body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;',
+    'font-size:16px;line-height:1.6;color:#4a5862;background:#f4f6f7;padding:28px 16px 60px}',
+    'main{max-width:820px;margin:0 auto}',
+    'a{color:#16525e}',
+    'h1{font-size:1.8rem;line-height:1.2;color:#18222b;margin:0 0 .3rem}',
+    '.stamp{font-size:.85rem;color:#6f7d86;margin:0 0 1.4rem}',
+    '.contents{background:#fff;border:1px solid #dde3e6;border-radius:10px;padding:16px 20px;margin-bottom:2rem}',
+    '.contents h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:#6f7d86;margin:0 0 .5rem}',
+    '.contents ol{margin:0;padding-left:1.3em}',
+    '.toc-tabs>li{margin:.35rem 0}',
+    '.toc-tab{font-weight:650}',
+    '.toc-qs{font-size:.9rem;margin:.2rem 0 .5rem!important}',
+    '.toc-qs li{margin:.1rem 0}',
+    '.count{font-size:.75rem;color:#6f7d86}',
+    '.tab{margin-top:2.4rem}',
+    '.tab-title{font-size:1.45rem;color:#18222b;border-bottom:3px solid #16525e;padding-bottom:.3rem;margin:0 0 1rem}',
+    '.intro{background:#fff;border:1px solid #dde3e6;border-radius:10px;padding:14px 18px;margin-bottom:1rem}',
+    '.stepper{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;',
+    'list-style:none;margin:0 0 1.2rem;padding:0}',
+    '.stepper .step{background:#fff;border:1px solid #dde3e6;border-top:3px solid #16525e;',
+    'border-radius:8px;padding:10px 12px;font-size:.88rem;line-height:1.4;color:#18222b}',
+    '.stepper .step b{display:block;margin-bottom:3px;font-size:.72rem;letter-spacing:.06em;',
+    'text-transform:uppercase;color:#16525e}',
+    '.group{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:#6f7d86;margin:1.6rem 0 .5rem}',
+    '.qa{background:#fff;border:1px solid #dde3e6;border-radius:10px;padding:14px 18px;margin-bottom:10px}',
+    '.q{font-size:1.05rem;color:#18222b;margin:0 0 .5rem;line-height:1.35}',
+    '.body p{margin:0 0 10px}',
+    '.body>:last-child{margin-bottom:0}',
+    '.body ul,.body ol{margin:6px 0 12px;padding-left:1.4em}',
+    '.body li{margin-bottom:5px}',
+    '.body h4{font-size:1rem;color:#18222b}',
+    '.body strong,.body b{color:#18222b}',
+    '.body [style*="font-size"]{font-size:inherit!important}',
+    '.body .note,.body .warn,.body .term{border-radius:8px;border-left:4px solid;padding:10px 14px;margin:12px 0;font-size:.93rem}',
+    '.body .note{background:#eef6f7;border-left-color:#2c8a9a}',
+    '.body .warn{background:#fdf4e6;border-left-color:#c77d14}',
+    '.body .term{background:#f2f1f9;border-left-color:#6a5fb0}',
+    '.body table{width:100%;border-collapse:collapse;font-size:.9rem;margin:10px 0 14px;display:block;overflow-x:auto}',
+    '.body th,.body td{border:1px solid #c4ced3;padding:8px 10px;text-align:left;vertical-align:top;line-height:1.45}',
+    '.body thead th{background:#e6f0f1;color:#0f3e47;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}',
+    '.body .setback-table tbody td:first-child,.body .facility-table tbody td:first-child{font-weight:600;background:#f8fafa}',
+    'abbr.faq-def{text-decoration:underline dotted;text-decoration-thickness:1.5px;text-underline-offset:3px;',
+    'text-decoration-color:#16525e;cursor:help}',
+    '.foot{margin-top:1rem;font-size:.93rem}',
+    '.reviewed{font-size:.8rem;color:#6f7d86;margin:.8rem 0 0}',
+    '.top{font-size:.85rem;margin:.8rem 0 0}',
+    '@media (max-width:640px){body{padding:18px 12px 40px}h1{font-size:1.5rem}',
+    '.stepper{grid-template-columns:1fr}.qa,.intro,.contents{padding:12px 14px}}',
+    '@media print{body{background:#fff;padding:0}.qa,.intro,.contents{border-color:#ccc}',
+    '.qa{break-inside:avoid}.top{display:none}.tab{break-before:page}',
+    '.body table{display:table;overflow:visible}}'
+  ].join('');
+
   // ---- verification sheets -------------------------------------------------
 
   function variablesByOwner(ownerId) {
@@ -815,6 +970,7 @@
     buildFiles: buildFiles,
     adopt: adopt,
     exportFaqOnly: exportFaqOnly,
+    faqHtml: faqHtml,
     faqProjection: faqProjection,
     processJson: processJson,
     processHtml: processHtml,

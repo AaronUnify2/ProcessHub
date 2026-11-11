@@ -294,6 +294,13 @@
     if (act === 'export-issues-html') Exporter.issuesHtml();
     if (act === 'export-issues-csv') Exporter.issuesCsv();
     if (act === 'export-coverage') Exporter.coverageHtml();
+    if (act === 'export-faq-html') {
+      var made = Exporter.faqHtml(d.tab || '');
+      if (!made.questions) {
+        alert(d.tab ? 'This tab has no questions yet, so there is nothing to export.'
+          : 'No questions are published in a tab yet, so there is nothing to export.');
+      }
+    }
 
     // -- rules
     if (act === 'add-rule') {
@@ -1410,6 +1417,7 @@
       btn('new-faq', {}, '+ New question') +
       btn('faq-new-tab', {}, '+ New tab') +
       '<span class="spacer"></span>' +
+      btn('export-faq-html', {}, '⤓ Web page (HTML)') +
       '<a class="btn small" href="' + PUBLIC_FAQ + '" target="_blank" rel="noopener" ' +
       'title="Shows what is published, not your draft">Public FAQ page ↗</a>' +
       '</div>' +
@@ -1521,6 +1529,7 @@
       btn('faq-add-question', { tab: id }, '+ Question in this tab') +
       '<a class="btn small" href="' + e(PUBLIC_FAQ + '#' + id) + '" target="_blank" rel="noopener" ' +
       'title="Shows what is published, not your draft">View the public tab ↗</a>' +
+      btn('export-faq-html', { tab: id }, '⤓ This tab as a web page') +
       '<span class="spacer"></span>' +
       btn('tab-up', { tab: id }, '↑ Move tab up', 'small', '') +
       btn('tab-down', { tab: id }, '↓ Move tab down', 'small', '') +

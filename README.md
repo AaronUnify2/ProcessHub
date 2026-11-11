@@ -425,6 +425,7 @@ choose, yours selected by default.
 | GitHub connection… | Save, test or forget the token this computer publishes with |
 | Download the files instead | The same four files, to commit by hand |
 | FAQ.json only | → `exports/FAQ.json`, which the public FAQ page reads |
+| FAQ as a web page | One self-contained HTML file to email or print: every published question, answers open, a contents list, links as on the public page (`#water`, `#water/<question>`). Built from your current draft, public content only. The FAQ dashboard has the same button, and each tab's page exports just that tab |
 | Verification sheet | Every variable, grouped by owning department |
 | Issues report | The register as a readable page |
 | Discard local changes | Throw the draft away and reload the published content |

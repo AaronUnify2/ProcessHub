@@ -478,6 +478,7 @@
         });
       }
       if (action === 'faq') Exporter.exportFaqOnly();
+      if (action === 'faq-html') Exporter.faqHtml();
       if (action === 'issues') Exporter.issuesHtml();
       if (action === 'coverage') Exporter.coverageHtml();
       if (action === 'verification') {
