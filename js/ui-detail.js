@@ -78,6 +78,18 @@
 
   // ---- structural actions --------------------------------------------------
 
+  /** Download the public FAQ page with the content inside it: all, or one tab. */
+  function exportFaqPage(tabId) {
+    Exporter.faqHtml(tabId).then(function (made) {
+      if (!made.questions) {
+        alert(tabId ? 'This tab has no questions yet, so there is nothing to export.'
+          : 'No questions are published in a tab yet, so there is nothing to export.');
+      }
+    }, function () {
+      alert('The FAQ page could not be fetched to make the copy. Check the internet connection and try again.');
+    });
+  }
+
   function ask(question, fallback) {
     var answer = prompt(question, fallback || '');
     return answer === null ? null : answer.trim();
@@ -295,11 +307,7 @@
     if (act === 'export-issues-csv') Exporter.issuesCsv();
     if (act === 'export-coverage') Exporter.coverageHtml();
     if (act === 'export-faq-html') {
-      var made = Exporter.faqHtml(d.tab || '');
-      if (!made.questions) {
-        alert(d.tab ? 'This tab has no questions yet, so there is nothing to export.'
-          : 'No questions are published in a tab yet, so there is nothing to export.');
-      }
+      exportFaqPage(d.tab || '');
     }
 
     // -- rules

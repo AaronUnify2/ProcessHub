@@ -478,7 +478,13 @@
         });
       }
       if (action === 'faq') Exporter.exportFaqOnly();
-      if (action === 'faq-html') Exporter.faqHtml();
+      if (action === 'faq-html') {
+        Exporter.faqHtml().then(function (made) {
+          if (!made.questions) alert('No questions are published in a tab yet, so there is nothing to export.');
+        }, function () {
+          alert('The FAQ page could not be fetched to make the copy. Check the internet connection and try again.');
+        });
+      }
       if (action === 'issues') Exporter.issuesHtml();
       if (action === 'coverage') Exporter.coverageHtml();
       if (action === 'verification') {

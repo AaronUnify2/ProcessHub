@@ -20,6 +20,12 @@
      FAQ.html#water/<question-slug>  opens that tab and that question
    Opening a question puts its link in the address bar, so it can be copied
    and sent to someone.
+
+   Process Hub's "FAQ as a web page" export saves a copy of this very page
+   with the content inside it (window.FAQ_EMBEDDED, set in the <head>), so
+   it opens from an email attachment with no internet. That copy reads its
+   content from there instead of exports/FAQ.json, and its copied links
+   point at the live page.
    =========================================================================== */
 
 :root {
@@ -530,6 +536,9 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
   // Process Hub's Publish button writes this file beside the page.
   var DATA_URL = 'exports/FAQ.json';
 
+  // A saved copy carries its content, and the live page's address (above).
+  var EMBEDDED = window.FAQ_EMBEDDED || null;
+
   var data = null;
   var tabs = [];          // [{ id, label, plain, panel, button, items: [question] }]
   var questions = [];     // every question: { tab, slug, q, a, plainQ, plainA, node }
@@ -1005,7 +1014,8 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
   });
 
   function copyLink(question) {
-    var url = location.href.replace(/#.*$/, '') + '#' + question.tab.id + '/' + question.slug;
+    var page = EMBEDDED && EMBEDDED.home ? EMBEDDED.home : location.href.replace(/#.*$/, '');
+    var url = page + '#' + question.tab.id + '/' + question.slug;
     copyText(url, 'Link copied');
   }
 
@@ -1156,11 +1166,14 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
 
   // ---- loading -------------------------------------------------------------
 
-  fetch(DATA_URL, { cache: 'no-cache' })
-    .then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    })
+  var loading = EMBEDDED && EMBEDDED.data
+    ? Promise.resolve(EMBEDDED.data)
+    : fetch(DATA_URL, { cache: 'no-cache' }).then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      });
+
+  loading
     .then(render)
     .catch(function (err) {
       var status = document.getElementById('status') || contentEl.appendChild(el('p', 'status'));
