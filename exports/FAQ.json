@@ -1929,6 +1929,166 @@
       "type": "org",
       "note": "Added 2026-10-28 so the definition shows on hover in FAQ answers. Wired into every answer that names it, wording unchanged.",
       "definition": "Queensland Building and Construction Commission — the state body that regulates Queensland's building industry, including building licences and home warranty insurance."
+    },
+    {
+      "id": "url_environmental_nuisance",
+      "question": "Is this still the correct web address for our Environmental Nuisance & Pollution page?",
+      "value": "https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/environmental-nuisance",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_environmental_nuisance_diary",
+      "question": "Is this still the correct web address for the Environmental Nuisance Diary?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1232/Environmental%20Nuisance%20Diary%20V1%20Nov%202022.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_default_noise_standards",
+      "question": "Is this still the correct web address for our Default Noise Standards fact sheet?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1232/Environmental%20Nuisance%20-%20Default%20noise%20standards.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_noise_regulation_fact_sheet",
+      "question": "Is this still the correct web address for the Queensland Government fact sheet Noise regulation under the Environmental Protection Act 1994?",
+      "value": "https://www.qld.gov.au/__data/assets/pdf_file/0020/202457/noise-regulation.pdf",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_environmental_protection_act",
+      "question": "Is this still the correct web address for the Environmental Protection Act 1994?",
+      "value": "https://www.legislation.qld.gov.au/view/html/inforce/current/act-1994-062",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_devolved_matters_sheet",
+      "question": "Is this still the correct web address for the DETSI information sheet Matters devolved to local government?",
+      "value": "https://www.detsi.qld.gov.au/_global/policy-register/policy-register-pdf?getdoc=3131&name=cm-is-devolved-matters-lga.pdf",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qps_noise_complaint",
+      "question": "Is this still the correct web address for the Queensland Police Service online noise complaint form?",
+      "value": "https://forms.police.qld.gov.au/launch/NoiseComplaint",
+      "owner": "Customer Service",
+      "type": "url"
+    },
+    {
+      "id": "phone_131_444",
+      "question": "Is this still the correct phone number for Policelink (Queensland Police Service non-urgent): 131 444?",
+      "value": "131 444",
+      "owner": "Customer Service",
+      "type": "phone"
+    },
+    {
+      "id": "phone_13_74_68",
+      "question": "Is this still the correct phone number for 13 QGOV (Queensland Government): 13 74 68?",
+      "value": "13 74 68",
+      "owner": "Customer Service",
+      "type": "phone"
+    },
+    {
+      "id": "phone_1300_130_372",
+      "question": "Is this still the correct phone number for the DETSI 24/7 Pollution Hotline: 1300 130 372?",
+      "value": "1300 130 372",
+      "owner": "Customer Service",
+      "type": "phone"
+    },
+    {
+      "id": "url_reporting_pollution",
+      "question": "Is this still the correct web address for the Queensland Government Reporting pollution page?",
+      "value": "https://www.qld.gov.au/environment/management/pollution-management/reporting",
+      "owner": "Customer Service",
+      "type": "url"
+    },
+    {
+      "id": "url_airservices_aircraft_noise",
+      "question": "Is this still the correct web address for making an aircraft noise complaint to Airservices Australia?",
+      "value": "https://www.airservicesaustralia.com/community/environment/aircraft-noise/about-making-a-complaint/",
+      "owner": "Customer Service",
+      "type": "url"
+    },
+    {
+      "id": "time_regulated_devices_mon_sat",
+      "question": "Are these still the permitted hours for lawn mowers, power tools and other regulated devices, Monday to Saturday: 7am to 7pm?",
+      "value": "7am to 7pm",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_regulated_devices_sun",
+      "question": "Are these still the permitted hours for lawn mowers, power tools and other regulated devices on Sundays and public holidays: 8am to 7pm?",
+      "value": "8am to 7pm",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_building_work_mon_sat",
+      "question": "Are these still the permitted hours for building work, Monday to Saturday: 6:30am to 6:30pm?",
+      "value": "6:30am to 6:30pm",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_nuisance_diary_period",
+      "question": "Is this still the minimum period for keeping an Environmental Nuisance Diary: 14 days?",
+      "value": "14 days",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_nuisance_diary_return",
+      "question": "Is this still the time allowed to return an Environmental Nuisance Diary: 20 working days?",
+      "value": "20 working days",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "url_complaints_form",
+      "question": "Is this still the correct web address for our Complaints Form?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/575/Complaints%20Form_2%2010.1.25%20-%20Online.pdf.aspx",
+      "owner": "Complaints",
+      "type": "url"
+    },
+    {
+      "id": "url_complaints_policy",
+      "question": "Is this still the correct web address for our Complaints Management Policy?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/287/Complaints%20Management%20Policy%20-adopted%2016_10_24.pdf.aspx",
+      "owner": "Complaints",
+      "type": "url"
+    },
+    {
+      "id": "time_complaint_acknowledgement",
+      "question": "Is this still the time within which we acknowledge an administrative action complaint: 10 working days?",
+      "value": "10 working days",
+      "owner": "Complaints",
+      "type": "time"
+    },
+    {
+      "id": "text_council_postal_address",
+      "question": "Is this still our correct postal address: PO Box 26, Warwick QLD 4370?",
+      "value": "PO Box 26, Warwick QLD 4370",
+      "owner": "Customer Service"
+    },
+    {
+      "id": "url_ombudsman_how_to_complain",
+      "question": "Is this still the correct web address for making a complaint to the Queensland Ombudsman?",
+      "value": "https://www.ombudsman.qld.gov.au/how-to-complain",
+      "owner": "Complaints",
+      "type": "url"
+    },
+    {
+      "id": "phone_07_3005_7000",
+      "question": "Is this still the correct phone number for the Queensland Ombudsman: (07) 3005 7000?",
+      "value": "(07) 3005 7000",
+      "owner": "Complaints",
+      "type": "phone"
     }
   ],
   "tabs": [
@@ -3012,12 +3172,104 @@
     },
     {
       "id": "disputes",
-      "label": "Disputes",
+      "label": "Environmental Nuisance &amp; Pollution",
+      "intro": "<p><strong>Noise, smoke, dust, odour, light or pollution coming from a neighbouring property or business?</strong> This guide follows the steps from talking to the person causing it to hearing the outcome of our investigation. It also covers the neighbour disputes we cannot resolve, such as trees and fences.</p>",
+      "stepper": [
+        {
+          "label": "STEP 1",
+          "text": "Talk to the person causing the problem, if it is safe to"
+        },
+        {
+          "label": "STEP 2",
+          "text": "Check we are the right authority to deal with it"
+        },
+        {
+          "label": "STEP 3",
+          "text": "Lodge a service request"
+        },
+        {
+          "label": "STEP 4",
+          "text": "We investigate — you may need to keep a nuisance diary"
+        },
+        {
+          "label": "STEP 5",
+          "text": "We tell you the outcome"
+        }
+      ],
       "items": [
+        {
+          "type": "group",
+          "title": "Talk to the person causing the problem"
+        },
+        {
+          "type": "faq",
+          "q": "Do I need to talk to my neighbour first?",
+          "a": "<p>No, but we encourage it if you feel safe doing so. People are often unaware that their activity is causing a nuisance. A friendly conversation or a note can fix the problem quickly.</p>\n<p>You do not have to talk to them if:</p>\n<ul>\n<li>you do not feel safe approaching them</li>\n<li>you have already tried and it has not helped</li>\n<li>you would rather they did not know you raised it</li>\n</ul>\n<p>If you give us your name, we will not tell the other person who complained. They may still be able to guess.</p>\n<p>You can also report a problem anonymously. If you do, we cannot tell you the outcome. Our investigation may also be limited, because we cannot contact you for more information or ask you to keep a nuisance diary.</p>\n<p>When you are ready to report it, see <em>How do I report a nuisance or pollution problem?</em></p>"
+        },
+        {
+          "type": "faq",
+          "q": "Where can I find information about the laws on nuisance and pollution?",
+          "a": "<p>Start with our <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/environmental-nuisance\" target=\"_blank\" data-var-href=\"url_environmental_nuisance\">Environmental Nuisance &amp; Pollution</a> page. It explains the noise, light, air and odour problems we investigate, and has fact sheets on noise, smoke, light and wood heaters.</p>\n<p>The law itself is the Queensland <a href=\"https://www.legislation.qld.gov.au/view/html/inforce/current/act-1994-062\" target=\"_blank\" data-var-href=\"url_environmental_protection_act\"><em>Environmental Protection Act 1994</em></a>. Two Queensland Government documents explain how it works:</p>\n<ul>\n<li><a href=\"https://www.qld.gov.au/__data/assets/pdf_file/0020/202457/noise-regulation.pdf\" target=\"_blank\" data-var-href=\"url_noise_regulation_fact_sheet\">Noise regulation under the Environmental Protection Act 1994</a> — which noise councils deal with, and who to contact about the rest</li>\n<li><a href=\"https://www.detsi.qld.gov.au/_global/policy-register/policy-register-pdf?getdoc=3131&name=cm-is-devolved-matters-lga.pdf\" target=\"_blank\" data-var-href=\"url_devolved_matters_sheet\">Matters devolved to local government</a> — which nuisance and pollution matters councils are responsible for, and which stay with the State</li>\n</ul>\n<p>For a question about a particular problem, call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> and ask for the Environmental Health team.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Check we are the right authority"
+        },
         {
           "type": "faq",
           "q": "What disputes can Council help with?",
-          "a": "<p>Our Local Laws team can investigate:</p>\n<ul>\n<li>noise that keeps happening, such as barking dogs, loud machinery or amplified music</li>\n<li>dust, smoke, odour or light pollution</li>\n<li>water pollution from a neighbouring property</li>\n<li>building work without approval, or illegal use of a structure</li>\n<li>unlawful land use</li>\n</ul>\n<p>Make a complaint using our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</p>"
+          "a": "<p>We can investigate many problems that come from a neighbouring property or business. These include:</p>\n<ul>\n<li>noise from things like machinery, power tools, pool pumps and air conditioners</li>\n<li>dust, smoke, odour or light</li>\n<li>water pollution, such as sediment, paint or chemicals washing into a drain or waterway</li>\n<li>barking dogs and other animal nuisances</li>\n<li>building work without approval, or illegal use of a structure</li>\n<li>unlawful land use</li>\n</ul>\n<p>Our Environmental Health team investigates environmental nuisance under the Queensland <em>Environmental Protection Act 1994</em>. Barking dogs are covered on the <a href=\"#animals\">Animals tab</a>, and building work and land use on the <a href=\"#building-compliance\">Building Compliance tab</a>.</p>\n<p>Some noise is not ours to deal with. For example, loud music, parties and noisy vehicles go to the Queensland Police Service. See <em>What noise does Council not deal with?</em></p>\n<p>To report a problem, use our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What noise does Council not deal with?",
+          "a": "<p>Some noise is not covered by the nuisance laws we enforce. Contact these agencies instead:</p>\n<table>\n<thead><tr><th>Noise from</th><th>Who to contact</th></tr></thead>\n<tbody>\n<tr><td>Music, stereos, parties and gatherings</td><td>Queensland Police Service, using their <a href=\"https://forms.police.qld.gov.au/launch/NoiseComplaint\" target=\"_blank\" data-var-href=\"url_qps_noise_complaint\">online noise complaint form</a></td></tr>\n<tr><td>Security alarms</td><td>Queensland Police Service on <span class=\"faq-var\" data-var=\"phone_131_444\">131 444</span></td></tr>\n<tr><td>Cars, trucks and motorbikes, including trail bikes ridden off the road</td><td>Queensland Police Service, using the <a href=\"https://forms.police.qld.gov.au/launch/NoiseComplaint\" target=\"_blank\" data-var-href=\"url_qps_noise_complaint\">online noise complaint form</a> or on <span class=\"faq-var\" data-var=\"phone_131_444\">131 444</span></td></tr>\n<tr><td>Hotels, clubs and other licensed premises</td><td>Office of Liquor and Gaming Regulation on 13 QGOV (<span class=\"faq-var\" data-var=\"phone_13_74_68\">13 74 68</span>)</td></tr>\n<tr><td>Aircraft</td><td>Airservices Australia, using their <a href=\"https://www.airservicesaustralia.com/community/environment/aircraft-noise/about-making-a-complaint/\" target=\"_blank\" data-var-href=\"url_airservices_aircraft_noise\">online complaint page</a></td></tr>\n<tr><td>State Government sites, such as state schools, and mines, quarries and other activities the State regulates</td><td>Department of the Environment, Tourism, Science and Innovation (DETSI) on <span class=\"faq-var\" data-var=\"phone_1300_130_372\">1300 130 372</span></td></tr>\n<tr><td>Work done by our own staff</td><td>DETSI on <span class=\"faq-var\" data-var=\"phone_1300_130_372\">1300 130 372</span></td></tr>\n</tbody>\n</table>\n<p>Noise from the normal use of roads and railways, and from maintaining water, sewer, power and telecommunications infrastructure, is also excluded. For a problem with one of our local roads, call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</p>\n<p>The full list is in the Queensland Government fact sheet <a href=\"https://www.qld.gov.au/__data/assets/pdf_file/0020/202457/noise-regulation.pdf\" target=\"_blank\" data-var-href=\"url_noise_regulation_fact_sheet\">Noise regulation under the Environmental Protection Act 1994</a>. For any other noise, see <em>How do I report a nuisance or pollution problem?</em></p>"
+        },
+        {
+          "type": "faq",
+          "q": "When are noisy activities allowed?",
+          "a": "<p>The Queensland <em>Environmental Protection Act 1994</em> sets the times when some common activities can be heard at a neighbour's home:</p>\n<table>\n<thead><tr><th>Activity</th><th>Monday to Saturday</th><th>Sundays and public holidays</th></tr></thead>\n<tbody>\n<tr><td>Lawn mowers, power tools, leaf blowers, generators, compressors and other regulated devices</td><td><span class=\"faq-var\" data-var=\"time_regulated_devices_mon_sat\">7am to 7pm</span></td><td><span class=\"faq-var\" data-var=\"time_regulated_devices_sun\">8am to 7pm</span></td></tr>\n<tr><td>Building work by a builder, a contractor or an owner-builder</td><td><span class=\"faq-var\" data-var=\"time_building_work_mon_sat\">6:30am to 6:30pm</span></td><td>Not allowed</td></tr>\n</tbody>\n</table>\n<p>Outside these times, the noise must not be clearly audible in a neighbouring home.</p>\n<div class=\"note\">The building work hours do not apply to work you do yourself on the home you live in. The hours for power tools and other regulated devices still do.</div>\n<p>There are also limits for pool and spa pumps, air conditioners, powerboats, public address systems, indoor venues and open-air events. Our <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1232/Environmental%20Nuisance%20-%20Default%20noise%20standards.pdf.aspx\" target=\"_blank\" data-var-href=\"url_default_noise_standards\">Default Noise Standards fact sheet</a> has them all.</p>\n<p>Noise inside these times can still be an environmental nuisance if it is unreasonable. To report it, see <em>How do I report a nuisance or pollution problem?</em></p>"
+        },
+        {
+          "type": "faq",
+          "q": "Who handles serious pollution incidents?",
+          "a": "<p>Report significant pollution incidents to the Queensland Government's 24/7 Pollution Hotline on <span class=\"faq-var\" data-var=\"phone_1300_130_372\">1300 130 372</span> (option 2). The hotline is run by the Department of the Environment, Tourism, Science and Innovation (DETSI).</p>\n<div class=\"warn\">If someone is in danger, or a building is on fire, call 000 first.</div>\n<p>Significant incidents include:</p>\n<ul>\n<li>large fish kills</li>\n<li>chemical truck or vehicle rollovers</li>\n<li>factory fires</li>\n<li>pipeline breaks</li>\n<li>major sewage spills</li>\n</ul>\n<p>DETSI also handles nuisance and pollution from:</p>\n<ul>\n<li>mines, quarries, sewage treatment plants and other activities that hold a State environmental permit</li>\n<li>State Government sites, such as state schools and hospitals</li>\n<li>work done by our own staff (if a private contractor is doing work for us, report it to us)</li>\n</ul>\n<p>For anything else, start with us. If a problem turns out to involve serious environmental harm, we can ask DETSI to take it over. See <em>How do I report a nuisance or pollution problem?</em> or the Queensland Government's <a href=\"https://www.qld.gov.au/environment/management/pollution-management/reporting\" target=\"_blank\" data-var-href=\"url_reporting_pollution\">Reporting pollution</a> page.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Lodge a service request"
+        },
+        {
+          "type": "faq",
+          "q": "How do I report a nuisance or pollution problem?",
+          "a": "<p>Lodge a service request using our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a>, or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> and ask for the Environmental Health team.</p>\n<p>On the online form, choose the category that fits:</p>\n<ul>\n<li><strong>Environmental Health</strong> — nuisances such as noise, odour, smoke, dust and light, and public health risks such as asbestos and mosquitoes</li>\n<li><strong>Illegal Dumping</strong> — littering and illegal dumping</li>\n</ul>\n<p>Tell us:</p>\n<ul>\n<li>what the problem is and where it is coming from</li>\n<li>when it happens and how long it lasts</li>\n<li>how it affects you where you live, for example if it keeps you awake or stops you using your yard</li>\n<li>whether you have talked to the person causing it</li>\n</ul>\n<p>How the problem affects you is the most important part. The law is about unreasonable interference with the people directly affected, so we look first at the impact on you at your property.</p>\n<p>For dumped rubbish, see <em>Someone has dumped rubbish on my land or in a public place. How do I report it?</em> on the <a href=\"#waste\">Waste &amp; Recycling tab</a>. For barking dogs, see <em>My neighbour's dog barks constantly. Can Council do something?</em> on the <a href=\"#animals\">Animals tab</a>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "We investigate"
+        },
+        {
+          "type": "faq",
+          "q": "What happens after I report an environmental nuisance?",
+          "a": "<p>Our Environmental Health Officers work through these steps:</p>\n<ol>\n<li><strong>We educate first.</strong> We let both sides know how the problem can be better managed.</li>\n<li><strong>We investigate.</strong> If the problem continues, we investigate further within our powers under the law.</li>\n<li><strong>You keep a diary.</strong> We may ask you to record each time the nuisance happens in an Environmental Nuisance Diary. The officer uses it to decide whether the problem is a nuisance under the <em>Environmental Protection Act 1994</em>.</li>\n<li><strong>We may issue a notice.</strong> If an offence has happened, we may issue a notice requiring the problem to be fixed.</li>\n<li><strong>Penalties may follow.</strong> If the person or business still does nothing, further penalties may apply, such as a fine or a prosecution in court.</li>\n</ol>\n<p>To start the diary, see <em>Why do I need to keep an Environmental Nuisance Diary?</em> To find out how we will tell you the result, see <em>How will I find out the outcome of my request?</em></p>"
+        },
+        {
+          "type": "faq",
+          "q": "Why do I need to keep an Environmental Nuisance Diary?",
+          "a": "<p>The diary shows us when the nuisance happens and how it affects you. Without it, we usually cannot take further action.</p>\n<p>Download the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1232/Environmental%20Nuisance%20Diary%20V1%20Nov%202022.pdf.aspx\" target=\"_blank\" data-var-href=\"url_environmental_nuisance_diary\">Environmental Nuisance Diary</a> and fill it in:</p>\n<ul>\n<li>for at least <span class=\"faq-var\" data-var=\"time_nuisance_diary_period\">14 days</span></li>\n<li>with an entry each time the nuisance happens: the date, the time, how long it lasted, the source, how it affected you and where you were</li>\n</ul>\n<p>If the problem has not been resolved, return the diary within <span class=\"faq-var\" data-var=\"time_nuisance_diary_return\">20 working days</span> of reporting it. If we do not receive it, or it is not complete, we cannot take further action.</p>\n<p>Email it to <a href=\"mailto:mail@sdrc.qld.gov.au?subject=Environmental%20Nuisance%20Diary%20%E2%80%93%20%5Btype%20of%20nuisance%5D%20%E2%80%93%20%5Byour%20full%20name%5D\" data-var-mailto=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</a> with the subject line \"Environmental Nuisance Diary – type of nuisance – your full name\".</p>\n<p><strong>Photos, video and audio help.</strong> If it is safe, record the nuisance and send the recording with your diary. For each recording, note:</p>\n<ul>\n<li>the date, and the start and end times</li>\n<li>your name and where you were when you recorded it</li>\n<li>where the nuisance was coming from</li>\n</ul>\n<p>Let the recording run without stopping. Add a short written statement that the information is true and correct.</p>\n<div class=\"note\">The diary ends with a signed declaration. Giving false or misleading information is an offence under the <em>Environmental Protection Act 1994</em>.</div>\n<p>Barking dogs have their own diary. See <em>Why does Council need a noise diary? Why can't an officer just come and listen?</em> on the <a href=\"#animals\">Animals tab</a>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "We tell you the outcome"
+        },
+        {
+          "type": "faq",
+          "q": "How will I find out the outcome of my request?",
+          "a": "<p>We will tell you the outcome the same way you received your request number.</p>\n<p>If you reported the problem anonymously, we cannot tell you the outcome.</p>\n<p>If you are not happy with how we handled your request, you can make a complaint. See <em>What is the difference between a complaint and a service request?</em> on the <a href=\"#complaints\">Complaints tab</a>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Neighbour disputes we cannot resolve"
         },
         {
           "type": "faq",
@@ -3033,7 +3285,15 @@
           "type": "faq",
           "q": "I have a boundary or fencing dispute with my neighbour. What now?",
           "a": "<p>Fences between two residential properties are covered by the <em>Neighbourhood Disputes (Dividing Fences and Trees) Act 2011</em>, not by us. As a general rule, both neighbours share the cost of a \"sufficient dividing fence\" equally. What counts as sufficient depends on the zone and the existing fence.</p>\n<p><strong>What to do:</strong></p>\n<ol>\n<li>Talk to your neighbour first. Agree on what needs doing and get a quote from a fencing contractor.</li>\n<li>If you cannot agree, serve a formal <em>Notice to Fence</em> on your neighbour. The Queensland Government has templates.</li>\n<li>If you still have not agreed 30 days after the notice, either of you can apply to QCAT for a decision. Visit <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">qcat.qld.gov.au</a> or call <span class=\"faq-var\" data-var=\"phone_1300_753_228\">1300 753 228</span>.</li>\n</ol>\n<p>A boundary dispute (where the fence should go) is separate from a fencing dispute (who pays for what). If you are not sure where the boundary is, a licensed surveyor can confirm it. Our online mapping shows cadastral boundaries for reference, but it does not replace a survey.</p>"
-        },
+        }
+      ],
+      "footer": "Related:\n    <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/environmental-nuisance\" target=\"_blank\" data-var-href=\"url_environmental_nuisance\">Environmental Nuisance &amp; Pollution</a> ·\n    <a href=\"https://www.qld.gov.au/__data/assets/pdf_file/0020/202457/noise-regulation.pdf\" target=\"_blank\" data-var-href=\"url_noise_regulation_fact_sheet\">Noise regulation fact sheet</a> ·\n    <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">QCAT</a> ·\n    <a href=\"https://www.sdrc.qld.gov.au/council/contact-us/lodge-a-complaint/lodge-a-complaint\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_38\">Lodge a Complaint</a>",
+      "lastReviewed": "November 2026"
+    },
+    {
+      "id": "building-compliance",
+      "label": "Building Compliance",
+      "items": [
         {
           "type": "faq",
           "q": "My neighbour's shed or extension looks unapproved. How do I report it?",
@@ -3045,8 +3305,31 @@
           "a": "<p>Yes. We can investigate \"unlawful land use\" under the Planning Scheme.</p>\n<p>Some home-based businesses are allowed. These are usually small, low-impact businesses that do not bring more traffic, noise or signage than a normal home. Others need planning approval, or are not allowed in residential zones at all.</p>\n<p>Signs that a business has gone too far include:</p>\n<ul>\n<li>commercial vehicle traffic</li>\n<li>employees coming and going</li>\n<li>customer parking</li>\n<li>commercial signs</li>\n<li>industrial noise</li>\n<li>activities that change the character of the property</li>\n</ul>\n<p>Make a complaint using our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>. Our Planning Compliance team will investigate.</p>"
         }
       ],
-      "footer": "Related:\n    <a href=\"https://www.sdrc.qld.gov.au/living-here/pets-animals/nuisances-complaints\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_37\">Nuisances &amp; Complaints</a> ·\n    <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">QCAT</a> ·\n    <a href=\"https://www.sdrc.qld.gov.au/council/contact-us/lodge-a-complaint/lodge-a-complaint\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_38\">Lodge a Complaint</a>",
-      "lastReviewed": "August 2026"
+      "lastReviewed": "November 2026"
+    },
+    {
+      "id": "complaints",
+      "label": "Complaints",
+      "intro": "<p><strong>Not happy with something we did?</strong> This tab explains what counts as a complaint, how to lodge one, and what you can do if you are not happy with the outcome.</p>",
+      "items": [
+        {
+          "type": "faq",
+          "q": "What is the difference between a complaint and a service request?",
+          "a": "<p>A complaint is about something we did. A service request asks us to do something.</p>\n<p>You can make a <strong>complaint</strong> when you are unhappy with a product or service we provide, or with the conduct of one of our officers. For example:</p>\n<ul>\n<li>how we handled an earlier request</li>\n<li>a decision we made, or did not make on time</li>\n<li>a request for service we did not complete</li>\n<li>a breach of your privacy</li>\n</ul>\n<p>A <strong>service request</strong> asks us to act. For example:</p>\n<ul>\n<li>fixing a pothole</li>\n<li>replacing a broken bin</li>\n<li>reporting a barking dog</li>\n<li>reporting a leaking water pipe or an overgrown block</li>\n</ul>\n<p>A service request can become a complaint. If you reported a problem and we have not resolved it to a reasonable standard, you can lodge a complaint.</p>\n<div class=\"note\">Complaints about Councillors, including the Mayor, follow a separate process. Call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> to find out more.</div>\n<p>To report a problem, use our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a>. To make a complaint, see <em>How do I lodge a complaint?</em></p>"
+        },
+        {
+          "type": "faq",
+          "q": "How do I lodge a complaint?",
+          "a": "<p>Use our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online complaint form</a>, or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span> and ask to lodge a complaint.</p>\n<p>You can also:</p>\n<ul>\n<li>email us at <a href=\"mailto:mail@sdrc.qld.gov.au\" data-var-mailto=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</a></li>\n<li>fill in our <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/575/Complaints%20Form_2%2010.1.25%20-%20Online.pdf.aspx\" target=\"_blank\" data-var-href=\"url_complaints_form\">Complaints Form</a> and post it to the Chief Executive Officer, <span class=\"faq-var\" data-var=\"text_council_postal_address\">PO Box 26, Warwick QLD 4370</span></li>\n<li>visit one of our customer service centres in Warwick, Stanthorpe or Allora (at the Allora Library)</li>\n</ul>\n<p>Include:</p>\n<ul>\n<li>as much detail as you can about what happened</li>\n<li>any loss or harm it caused you</li>\n<li>any other authority you have already reported it to</li>\n<li>your name and at least one way to contact you</li>\n<li>the outcome you are looking for</li>\n<li>photos, and contact details for anyone who can support what you say</li>\n</ul>\n<p><strong>Who can complain?</strong> A person directly affected by what we did, or someone acting for them with their written authority. You can also complain anonymously. If you do, we cannot ask you for more information or tell you our decision.</p>\n<p>We record your complaint and can give you a reference number. We acknowledge administrative action complaints within <span class=\"faq-var\" data-var=\"time_complaint_acknowledgement\">10 working days</span>. You can withdraw a complaint at any time.</p>\n<p>Find out more on our <a href=\"https://www.sdrc.qld.gov.au/council/contact-us/lodge-a-complaint/lodge-a-complaint\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_38\">Lodge a Complaint</a> page.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What if I'm not happy with the outcome of my complaint?",
+          "a": "<p>Ask us for an internal review. When we tell you the outcome of your complaint, we also tell you the options open to you.</p>\n<p>To ask for a review, lodge it the same way as a complaint. See <em>How do I lodge a complaint?</em></p>\n<p>If you have been through our complaints process and are still not happy, you can ask the Queensland Ombudsman to look at how we handled it. The Ombudsman is independent and deals with complaints about Queensland councils and government agencies. They expect you to have tried our process first.</p>\n<p>Contact the Ombudsman through their <a href=\"https://www.ombudsman.qld.gov.au/how-to-complain\" target=\"_blank\" data-var-href=\"url_ombudsman_how_to_complain\">How to complain</a> page or on <span class=\"faq-var\" data-var=\"phone_07_3005_7000\">(07) 3005 7000</span>.</p>\n<p>Our <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/287/Complaints%20Management%20Policy%20-adopted%2016_10_24.pdf.aspx\" target=\"_blank\" data-var-href=\"url_complaints_policy\">Complaints Management Policy</a> explains how we handle complaints.</p>"
+        }
+      ],
+      "footer": "Related:\n    <a href=\"https://www.sdrc.qld.gov.au/council/contact-us/lodge-a-complaint/lodge-a-complaint\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_38\">Lodge a Complaint</a> ·\n    <a href=\"https://www.ombudsman.qld.gov.au/how-to-complain\" target=\"_blank\" data-var-href=\"url_ombudsman_how_to_complain\">Queensland Ombudsman</a>",
+      "lastReviewed": "November 2026"
     },
     {
       "id": "payments",
