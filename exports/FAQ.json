@@ -2089,6 +2089,37 @@
       "value": "(07) 3005 7000",
       "owner": "Complaints",
       "type": "phone"
+    },
+    {
+      "id": "url_roadside_stall_code",
+      "question": "Is this still the correct web address for the Planning Scheme Roadside stall code?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1491/Roadside%20stall%20code%20(v5).pdf.aspx",
+      "owner": "Planning",
+      "type": "url"
+    },
+    {
+      "id": "text_roadside_stall_max_area",
+      "question": "Is this still the maximum total area of a roadside stall: 9m²?",
+      "value": "9m²",
+      "owner": "Planning"
+    },
+    {
+      "id": "text_roadside_stall_side_setback",
+      "question": "Is this still the minimum setback of a roadside stall from side boundaries: 6 m?",
+      "value": "6 m",
+      "owner": "Planning"
+    },
+    {
+      "id": "text_roadside_stall_max_signs",
+      "question": "Is this still the maximum number of signs for a roadside stall: 2?",
+      "value": "2",
+      "owner": "Planning"
+    },
+    {
+      "id": "text_roadside_stall_sign_area",
+      "question": "Is this still the maximum area of each roadside stall sign: 1m²?",
+      "value": "1m²",
+      "owner": "Planning"
     }
   ],
   "tabs": [
@@ -2691,7 +2722,7 @@
         {
           "type": "faq",
           "q": "What approvals are necessary for a farm stand?",
-          "a": "<p></p>"
+          "a": "<p>It depends on your zone. The Planning Scheme calls a farm stand a <strong>roadside stall</strong>: a small stall for selling goods produced on the same property. In some zones, a stall that meets the rules below does not need planning approval. In others, you need to apply.</p>\n<p><strong>The roadside stall rules:</strong></p>\n<ul>\n<li>sell only goods produced on the same property</li>\n<li>a total area of no more than <strong><span class=\"faq-var\" data-var=\"text_roadside_stall_max_area\">9m²</span></strong>, fully inside your property</li>\n<li>set back at least <strong><span class=\"faq-var\" data-var=\"text_roadside_stall_side_setback\">6 m</span></strong> from the side boundaries</li>\n<li>no more than <strong><span class=\"faq-var\" data-var=\"text_roadside_stall_max_signs\">2</span></strong> signs, each up to <strong><span class=\"faq-var\" data-var=\"text_roadside_stall_sign_area\">1m²</span></strong>, on the same land as the stall</li>\n<li>access from a road that can safely handle the extra traffic, without causing hazards, road damage or dust for neighbours</li>\n<li>no parking in a State-controlled road reserve unless the Department of Transport and Main Roads (TMR) approves it</li>\n</ul>\n<p>The full rules are in the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1491/Roadside%20stall%20code%20(v5).pdf.aspx\" target=\"_blank\" data-var-href=\"url_roadside_stall_code\">Roadside stall code</a>.</p>\n<p>Your stall must also meet the other parts of the Planning Scheme that apply to your property, such as your zone's rules. If the stall is part of a bigger business run from your home, the home-based business rules apply to that business too. See <em>What approval is required to start a business from my home?</em></p>\n<p>Selling food may also need a licence. See <em>Do I need a licence to sell food or offer beauty services from home?</em></p>\n<p>To check whether your stall needs approval, talk to a duty planner. Lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Planning enquiry</strong> and a duty planner will get back to you within <span class=\"faq-var\" data-var=\"time_duty_planner_response\">5 business days</span>. Or call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to speak to the duty planner. General enquiries are free.</p>"
         },
         {
           "type": "faq",
