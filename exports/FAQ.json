@@ -2120,6 +2120,802 @@
       "question": "Is this still the maximum area of each roadside stall sign: 1m²?",
       "value": "1m²",
       "owner": "Planning"
+    },
+    {
+      "id": "money_food_licence_cat1",
+      "question": "Is this fee still current for a Category 1 food business licence: $575.00?",
+      "value": "$575.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_licence_cat2",
+      "question": "Is this fee still current for a Category 2 food business licence: $462.00?",
+      "value": "$462.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_licence_cat3",
+      "question": "Is this fee still current for a Category 3 food business licence: $323.00?",
+      "value": "$323.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_licence_cat4",
+      "question": "Is this fee still current for a Category 4 (home-based) food business licence: $323.00?",
+      "value": "$323.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_design_approval",
+      "question": "Is this fee still current for a design approval of food premises plans: $506.00?",
+      "value": "$506.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_temporary_event",
+      "question": "Is this fee still current for a temporary food licence for one event: $139.00?",
+      "value": "$139.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_temporary_annual",
+      "question": "Is this fee still current for an annual temporary food licence: $268.00?",
+      "value": "$268.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_safety_program",
+      "question": "Is this fee still current for accrediting a food safety program: $391.00?",
+      "value": "$391.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_safety_program_amended",
+      "question": "Is this fee still current for assessing an amended food safety program: $308.00?",
+      "value": "$308.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_licence_amendment",
+      "question": "Is this fee still current for an administrative amendment of a licence: $87.00?",
+      "value": "$87.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_licence_replacement",
+      "question": "Is this fee still current for a replacement licence: $52.00?",
+      "value": "$52.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_licence_restoration",
+      "question": "Is this fee still current for restoring an expired licence: $92.00?",
+      "value": "$92.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_food_reinspection",
+      "question": "Is this fee still current for a re-inspection of a food premises: $221.00?",
+      "value": "$221.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_health_search",
+      "question": "Is this fee still current for a health search inspection: $234.00?",
+      "value": "$234.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_health_search_hourly",
+      "question": "Is this fee still current for each hour of a health search inspection after the first 2 hours: $170.00?",
+      "value": "$170.00",
+      "owner": "Environmental Health",
+      "type": "money"
+    },
+    {
+      "id": "money_roadside_vending_application",
+      "question": "Is this fee still current for a new roadside vending permit application: $323.00?",
+      "value": "$323.00",
+      "owner": "Licensing",
+      "type": "money"
+    },
+    {
+      "id": "money_roadside_vending_annual",
+      "question": "Is this fee still current for the annual roadside vending permit: $197.00?",
+      "value": "$197.00",
+      "owner": "Licensing",
+      "type": "money"
+    },
+    {
+      "id": "money_footpath_dining_centre",
+      "question": "Is this fee still current for a footpath dining permit in the principal centre zone of Warwick and Stanthorpe: $99.00 + $19.00 per chair?",
+      "value": "$99.00 + $19.00 per chair",
+      "owner": "Licensing",
+      "type": "money"
+    },
+    {
+      "id": "money_footpath_dining_other",
+      "question": "Is this fee still current for a footpath dining permit outside the principal centre zone: $57.00 + $13.00 per chair?",
+      "value": "$57.00 + $13.00 per chair",
+      "owner": "Licensing",
+      "type": "money"
+    },
+    {
+      "id": "text_food_prorata_oct_dec",
+      "question": "Is this still the share of the annual food licence fee charged for a new licence from 1 October to 31 December: 75%?",
+      "value": "75%",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_food_prorata_jan_mar",
+      "question": "Is this still the share of the annual food licence fee charged for a new licence from 1 January to 31 March: 50%?",
+      "value": "50%",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_nonprofit_licence_discount",
+      "question": "Is this still the discount on licence fees for non-profit organisations: 50%?",
+      "value": "50%",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "time_food_application_lead",
+      "question": "Is this still how far ahead of opening you should lodge a food business licence application: 30 days?",
+      "value": "30 days",
+      "owner": "Environmental Health",
+      "type": "time",
+      "note": "Aaron, November 2026: use 30 days. The Food Business Application Guide says 4 weeks."
+    },
+    {
+      "id": "time_food_decision",
+      "question": "Is this still how long we have to decide a food business licence application under the Food Act 2006: 30 days?",
+      "value": "30 days",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_food_further_info",
+      "question": "Is this still how long a reassessment can take after we receive further information on food premises plans: up to 30 days?",
+      "value": "30 days",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_design_approval_ready",
+      "question": "Is this still the time from design approval within which you must be ready to operate, or apply separately for the licence: 6 months?",
+      "value": "6 months",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_food_premises_inactive",
+      "question": "Is this still how long a food premises can sit unused and still count as existing approved premises: 6 months?",
+      "value": "6 months",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_fss_change",
+      "question": "Is this still how long a licensee has to tell us about a new, changed or removed food safety supervisor: 14 days?",
+      "value": "14 days",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_fss_takeover",
+      "question": "Is this still how long we allow a new owner to get a food safety supervisor qualification: 30 days?",
+      "value": "30 days",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "text_fss_certificate_years",
+      "question": "Is this still how recent a food safety supervisor certificate must be for category one and two businesses: within 5 years?",
+      "value": "5 years",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "time_health_search",
+      "question": "Is this still the turnaround for a food premises health search inspection: 10 full working days?",
+      "value": "10 full working days",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "time_fsp_first_audit",
+      "question": "Is this still the time after accreditation within which the first food safety program audit must happen: 6 months?",
+      "value": "6 months",
+      "owner": "Environmental Health",
+      "type": "time"
+    },
+    {
+      "id": "text_temp_event_max_days",
+      "question": "Is this still the longest a one-off event temporary food licence covers: 5 days?",
+      "value": "5 days",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_temp_max_times",
+      "question": "Is this still the number of times a year at or above which a temporary stall must become a permanent food vehicle or premises: 12 times?",
+      "value": "12 times",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_nonprofit_meal_days",
+      "question": "Is this still the number of days a year a non-profit can sell meals before it needs a food licence: 12 days?",
+      "value": "12 days",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_fsp_vulnerable_people",
+      "question": "Is this still the number of vulnerable people served potentially hazardous food at or above which a food safety program is required: six?",
+      "value": "six",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_food_seats_toilets",
+      "question": "Is this still the number of patron seats at or above which a food business needs separate customer toilets: 20?",
+      "value": "20",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_public_liability_council_land",
+      "question": "Is this still the minimum public liability insurance for a permit to use Council roads or footpaths: $20 million?",
+      "value": "$20 million",
+      "owner": "Licensing"
+    },
+    {
+      "id": "text_roadside_vending_lane_clearance",
+      "question": "Is this still how far a roadside vending vehicle must be from the nearest traffic lane: 10 metres?",
+      "value": "10 metres",
+      "owner": "Licensing"
+    },
+    {
+      "id": "text_roadside_vending_intersection_clearance",
+      "question": "Is this still how far a roadside vending vehicle must be from the nearest intersection: 50 metres?",
+      "value": "50 metres",
+      "owner": "Licensing"
+    },
+    {
+      "id": "text_home_kitchen_basin_distance",
+      "question": "Is this still the furthest a hand basin in an adjacent room can be from a home kitchen food handling area: 5 metres?",
+      "value": "5 metres",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_washing_water_temp",
+      "question": "Is this still the minimum hot water temperature for washing up in a home kitchen food business: 54°C?",
+      "value": "54°C",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_home_kitchen_splashback",
+      "question": "Is this still the height of splashback needed behind a home kitchen washing up area: 300mm?",
+      "value": "300mm",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_cold_food_temp",
+      "question": "Is this still the temperature at or below which potentially hazardous food must be kept cold: 5°C?",
+      "value": "5°C",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_hot_food_temp",
+      "question": "Is this still the temperature at or above which potentially hazardous food must be kept hot: 60°C?",
+      "value": "60°C",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_temp_stall_water",
+      "question": "Is this still the minimum water container for hand washing at a temporary food stall: 20 litres?",
+      "value": "20 litres",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_temp_stall_sign_height",
+      "question": "Is this still the minimum lettering height for the operator sign at a temporary food stall: 100mm?",
+      "value": "100mm",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_vent_electric_trigger",
+      "question": "Is this still the total electric cooking input above which mechanical ventilation is required: 8kW?",
+      "value": "8kW",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_vent_gas_trigger",
+      "question": "Is this still the total gas cooking input above which mechanical ventilation is required: 29MJ/hour?",
+      "value": "29MJ/hour",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_potentially_hazardous_food",
+      "question": "Is this still the right meaning of potentially hazardous food?",
+      "value": "potentially hazardous food",
+      "owner": "Environmental Health",
+      "note": "Added so the term shows its meaning on hover.",
+      "definition": "Food that has to be kept at certain temperatures to stop harmful bacteria growing or toxins forming. For example, meat, chicken, seafood, rice dishes, dairy products, gravy and cream-based desserts."
+    },
+    {
+      "id": "phone_ddphu",
+      "question": "Is this still the correct phone number for the Darling Downs Public Health Unit: (07) 4699 8240?",
+      "value": "(07) 4699 8240",
+      "owner": "Environmental Health",
+      "type": "phone",
+      "note": "From a guideline dated 25 May 2023: check it is still current."
+    },
+    {
+      "id": "url_food_application_fixed_mobile",
+      "question": "Is this still the correct web address for the Application for Food Business Licence – Fixed and Mobile Premises?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20Fixed%20%20Mobile%20with%20checklist%20v2.pdf.aspx?embed=Y",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_application_guide",
+      "question": "Is this still the correct web address for the Food Business Application Guide?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/392/Food%20Business%20Application%20Guide%20v2.pdf.aspx?embed=Y",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_application_temporary",
+      "question": "Is this still the correct web address for the Application for Food Business Licence – Temporary Premises?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20%E2%80%93%20Temporary%20Food%20Premises%20with%20checklist%20.pdf.aspx?embed=Y",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_temporary_guideline",
+      "question": "Is this still the correct web address for the Guideline for the Establishment of a Temporary Food Premises?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Guideline%20for%20the%20Establishment%20of%20a%20Temporary%20Food%20Premises.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_domestic_kitchen_guideline",
+      "question": "Is this still the correct web address for the Guidelines for the Use of Domestic Kitchens for Commercial Food Preparation?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Guideline%20for%20Domestic%20Kitchen.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_new_premises_fact_sheet",
+      "question": "Is this still the correct web address for the fact sheet on setting up a new food business premises?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Flow%20Chart%20for%20FBL%20Application%20Process%20-%20NewAlterations-%20pdf.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_existing_business_fact_sheet",
+      "question": "Is this still the correct web address for the fact sheet on taking over an existing licensed food premises?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Flow%20Chart%20For%20FBL%20application%20For%20Existing%20Businesses.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_fit_out_guide",
+      "question": "Is this still the correct web address for the Food Business Fit Out Guide?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Fact%20Sheet%20-%20Food%20Business%20Fit%20Out%20Guide.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_mechanical_ventilation",
+      "question": "Is this still the correct web address for the Mechanical Ventilation fact sheet?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Fact%20Sheet%20-%20Mechanical%20Ventilation.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_potable_water",
+      "question": "Is this still the correct web address for the Potable Water information sheet?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/288/Information%20Sheet%20-%20Potable%20Water.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_fss_notification",
+      "question": "Is this still the correct web address for the Food Safety Supervisor Notification form?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/392/Food%20Safety%20Supervisor%20Notification%20-%20New,%20Change%20or%20Remove.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_nonprofit_notification",
+      "question": "Is this still the correct web address for the Notification of Non-Profit Organisation Food Event form?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/392/Notification%20of%20Non-Profit%20Organisation%20Food%20Event.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_food_safety_program_application",
+      "question": "Is this still the correct web address for the Application for Food Safety Program Accreditation or Amendment?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Safety%20Program%20Accreditation%20or%20Amendment.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_search_application_form",
+      "question": "Is this still the correct web address for the Search Application form (health search inspections)?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/476/Search%20Application%20Form%202026%202027%20-%20V4.pdf.aspx",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_trade_waste_food_fact_sheet",
+      "question": "Is this still the correct web address for the Trade Waste Category 3 (food related business) fact sheet?",
+      "value": "https://www.sdrc.qld.gov.au/articledocuments/1470/Trade%20Waste_Category%203.pdf.aspx",
+      "owner": "Waste",
+      "type": "url"
+    },
+    {
+      "id": "url_trade_waste_application",
+      "question": "Is this still the correct web address for the Trade Waste Application Form page?",
+      "value": "https://www.sdrc.qld.gov.au/living-here/environment-water-waste/water-wastewater/trade-waste/trade-waste-application-form",
+      "owner": "Waste",
+      "type": "url"
+    },
+    {
+      "id": "url_using_council_land",
+      "question": "Is this still the correct web address for the Using Council Land page (footpath dining and roadside vending)?",
+      "value": "https://www.sdrc.qld.gov.au/doing-business/new-planning-development/licences-permits-for-business/using-council-land",
+      "owner": "Licensing",
+      "type": "url"
+    },
+    {
+      "id": "url_footpath_use_application",
+      "question": "Is this still the correct web address for the Application for Permit for Use of Footpath (Commercial Use)?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Permit%20for%20Use%20of%20Footpath%20(commercial%20use).pdf.aspx",
+      "owner": "Licensing",
+      "type": "url"
+    },
+    {
+      "id": "url_roadside_vending_application",
+      "question": "Is this still the correct web address for the Application for Permit for Use of Road (Commercial Roadside Vending)?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Permit%20for%20Use%20of%20Road%20(Commercial%20Roadside%20Vending).pdf.aspx",
+      "owner": "Licensing",
+      "type": "url"
+    },
+    {
+      "id": "url_permits_licences_forms",
+      "question": "Is this still the correct web address for the Permits & Licences forms page?",
+      "value": "https://www.sdrc.qld.gov.au/payments-services/forms-permits-licences/permits-licences",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_contact_us",
+      "question": "Is this still the correct web address for our Contact Us page (customer service centres)?",
+      "value": "https://www.sdrc.qld.gov.au/council/contact-us",
+      "owner": "Customer Service",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_food_licence",
+      "question": "Is this still the correct web address for Queensland Health's Do I need a food business licence? page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/food-business-licences/do-i-need-a-food-business-licence",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_food_safety_supervisors",
+      "question": "Is this still the correct web address for Queensland Health's Food safety supervisors page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/food-safety-supervisors",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_food_resources",
+      "question": "Is this still the correct web address for Queensland Health's Resources for food businesses page (DoFoodSafely)?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/resources-food-businesses",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_design_fit_out",
+      "question": "Is this still the correct web address for Queensland Health's Design and fit-out page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/premises-and-equipment/design-and-fit-out",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_develop_food_safety_program",
+      "question": "Is this still the correct web address for Queensland Health's Develop a food safety program page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-programs-and-auditors/develop-a-food-safety-program",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_food_safety_auditors",
+      "question": "Is this still the correct web address for Queensland Health's food safety program compliance page (approved auditors)?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-programs-and-auditors/compliance",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_nonprofit_food",
+      "question": "Is this still the correct web address for Queensland Health's non-profit organisations page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/non-profit-organisations/non-profit",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_fundraising_events",
+      "question": "Is this still the correct web address for Queensland Health's fundraising events page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/non-profit-organisations/fundraising-events",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_food_pantry",
+      "question": "Is this still the correct web address for Queensland Health's The Food Pantry?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_training_gov_au",
+      "question": "Is this still the correct web address for training.gov.au (finding a registered training organisation)?",
+      "value": "https://training.gov.au/Home/Tga",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_standard_322a",
+      "question": "Is this still the correct web address for Queensland Health's Standard 3.2.2A page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/other-requirements/food-safety-tools-standard",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_food_labelling",
+      "question": "Is this still the correct web address for Queensland Health's Food labelling page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-labelling",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_business_qld_buying",
+      "question": "Is this still the correct web address for Business Queensland's Buying a business guide?",
+      "value": "https://www.business.qld.gov.au/starting-business/starting-buying/buying",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_starting_food_business",
+      "question": "Is this still the correct web address for Queensland Health's Starting a food business page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_running_food_business",
+      "question": "Is this still the correct web address for Queensland Health's Running a food business page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_food_records",
+      "question": "Is this still the correct web address for Queensland Health's free record sheets and posters for food businesses?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/resources-food-businesses#Records",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_know_your_food_business",
+      "question": "Is this still the correct web address for Queensland Health's Know your food business self-assessment?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/know-your-food-business",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_do_i_need_a_label",
+      "question": "Is this still the correct web address for Queensland Health's Do I need a label? quiz?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/food-labelling/do-I-need-a-label",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_water_carriers",
+      "question": "Is this still the correct web address for Queensland Health's Water carriers page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/specific-requirements/water-carriers",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_customer_complaints",
+      "question": "Is this still the correct web address for Queensland Health's Customer complaints page for food businesses?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/handling-food/customer-complaints",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_allergies",
+      "question": "Is this still the correct web address for Queensland Health's Food allergies and intolerances page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/skills-and-knowledge/allergies-and-food-intolerances",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_animals_food_business",
+      "question": "Is this still the correct web address for Queensland Health's Animals in a food business page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/premises-and-equipment/food-premises-and-equipment/animals-in-a-food-business",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_temperature_control",
+      "question": "Is this still the correct web address for Queensland Health's Temperature control page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/premises-and-equipment/temperature-control",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_home_based_food",
+      "question": "Is this still the correct web address for Queensland Health's Home-based food businesses page?",
+      "value": "https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/specific-requirements/home-based-food-business",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_food_complaint",
+      "question": "Is this still the correct web address for Queensland Health's online food safety complaint form?",
+      "value": "https://phconnect-foodcomplaints.health.qld.gov.au/",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "url_allergen_training",
+      "question": "Is this still the correct web address for the free All About Allergens online course?",
+      "value": "https://foodallergytraining.org.au/",
+      "owner": "Environmental Health",
+      "type": "url"
+    },
+    {
+      "id": "phone_13_health",
+      "question": "Is this still the correct phone number for 13 HEALTH (Queensland Health): 13 43 25 84?",
+      "value": "13 43 25 84",
+      "owner": "Customer Service",
+      "type": "phone"
+    },
+    {
+      "id": "text_dishwasher_sanitise_temp",
+      "question": "Is this still the temperature a domestic dishwasher sanitising cycle must reach to sanitise for a home food business: 65.6°C?",
+      "value": "65.6°C",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_dishwasher_inlet_temp",
+      "question": "Is this still the inlet water temperature a domestic dishwasher without a sanitising cycle must run above: 68°C?",
+      "value": "68°C",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_food_max_hours_out_of_temp",
+      "question": "Is this still the longest total time ready-to-eat potentially hazardous food can be between 5°C and 60°C before it must be thrown out: 4 hours?",
+      "value": "4 hours",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_food_handler_symptom_free",
+      "question": "Is this still how long a sick food handler must be free of symptoms before returning to work: 48 hours?",
+      "value": "48 hours",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "text_thermometer_calibration",
+      "question": "Is this still how often a probe thermometer should be calibrated: about every 6 months?",
+      "value": "6 months",
+      "owner": "Environmental Health"
+    },
+    {
+      "id": "url_civil_issues_disputes",
+      "question": "Is this still the correct web address for our Civil Issues & Disputes page?",
+      "value": "https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/civil-issues-disputes",
+      "owner": "Governance",
+      "type": "url"
+    },
+    {
+      "id": "url_neighbouring_land_uses",
+      "question": "Is this still the correct web address for our Neighbouring Land Uses page?",
+      "value": "https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/neighbouring-land-uses",
+      "owner": "Building Compliance",
+      "type": "url"
+    },
+    {
+      "id": "url_stormwater_disputes",
+      "question": "Is this still the correct web address for our Stormwater Disputes page?",
+      "value": "https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/stormwater-disputes",
+      "owner": "Governance",
+      "type": "url"
+    },
+    {
+      "id": "url_stormwater_fact_sheet",
+      "question": "Is this still the correct web address for our Stormwater Fact Sheet?",
+      "value": "https://www.sdrc.qld.gov.au/ArticleDocuments/406/Stormwater%20Guide%20Fact%20sheet.pdf.aspx?Embed=Y",
+      "owner": "Governance",
+      "type": "url",
+      "note": "The fact sheet PDF was created in May 2011. Its Dispute Resolution Branch contact details are out of date."
+    },
+    {
+      "id": "url_qld_resolve_neighbour_disputes",
+      "question": "Is this still the correct web address for the Queensland Government's neighbourhood disputes tool?",
+      "value": "https://www.qld.gov.au/justice/court-and-mediation/dispute-resolution/resolve-disputes",
+      "owner": "Governance",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_approach_neighbour",
+      "question": "Is this still the correct web address for the Queensland Government's Ways to approach your neighbour page?",
+      "value": "https://www.qld.gov.au/community/your-home-community/neighbour-disputes/disputes-about-fences-trees-and-buildings/ways-to-approach-your-neighbour",
+      "owner": "Governance",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_apply_mediation",
+      "question": "Is this still the correct web address for the Queensland Government's Apply for mediation page?",
+      "value": "https://www.qld.gov.au/justice/court-and-mediation/dispute-resolution/apply-mediation",
+      "owner": "Governance",
+      "type": "url"
+    },
+    {
+      "id": "url_qld_dispute_resolution_centres",
+      "question": "Is this still the correct web address for the Queensland Government's Find a dispute resolution centre page?",
+      "value": "https://www.qld.gov.au/justice/court-and-mediation/dispute-resolution/dispute-resolution-centres",
+      "owner": "Governance",
+      "type": "url"
+    },
+    {
+      "id": "phone_1800_017_288",
+      "question": "Is this still the correct toll-free number for Queensland's Dispute Resolution Centres: 1800 017 288?",
+      "value": "1800 017 288",
+      "owner": "Governance",
+      "type": "phone",
+      "note": "Our Stormwater Disputes page gives 1300 017 288 for the South Queensland Dispute Resolution Centre. The Queensland Government page gives 1800 017 288."
+    },
+    {
+      "id": "time_mediation_assessment",
+      "question": "Is this still how long the Queensland Government takes to assess a mediation application: up to 10 business days?",
+      "value": "10 business days",
+      "owner": "Governance",
+      "type": "time"
+    },
+    {
+      "id": "text_mediation_session",
+      "question": "Is this still how long a mediation session usually takes: 2 to 4 hours?",
+      "value": "2 to 4 hours",
+      "owner": "Governance"
+    },
+    {
+      "id": "text_mediation_process",
+      "question": "Is this still how long the mediation process takes on average: 2 to 6 weeks?",
+      "value": "2 to 6 weeks",
+      "owner": "Governance"
+    },
+    {
+      "id": "text_stormwater_bubbler_distance",
+      "question": "Is this still how far a stormwater bubbler outlet must be from building foundations and from any property boundary: 3 metres?",
+      "value": "3 metres",
+      "owner": "Plumbing",
+      "note": "From a fact sheet created in May 2011: check it is still current."
     }
   ],
   "tabs": [
@@ -2636,12 +3432,12 @@
         {
           "type": "faq",
           "q": "Can I rent out my house for short-term stays in town? (Airbnb-style)",
-          "a": "<p>Most likely yes. In planning terms, this is the most permissive path in the scheme. This answer covers properties in the <strong>Low Density Residential</strong> and <strong>Medium Density Residential</strong> zones. Check your zone by searching for the property address on the <a href=\"https://sdrc.spatial.t1cloud.com/spatial/intramaps/?configId=15145eaf-c419-4c91-aa46-f0b9d5637836&amp;project=Online%20Mapping\" target=\"_blank\" data-var-href=\"url_sdrc_spatial_t1cloud_com\">Online Mapping tool</a>.</p>\n<p>Renting out an existing house needs 3 approvals, and sometimes a fourth. <em>What approvals are required for short-term accommodation?</em> sets out the full stack. This answer explains each one as it applies in town.</p>\n<p><strong>Planning approval: often not needed</strong></p>\n<p>You generally <strong>do not need planning approval</strong> if all of these are true:</p>\n<ul>\n<li>the accommodation is in an existing dwelling (not a new build, and not a building that is not a dwelling, like a converted shed)</li>\n<li>no more than 6 guests stay at any one time</li>\n<li>the proposal meets the acceptable outcomes in the Planning Scheme (parking, amenity, signs, hours and similar)</li>\n</ul>\n<p>If you cannot meet every acceptable outcome, you need a <strong>code-assessable</strong> planning application. If you want more than 6 guests, a new accommodation building, or to use a building that is not a dwelling, the application becomes <strong>impact-assessable</strong>. That means public notification, and the application may be referred to an Ordinary Council meeting for decision.</p>\n<p><strong>Building approval: reclassification from Class 1a to Class 1b</strong></p>\n<p>This surprises a lot of operators. Under the <em>Building Act 1975</em>, an existing house is <strong>Class 1a</strong> (a dwelling). Using it for short-term accommodation changes it to <strong>Class 1b</strong> (a small guest accommodation building). See <em>When does my house need to be reclassified to Class 1b?</em> The reclassification is a separate building approval, <strong>needed even if no physical building work is happening</strong>. The new class brings requirements designed for paying guests rather than residents:</p>\n<ul>\n<li><strong>Smoke alarms:</strong> interconnected hard-wired alarms, in or near the ceiling, in every bedroom and every corridor linked to bedrooms.</li>\n<li><strong>Evacuation lighting:</strong> lighting set off by the smoke alarm to help people get out. You can use existing lighting if it is wired to come on with the alarm.</li>\n<li><strong>Balustrades and stairs:</strong> needed for any landing, verandah or deck floor more than 1m above the ground, meeting current Building Code of Australia standards.</li>\n<li><strong>Disabled access:</strong> needed to one bedroom and its bathroom where there are 4 or more guest bedrooms, plus access to shared rooms.</li>\n<li><strong>Properties in the bushfire overlay:</strong> extra requirements apply, as set out in the Development in the Bushfire Hazard Overlay fact sheet.</li>\n</ul>\n<p><em>How to lodge:</em></p>\n<ul>\n<li>Email it to <strong><span class=\"faq-var\" data-var=\"email_sdrcbuilding_sdrc_qld_go\">sdrcbuilding@sdrc.qld.gov.au</span></strong>, or lodge it in person at one of our Administration Centres.</li>\n<li>Include a completed <a href=\"https://www.planning.qld.gov.au/planning-framework/development-assessment/development-assessment-process/forms-and-templates\" target=\"_blank\" data-var-href=\"url_www_planning_qld_gov_au\"><abbr class=\"faq-def\" title=\"Building work details — the Queensland Government form for a development application involving building work, which is how you apply for building approval.\"><span class=\"faq-var\" data-var=\"form_da_2\">DA Form 2</span></abbr></a>, a site plan (north point, existing buildings, distances to boundaries) and a floor plan (showing smoke alarms, escape lighting, and entrance and exit doors). Also include a <abbr class=\"faq-def\" title=\"Queensland Building and Construction Commission — the state body that regulates Queensland&#39;s building industry, including building licences and home warranty insurance.\"><span class=\"faq-var\" data-var=\"org_qbcc\">QBCC</span></abbr> Insurance Certificate (if a builder is involved and the work is worth <span class=\"faq-var\" data-var=\"money_3_300\">$3,300</span> or more) <strong>or</strong> a <abbr class=\"faq-def\" title=\"Queensland Building and Construction Commission — the state body that regulates Queensland&#39;s building industry, including building licences and home warranty insurance.\"><span class=\"faq-var\" data-var=\"org_qbcc\">QBCC</span></abbr> Owner Builder Permit (if you are doing the work yourself and it is worth <span class=\"faq-var\" data-var=\"money_11_000\">$11,000</span> or more).</li>\n<li>We issue a decision within <strong><span class=\"faq-var\" data-var=\"time_35_business_days\">35 business days</span></strong> of having all the information. After our certifier inspects the building and finds it meets the standards, we issue a <strong>Form 11 Certificate of Classification</strong> (sometimes called a certificate of occupancy). <em>(This is different from the <abbr class=\"faq-def\" title=\"Final inspection certificate — the certificate your building certifier gives you once the finished building work passes its final inspection.\"><span class=\"faq-var\" data-var=\"form_21\">Form 21</span></abbr> final inspection certificate issued for a new house.)</em></li>\n<li>Once the Form 11 is issued, you can apply for the Local Law permit (the next step).</li>\n</ul>\n<p><strong>Local Law permit to Operate Rental Accommodation</strong></p>\n<p>You apply for this after the building reclassification is complete. It is managed under our Local Law. See the <a href=\"https://www.sdrc.qld.gov.au/doing-business/environmental-regulatory-services/licences-permits-for-business\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_26\">Licences &amp; Permits for Business</a> page for the application form and current fee.</p>\n<p><strong>Plumbing &amp; drainage approval (if needed)</strong></p>\n<p>If your reclassification involves any new bathrooms, ensuites, extra fixtures or changes to existing plumbing, you need a separate plumbing and drainage application. If there is no plumbing work, you do not need this approval.</p>\n<p><strong>Other things worth knowing</strong></p>\n<ul>\n<li><strong>Food licence:</strong> if you serve any food (breakfasts, packaged snacks, mini-bar items prepared on the premises), you need a separate Food Business Licence under the <em>Food Act 2006</em>. See <em>Do I need a licence to sell food or offer beauty services from home?</em></li>\n<li><strong>Rates and charges</strong> change once the property is reclassified. See <em>What approvals are required for short-term accommodation?</em></li>\n</ul>\n<p>The building reclassification fact sheet is on our <a href=\"https://www.sdrc.qld.gov.au/doing-business/planning-development/building/building-info-sheets\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_3\">Building Info Sheets</a> page. The planning fact sheets on short-term accommodation, with their acceptable outcomes checklists, are on the <a href=\"https://www.sdrc.qld.gov.au/doing-business/planning-development/planning/fact-sheets/planning-information-sheets\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_5\">Planning Information Sheets</a> page.</p>\n<p>For anything that looks borderline, talk to a duty planner. Lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Planning enquiry</strong> and a duty planner will get back to you within <span class=\"faq-var\" data-var=\"time_duty_planner_response\">5 business days</span>. Or call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to speak to the duty planner.</p>"
+          "a": "<p>Most likely yes. In planning terms, this is the most permissive path in the scheme. This answer covers properties in the <strong>Low Density Residential</strong> and <strong>Medium Density Residential</strong> zones. Check your zone by searching for the property address on the <a href=\"https://sdrc.spatial.t1cloud.com/spatial/intramaps/?configId=15145eaf-c419-4c91-aa46-f0b9d5637836&amp;project=Online%20Mapping\" target=\"_blank\" data-var-href=\"url_sdrc_spatial_t1cloud_com\">Online Mapping tool</a>.</p>\n<p>Renting out an existing house needs 3 approvals, and sometimes a fourth. <em>What approvals are required for short-term accommodation?</em> sets out the full stack. This answer explains each one as it applies in town.</p>\n<p><strong>Planning approval: often not needed</strong></p>\n<p>You generally <strong>do not need planning approval</strong> if all of these are true:</p>\n<ul>\n<li>the accommodation is in an existing dwelling (not a new build, and not a building that is not a dwelling, like a converted shed)</li>\n<li>no more than 6 guests stay at any one time</li>\n<li>the proposal meets the acceptable outcomes in the Planning Scheme (parking, amenity, signs, hours and similar)</li>\n</ul>\n<p>If you cannot meet every acceptable outcome, you need a <strong>code-assessable</strong> planning application. If you want more than 6 guests, a new accommodation building, or to use a building that is not a dwelling, the application becomes <strong>impact-assessable</strong>. That means public notification, and the application may be referred to an Ordinary Council meeting for decision.</p>\n<p><strong>Building approval: reclassification from Class 1a to Class 1b</strong></p>\n<p>This surprises a lot of operators. Under the <em>Building Act 1975</em>, an existing house is <strong>Class 1a</strong> (a dwelling). Using it for short-term accommodation changes it to <strong>Class 1b</strong> (a small guest accommodation building). See <em>When does my house need to be reclassified to Class 1b?</em> The reclassification is a separate building approval, <strong>needed even if no physical building work is happening</strong>. The new class brings requirements designed for paying guests rather than residents:</p>\n<ul>\n<li><strong>Smoke alarms:</strong> interconnected hard-wired alarms, in or near the ceiling, in every bedroom and every corridor linked to bedrooms.</li>\n<li><strong>Evacuation lighting:</strong> lighting set off by the smoke alarm to help people get out. You can use existing lighting if it is wired to come on with the alarm.</li>\n<li><strong>Balustrades and stairs:</strong> needed for any landing, verandah or deck floor more than 1m above the ground, meeting current Building Code of Australia standards.</li>\n<li><strong>Disabled access:</strong> needed to one bedroom and its bathroom where there are 4 or more guest bedrooms, plus access to shared rooms.</li>\n<li><strong>Properties in the bushfire overlay:</strong> extra requirements apply, as set out in the Development in the Bushfire Hazard Overlay fact sheet.</li>\n</ul>\n<p><em>How to lodge:</em></p>\n<ul>\n<li>Email it to <strong><span class=\"faq-var\" data-var=\"email_sdrcbuilding_sdrc_qld_go\">sdrcbuilding@sdrc.qld.gov.au</span></strong>, or lodge it in person at one of our Administration Centres.</li>\n<li>Include a completed <a href=\"https://www.planning.qld.gov.au/planning-framework/development-assessment/development-assessment-process/forms-and-templates\" target=\"_blank\" data-var-href=\"url_www_planning_qld_gov_au\"><abbr class=\"faq-def\" title=\"Building work details — the Queensland Government form for a development application involving building work, which is how you apply for building approval.\"><span class=\"faq-var\" data-var=\"form_da_2\">DA Form 2</span></abbr></a>, a site plan (north point, existing buildings, distances to boundaries) and a floor plan (showing smoke alarms, escape lighting, and entrance and exit doors). Also include a <abbr class=\"faq-def\" title=\"Queensland Building and Construction Commission — the state body that regulates Queensland&#39;s building industry, including building licences and home warranty insurance.\"><span class=\"faq-var\" data-var=\"org_qbcc\">QBCC</span></abbr> Insurance Certificate (if a builder is involved and the work is worth <span class=\"faq-var\" data-var=\"money_3_300\">$3,300</span> or more) <strong>or</strong> a <abbr class=\"faq-def\" title=\"Queensland Building and Construction Commission — the state body that regulates Queensland&#39;s building industry, including building licences and home warranty insurance.\"><span class=\"faq-var\" data-var=\"org_qbcc\">QBCC</span></abbr> Owner Builder Permit (if you are doing the work yourself and it is worth <span class=\"faq-var\" data-var=\"money_11_000\">$11,000</span> or more).</li>\n<li>We issue a decision within <strong><span class=\"faq-var\" data-var=\"time_35_business_days\">35 business days</span></strong> of having all the information. After our certifier inspects the building and finds it meets the standards, we issue a <strong>Form 11 Certificate of Classification</strong> (sometimes called a certificate of occupancy). <em>(This is different from the <abbr class=\"faq-def\" title=\"Final inspection certificate — the certificate your building certifier gives you once the finished building work passes its final inspection.\"><span class=\"faq-var\" data-var=\"form_21\">Form 21</span></abbr> final inspection certificate issued for a new house.)</em></li>\n<li>Once the Form 11 is issued, you can apply for the Local Law permit (the next step).</li>\n</ul>\n<p><strong>Local Law permit to Operate Rental Accommodation</strong></p>\n<p>You apply for this after the building reclassification is complete. It is managed under our Local Law. See the <a href=\"https://www.sdrc.qld.gov.au/doing-business/environmental-regulatory-services/licences-permits-for-business\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_26\">Licences &amp; Permits for Business</a> page for the application form and current fee.</p>\n<p><strong>Plumbing &amp; drainage approval (if needed)</strong></p>\n<p>If your reclassification involves any new bathrooms, ensuites, extra fixtures or changes to existing plumbing, you need a separate plumbing and drainage application. If there is no plumbing work, you do not need this approval.</p>\n<p><strong>Other things worth knowing</strong></p>\n<ul>\n<li><strong>Food licence:</strong> if you prepare or serve unpackaged food for guests, such as breakfasts, you need a Food Business Licence under the <em>Food Act 2006</em>. Packaged food, such as packaged snacks, does not need one. See <em>Do I need a food business licence?</em> on the <a href=\"#food-businesses\">Food Businesses tab</a>.</li>\n<li><strong>Rates and charges</strong> change once the property is reclassified. See <em>What approvals are required for short-term accommodation?</em></li>\n</ul>\n<p>The building reclassification fact sheet is on our <a href=\"https://www.sdrc.qld.gov.au/doing-business/planning-development/building/building-info-sheets\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_3\">Building Info Sheets</a> page. The planning fact sheets on short-term accommodation, with their acceptable outcomes checklists, are on the <a href=\"https://www.sdrc.qld.gov.au/doing-business/planning-development/planning/fact-sheets/planning-information-sheets\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_5\">Planning Information Sheets</a> page.</p>\n<p>For anything that looks borderline, talk to a duty planner. Lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Planning enquiry</strong> and a duty planner will get back to you within <span class=\"faq-var\" data-var=\"time_duty_planner_response\">5 business days</span>. Or call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to speak to the duty planner.</p>"
         },
         {
           "type": "faq",
           "q": "Can I run short-term accommodation or a caravan park on rural land?",
-          "a": "<p>Yes, but it takes more than in town. In the Rural zone, planning approval is <strong>always</strong> needed. The building reclassification, Local Law permit and other approvals in <em>What approvals are required for short-term accommodation?</em> all still apply on top.</p>\n<p>A bed and breakfast for up to <span class=\"faq-var\" data-var=\"text_bnb_max_guests\">six</span> guests, run by the people who live on the property, is different. It is a home-based business and often does not need planning approval. See <em>Can I run a bed and breakfast from my home?</em></p>\n<p>There are 2 separate uses on rural land:</p>\n<ul>\n<li><strong>Short-term accommodation:</strong> cabins, farm-stay, and motel-style accommodation in buildings.</li>\n<li><strong>Tourist parks:</strong> caravan parks and camping grounds.</li>\n</ul>\n<p><strong>Cabins, farm-stay, motel-style accommodation</strong></p>\n<p>Your lot size and the number of buildings and guests decide which planning pathway applies:</p>\n<ul>\n<li><strong>Code assessable</strong>: if your lot is at least <span class=\"faq-var\" data-var=\"text_sta_rural_lot_small\">5 hectares</span>, you have no more than <span class=\"faq-var\" data-var=\"text_sta_rural_buildings_small\">2</span> accommodation buildings, and no more than <span class=\"faq-var\" data-var=\"text_sta_rural_guests_small\">12</span> guests at any one time.</li>\n<li><strong>Code assessable</strong>: if your lot is at least <span class=\"faq-var\" data-var=\"text_sta_rural_lot_large\">10 hectares</span>, you have no more than <span class=\"faq-var\" data-var=\"text_sta_rural_buildings_large\">4</span> accommodation buildings, and no more than <span class=\"faq-var\" data-var=\"text_sta_rural_guests_large\">24</span> guests at any one time.</li>\n<li><strong>Impact assessable</strong>: anything outside those 2 brackets.</li>\n</ul>\n<p>Code-assessable applications are decided by a planner under delegated authority and do not need public notification. Impact-assessable applications need public notification and may be referred to an Ordinary Council meeting for decision. They take longer and cost more, so discuss them with the duty planner before you lodge.</p>\n<p><strong>Caravan parks and camping grounds (tourist parks)</strong></p>\n<ul>\n<li><strong>Code assessable</strong>: if your lot is at least <span class=\"faq-var\" data-var=\"text_tourist_park_rural_lot\">10 hectares</span> and you have no more than <span class=\"faq-var\" data-var=\"text_tourist_park_rural_sites\">20</span> sites.</li>\n<li><strong>Impact assessable</strong>: anything larger, or on a smaller lot.</li>\n</ul>\n<p>Tourist parks have an extra ongoing layer. Once approved, they operate under our Caravan Parks Local Law, which covers things like the number of amenities, dump points and waste management. The duty planner will point you to those requirements early.</p>\n<p><strong>The other approvals still apply</strong></p>\n<ul>\n<li><strong>Building approval:</strong> needed for any new accommodation buildings. You may also need a Class 1a to 1b reclassification if you are using or converting an existing house. See <em>Can I rent out my house for short-term stays in town? (Airbnb-style)</em> for what the reclassification involves. The same standards apply on rural land, and bushfire overlay requirements are more likely to be relevant.</li>\n<li><strong>Local Law permit to Operate Rental Accommodation:</strong> usually needed.</li>\n<li><strong>Plumbing &amp; drainage approval:</strong> for new bathrooms, amenities blocks, or significant changes to existing plumbing.</li>\n<li><strong>State environmental approvals</strong> may apply for larger sites without town sewerage, which is common on rural land. The duty planner can tell you what is likely to apply.</li>\n<li><strong>Food licence:</strong> you need a separate licence under the <em>Food Act 2006</em> if you serve any food.</li>\n</ul>\n<p><strong>Rates and charges</strong> change once a property is reclassified for short-term accommodation. See <em>What approvals are required for short-term accommodation?</em></p>\n<p>Rural accommodation often involves bushfire overlays, setbacks from watercourses and on-site sewerage, which affect what is possible on a particular block. <strong>We strongly recommend</strong> booking a <strong>Pre-Lodgement Meeting</strong> with our Town Planners before you spend significant money on plans. The fee is small compared with what it can save you in redesign or refusal.</p>\n<p>To discuss your situation with a duty planner, lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Planning enquiry</strong> and a duty planner will get back to you within <span class=\"faq-var\" data-var=\"time_duty_planner_response\">5 business days</span>. Or call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to speak to the duty planner. General enquiries are free.</p>"
+          "a": "<p>Yes, but it takes more than in town. In the Rural zone, planning approval is <strong>always</strong> needed. The building reclassification, Local Law permit and other approvals in <em>What approvals are required for short-term accommodation?</em> all still apply on top.</p>\n<p>A bed and breakfast for up to <span class=\"faq-var\" data-var=\"text_bnb_max_guests\">six</span> guests, run by the people who live on the property, is different. It is a home-based business and often does not need planning approval. See <em>Can I run a bed and breakfast from my home?</em></p>\n<p>There are 2 separate uses on rural land:</p>\n<ul>\n<li><strong>Short-term accommodation:</strong> cabins, farm-stay, and motel-style accommodation in buildings.</li>\n<li><strong>Tourist parks:</strong> caravan parks and camping grounds.</li>\n</ul>\n<p><strong>Cabins, farm-stay, motel-style accommodation</strong></p>\n<p>Your lot size and the number of buildings and guests decide which planning pathway applies:</p>\n<ul>\n<li><strong>Code assessable</strong>: if your lot is at least <span class=\"faq-var\" data-var=\"text_sta_rural_lot_small\">5 hectares</span>, you have no more than <span class=\"faq-var\" data-var=\"text_sta_rural_buildings_small\">2</span> accommodation buildings, and no more than <span class=\"faq-var\" data-var=\"text_sta_rural_guests_small\">12</span> guests at any one time.</li>\n<li><strong>Code assessable</strong>: if your lot is at least <span class=\"faq-var\" data-var=\"text_sta_rural_lot_large\">10 hectares</span>, you have no more than <span class=\"faq-var\" data-var=\"text_sta_rural_buildings_large\">4</span> accommodation buildings, and no more than <span class=\"faq-var\" data-var=\"text_sta_rural_guests_large\">24</span> guests at any one time.</li>\n<li><strong>Impact assessable</strong>: anything outside those 2 brackets.</li>\n</ul>\n<p>Code-assessable applications are decided by a planner under delegated authority and do not need public notification. Impact-assessable applications need public notification and may be referred to an Ordinary Council meeting for decision. They take longer and cost more, so discuss them with the duty planner before you lodge.</p>\n<p><strong>Caravan parks and camping grounds (tourist parks)</strong></p>\n<ul>\n<li><strong>Code assessable</strong>: if your lot is at least <span class=\"faq-var\" data-var=\"text_tourist_park_rural_lot\">10 hectares</span> and you have no more than <span class=\"faq-var\" data-var=\"text_tourist_park_rural_sites\">20</span> sites.</li>\n<li><strong>Impact assessable</strong>: anything larger, or on a smaller lot.</li>\n</ul>\n<p>Tourist parks have an extra ongoing layer. Once approved, they operate under our Caravan Parks Local Law, which covers things like the number of amenities, dump points and waste management. The duty planner will point you to those requirements early.</p>\n<p><strong>The other approvals still apply</strong></p>\n<ul>\n<li><strong>Building approval:</strong> needed for any new accommodation buildings. You may also need a Class 1a to 1b reclassification if you are using or converting an existing house. See <em>Can I rent out my house for short-term stays in town? (Airbnb-style)</em> for what the reclassification involves. The same standards apply on rural land, and bushfire overlay requirements are more likely to be relevant.</li>\n<li><strong>Local Law permit to Operate Rental Accommodation:</strong> usually needed.</li>\n<li><strong>Plumbing &amp; drainage approval:</strong> for new bathrooms, amenities blocks, or significant changes to existing plumbing.</li>\n<li><strong>State environmental approvals</strong> may apply for larger sites without town sewerage, which is common on rural land. The duty planner can tell you what is likely to apply.</li>\n<li><strong>Food licence:</strong> if you prepare or serve unpackaged food for guests, such as meals, you need a licence under the <em>Food Act 2006</em>. Packaged food does not need one. See <em>Do I need a food business licence?</em> on the <a href=\"#food-businesses\">Food Businesses tab</a>.</li>\n</ul>\n<p><strong>Rates and charges</strong> change once a property is reclassified for short-term accommodation. See <em>What approvals are required for short-term accommodation?</em></p>\n<p>Rural accommodation often involves bushfire overlays, setbacks from watercourses and on-site sewerage, which affect what is possible on a particular block. <strong>We strongly recommend</strong> booking a <strong>Pre-Lodgement Meeting</strong> with our Town Planners before you spend significant money on plans. The fee is small compared with what it can save you in redesign or refusal.</p>\n<p>To discuss your situation with a duty planner, lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Planning enquiry</strong> and a duty planner will get back to you within <span class=\"faq-var\" data-var=\"time_duty_planner_response\">5 business days</span>. Or call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to speak to the duty planner. General enquiries are free.</p>"
         },
         {
           "type": "group",
@@ -2727,7 +3523,7 @@
         {
           "type": "faq",
           "q": "Do I need a licence to sell food or offer beauty services from home?",
-          "a": "<p>Yes, for some businesses. You need these licences whether or not your business needs planning approval.</p>\n<ul>\n<li><strong>Food businesses:</strong> if you make or sell food as part of your business (baked goods, meals, catering, market stalls, mobile coffee, home kitchens), you need a separate Food Business Licence under the <em>Food Act 2006</em>. See <a href=\"https://www.sdrc.qld.gov.au/doing-business/planning-development/licences-permits-for-business/food-businesses\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_24\">Food Businesses</a>.</li>\n<li><strong>Personal Appearance Services:</strong> higher-risk services, such as tattooing, body piercing and other skin penetration procedures, need a licence under the <em>Public Health (Infection Control for Personal Appearance Services) Act 2003</em>, wherever they are done. Lower-risk services, such as hairdressing and beauty therapy, do not need a licence but must still meet infection control requirements. See <a href=\"https://www.sdrc.qld.gov.au/doing-business/new-planning-development/licences-permits-for-business/personal-appearance-services\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_25\">Personal Appearance Services</a>.</li>\n</ul>\n<p>You must get the licence before you start trading, and renew it every year. For other types of business, see <em>What approval is required to start a business from my home?</em></p>"
+          "a": "<p>Yes, for some businesses. You need these licences whether or not your business needs planning approval.</p>\n<ul>\n<li><strong>Food businesses:</strong> most businesses that make food, or sell unpackaged food, need a Food Business Licence under the <em>Food Act 2006</em>. Some do not, for example if you sell only packaged food, or drinks such as coffee. A home kitchen can only be licensed for low-risk food, such as cakes, jams and biscuits, not meals. See <em>Do I need a food business licence?</em> on the <a href=\"#food-businesses\">Food Businesses tab</a>, and <em>Can I run a food business from my home kitchen?</em>.</li>\n<li><strong>Personal Appearance Services:</strong> higher-risk services, such as tattooing, body piercing and other skin penetration procedures, need a licence under the <em>Public Health (Infection Control for Personal Appearance Services) Act 2003</em>, wherever they are done. Lower-risk services, such as hairdressing and beauty therapy, do not need a licence but must still meet infection control requirements. See <a href=\"https://www.sdrc.qld.gov.au/doing-business/new-planning-development/licences-permits-for-business/personal-appearance-services\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_25\">Personal Appearance Services</a>.</li>\n</ul>\n<p>You must get the licence before you start trading, and renew it every year. For other types of business, see <em>What approval is required to start a business from my home?</em></p>"
         },
         {
           "type": "faq",
@@ -3204,7 +4000,7 @@
     {
       "id": "disputes",
       "label": "Environmental Nuisance &amp; Pollution",
-      "intro": "<p><strong>Noise, smoke, dust, odour, light or pollution coming from a neighbouring property or business?</strong> This guide follows the steps from talking to the person causing it to hearing the outcome of our investigation. It also covers the neighbour disputes we cannot resolve, such as trees and fences.</p>",
+      "intro": "<p><strong>Noise, smoke, dust, odour, light or pollution coming from a neighbouring property or business?</strong> This guide follows the steps from talking to the person causing it to hearing the outcome of our investigation. It also covers the neighbour disputes we cannot resolve, such as trees, fences and stormwater, and where to get free mediation.</p>",
       "stepper": [
         {
           "label": "STEP 1",
@@ -3235,7 +4031,7 @@
         {
           "type": "faq",
           "q": "Do I need to talk to my neighbour first?",
-          "a": "<p>No, but we encourage it if you feel safe doing so. People are often unaware that their activity is causing a nuisance. A friendly conversation or a note can fix the problem quickly.</p>\n<p>You do not have to talk to them if:</p>\n<ul>\n<li>you do not feel safe approaching them</li>\n<li>you have already tried and it has not helped</li>\n<li>you would rather they did not know you raised it</li>\n</ul>\n<p>If you give us your name, we will not tell the other person who complained. They may still be able to guess.</p>\n<p>You can also report a problem anonymously. If you do, we cannot tell you the outcome. Our investigation may also be limited, because we cannot contact you for more information or ask you to keep a nuisance diary.</p>\n<p>When you are ready to report it, see <em>How do I report a nuisance or pollution problem?</em></p>"
+          "a": "<p>No, but we encourage it if you feel safe doing so. People are often unaware that their activity is causing a nuisance. A friendly conversation or a note can fix the problem quickly.</p>\n<p>You do not have to talk to them if:</p>\n<ul>\n<li>you do not feel safe approaching them</li>\n<li>you have already tried and it has not helped</li>\n<li>you would rather they did not know you raised it</li>\n</ul>\n<p>Some tips from the Queensland Government:</p><ul>\n<li>talk face to face if you can. It works better than calls, emails or notes</li>\n<li>pick a time when neither of you is rushed or stressed</li>\n<li>explain the problem from your point of view, without blame. For example, \"When your branches hang over my roof, my gutters block and overflow\"</li>\n<li>let them tell their side without interrupting</li>\n<li>work out a solution together, write down what you agree, and both keep a copy</li>\n</ul><p>Read <a href=\"https://www.qld.gov.au/community/your-home-community/neighbour-disputes/disputes-about-fences-trees-and-buildings/ways-to-approach-your-neighbour\" target=\"_blank\" data-var-href=\"url_qld_approach_neighbour\">Ways to approach your neighbour</a>. If talking does not solve it, free mediation can help. See <em>How can free mediation help with a dispute with my neighbour?</em></p>\n<p>If you give us your name, we will not tell the other person who complained. They may still be able to guess.</p>\n<p>You can also report a problem anonymously. If you do, we cannot tell you the outcome. Our investigation may also be limited, because we cannot contact you for more information or ask you to keep a nuisance diary.</p>\n<p>When you are ready to report it, see <em>How do I report a nuisance or pollution problem?</em></p>"
         },
         {
           "type": "faq",
@@ -3249,7 +4045,7 @@
         {
           "type": "faq",
           "q": "What disputes can Council help with?",
-          "a": "<p>We can investigate many problems that come from a neighbouring property or business. These include:</p>\n<ul>\n<li>noise from things like machinery, power tools, pool pumps and air conditioners</li>\n<li>dust, smoke, odour or light</li>\n<li>water pollution, such as sediment, paint or chemicals washing into a drain or waterway</li>\n<li>barking dogs and other animal nuisances</li>\n<li>building work without approval, or illegal use of a structure</li>\n<li>unlawful land use</li>\n</ul>\n<p>Our Environmental Health team investigates environmental nuisance under the Queensland <em>Environmental Protection Act 1994</em>. Barking dogs are covered on the <a href=\"#animals\">Animals tab</a>, and building work and land use on the <a href=\"#building-compliance\">Building Compliance tab</a>.</p>\n<p>Some noise is not ours to deal with. For example, loud music, parties and noisy vehicles go to the Queensland Police Service. See <em>What noise does Council not deal with?</em></p>\n<p>To report a problem, use our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</p>"
+          "a": "<p>We can investigate many problems that come from a neighbouring property or business. These include:</p>\n<ul>\n<li>noise from things like machinery, power tools, pool pumps and air conditioners</li>\n<li>dust, smoke, odour or light</li>\n<li>water pollution, such as sediment, paint or chemicals washing into a drain or waterway</li>\n<li>barking dogs and other animal nuisances</li>\n<li>building work without approval, dangerous or dilapidated buildings, and shipping containers placed on a property</li>\n<li>people living in a shed, caravan or tent on private property</li>\n<li>unauthorised plumbing work, and stormwater drainage from roofs that does not meet its approval</li>\n<li>unlawful land use</li>\n</ul>\n<p>Our Environmental Health team investigates environmental nuisance under the Queensland <em>Environmental Protection Act 1994</em>. Barking dogs are covered on the <a href=\"#animals\">Animals tab</a>, and building work and land use on the <a href=\"#building-compliance\">Building Compliance tab</a>.</p>\n<p>Some noise is not ours to deal with. For example, loud music, parties and noisy vehicles go to the Queensland Police Service. See <em>What noise does Council not deal with?</em></p>\n<p>To report a problem, use our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</p>"
         },
         {
           "type": "faq",
@@ -3305,17 +4101,27 @@
         {
           "type": "faq",
           "q": "What disputes are outside Council's jurisdiction?",
-          "a": "<p>Some common disputes are private matters that we cannot mediate or enforce. These include:</p>\n<ul>\n<li>boundary and fencing disputes</li>\n<li>trees crossing property lines</li>\n<li>parking complaints outside the regulated Warwick CBD parking area (these are a police matter)</li>\n<li>easement disputes</li>\n</ul>\n<p>The Queensland Civil and Administrative Tribunal (QCAT) is often the right place to take these. Visit <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">qcat.qld.gov.au</a> or call <span class=\"faq-var\" data-var=\"phone_1300_753_228\">1300 753 228</span>.</p>"
+          "a": "<p>Some common disputes are private matters that we cannot mediate or enforce. These include:</p>\n<ul>\n<li>boundary and fencing disputes</li>\n<li>trees crossing property lines</li>\n<li>parking complaints outside the regulated Warwick CBD parking area (these are a police matter)</li>\n<li>easement disputes</li>\n<li>water flowing naturally across land. See <em>Stormwater from my neighbour's property is flowing onto mine. What can I do?</em></li>\n<li>crime in the neighbourhood (a police matter)</li>\n<li>tenants' rights and disputes</li>\n</ul>\n<p>If it is safe, talk to your neighbour first. They may not know they are causing a problem. See <em>Do I need to talk to my neighbour first?</em></p>\n<p>If that does not work, the Queensland Government offers free neighbourhood mediation. See <em>How can free mediation help with a dispute with my neighbour?</em></p>\n<p>If you still cannot agree, the Queensland Civil and Administrative Tribunal (QCAT) is often the right place to take these. Visit <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">qcat.qld.gov.au</a> or call <span class=\"faq-var\" data-var=\"phone_1300_753_228\">1300 753 228</span>.</p>\n<p>The Queensland Government's <a href=\"https://www.qld.gov.au/justice/court-and-mediation/dispute-resolution/resolve-disputes\" target=\"_blank\" data-var-href=\"url_qld_resolve_neighbour_disputes\">How to resolve neighbourhood disputes</a> tool shows what to read or do next for your type of dispute. Read more on our <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/civil-issues-disputes\" target=\"_blank\" data-var-href=\"url_civil_issues_disputes\">Civil Issues &amp; Disputes</a> page.</p>"
         },
         {
           "type": "faq",
           "q": "My neighbour's tree drops branches, blocks light, or damages my fence. What can I do?",
-          "a": "<p>Tree disputes between neighbours are a private matter that we cannot mediate. They are covered by the Queensland <em>Neighbourhood Disputes (Dividing Fences and Trees) Act 2011</em>.</p>\n<p><strong>What to do:</strong></p>\n<ol>\n<li>Talk to your neighbour first. Most tree problems are sorted out once the owner knows about them.</li>\n<li>If you cannot agree, you can serve a formal notice on the tree owner under the Act, asking them to act.</li>\n<li>If that does not work, you can take the matter to QCAT. Visit <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">qcat.qld.gov.au</a> or call <span class=\"faq-var\" data-var=\"phone_1300_753_228\">1300 753 228</span>.</li>\n</ol>\n<p>You can trim branches that hang over your property, up to the boundary line. You pay for this yourself, and you must not harm the tree's health. Give the trimmings back to the tree owner. Do not dump them.</p>\n<div class=\"note\">Trees on our land or on road reserves are different. Lodge a service request and one of our officers will assess the tree. Never trim or remove one of our trees yourself.</div>"
+          "a": "<p>Tree disputes between neighbours are a private matter that we cannot mediate. They are covered by the Queensland <em>Neighbourhood Disputes (Dividing Fences and Trees) Act 2011</em>.</p>\n<p><strong>What to do:</strong></p>\n<ol>\n<li>Talk to your neighbour first. Most tree problems are sorted out once the owner knows about them.</li>\n<li>If you cannot agree, you can serve a formal notice on the tree owner under the Act, asking them to act.</li>\n<li>If you still cannot agree, try free mediation. See <em>How can free mediation help with a dispute with my neighbour?</em></li>\n<li>If that does not work, you can take the matter to QCAT. Visit <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">qcat.qld.gov.au</a> or call <span class=\"faq-var\" data-var=\"phone_1300_753_228\">1300 753 228</span>.</li>\n</ol>\n<p>You can trim branches that hang over your property, up to the boundary line. You pay for this yourself, and you must not harm the tree's health. Give the trimmings back to the tree owner. Do not dump them.</p>\n<div class=\"note\">Trees on our land or on road reserves are different. Lodge a service request and one of our officers will assess the tree. Never trim or remove one of our trees yourself.</div>"
         },
         {
           "type": "faq",
           "q": "I have a boundary or fencing dispute with my neighbour. What now?",
-          "a": "<p>Fences between two residential properties are covered by the <em>Neighbourhood Disputes (Dividing Fences and Trees) Act 2011</em>, not by us. As a general rule, both neighbours share the cost of a \"sufficient dividing fence\" equally. What counts as sufficient depends on the zone and the existing fence.</p>\n<p><strong>What to do:</strong></p>\n<ol>\n<li>Talk to your neighbour first. Agree on what needs doing and get a quote from a fencing contractor.</li>\n<li>If you cannot agree, serve a formal <em>Notice to Fence</em> on your neighbour. The Queensland Government has templates.</li>\n<li>If you still have not agreed 30 days after the notice, either of you can apply to QCAT for a decision. Visit <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">qcat.qld.gov.au</a> or call <span class=\"faq-var\" data-var=\"phone_1300_753_228\">1300 753 228</span>.</li>\n</ol>\n<p>A boundary dispute (where the fence should go) is separate from a fencing dispute (who pays for what). If you are not sure where the boundary is, a licensed surveyor can confirm it. Our online mapping shows cadastral boundaries for reference, but it does not replace a survey.</p>"
+          "a": "<p>Fences between two residential properties are covered by the <em>Neighbourhood Disputes (Dividing Fences and Trees) Act 2011</em>, not by us. As a general rule, both neighbours share the cost of a \"sufficient dividing fence\" equally. What counts as sufficient depends on the zone and the existing fence.</p>\n<p><strong>What to do:</strong></p>\n<ol>\n<li>Talk to your neighbour first. Agree on what needs doing and get a quote from a fencing contractor.</li>\n<li>If you cannot agree, serve a formal <em>Notice to Fence</em> on your neighbour. The Queensland Government has templates.</li>\n<li>Free mediation can help you agree at any stage. See <em>How can free mediation help with a dispute with my neighbour?</em></li>\n<li>If you still have not agreed 30 days after the notice, either of you can apply to QCAT for a decision. Visit <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">qcat.qld.gov.au</a> or call <span class=\"faq-var\" data-var=\"phone_1300_753_228\">1300 753 228</span>.</li>\n</ol>\n<p>A boundary dispute (where the fence should go) is separate from a fencing dispute (who pays for what). If you are not sure where the boundary is, a licensed surveyor can confirm it. Our online mapping shows cadastral boundaries for reference, but it does not replace a survey.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Stormwater from my neighbour's property is flowing onto mine. What can I do?",
+          "a": "<p>It depends on where the water comes from. Water that flows naturally across the land is a private matter between neighbours. We cannot intervene. Water from a building that does not meet its approval is something we can look at.</p><p><strong>Natural overland flow</strong>: if your property is downhill, you must accept the natural run-off from the ordinary use of the land above it. We do not regulate natural overland flow on private property. Each owner is responsible for managing stormwater as it enters and leaves their land.</p>\n<p>If a neighbour changes the natural flow and it causes a nuisance or damage, that is a civil matter between you. This includes concentrating the water, increasing peak flows or affecting its quality. We have no legal power to intervene when water is redirected by:</p><ul>\n<li>a house, garage, shed, pool, fence or retaining wall</li>\n<li>landscaping, such as garden beds, mounds, drains or paths</li>\n</ul><p><strong>Where we can help:</strong></p><ul>\n<li>roof water and drainage that does not meet the building or plumbing approval for the work, or its conditions</li>\n<li>contaminated stormwater, such as paint, chemicals or sediment. See <em>What disputes can Council help with?</em></li>\n<li>checking that the conditions of an approval we issued are being met</li>\n</ul><p>If the building work has a current approval from a private building certifier, we refer the complaint to that certifier first.</p>\n<p>Every owner must keep their gutters, downpipes, stormwater pipes and drains in good condition. Roof water should go to a lawful point of discharge, such as the kerb and channel in the street or an inter-allotment drain. Where the slope does not allow this, a bubbler outlet can be used. It must be at least <span class=\"faq-var\" data-var=\"text_stormwater_bubbler_distance\">3 metres</span> from the downhill side of the building foundations and at least <span class=\"faq-var\" data-var=\"text_stormwater_bubbler_distance\">3 metres</span> from any boundary.</p>\n<p><strong>What to do:</strong></p><ol>\n<li>Talk to your neighbour. See <em>Do I need to talk to my neighbour first?</em></li>\n<li>For a complex problem, a stormwater engineer can design a drainage solution for both properties.</li>\n<li>If you still cannot agree, try free mediation. See <em>How can free mediation help with a dispute with my neighbour?</em></li>\n</ol>\n<p>Read our <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/stormwater-disputes\" target=\"_blank\" data-var-href=\"url_stormwater_disputes\">Stormwater Disputes</a> page and <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/406/Stormwater%20Guide%20Fact%20sheet.pdf.aspx?Embed=Y\" target=\"_blank\" data-var-href=\"url_stormwater_fact_sheet\">Stormwater Fact Sheet</a>. To report roof water or drainage you think does not meet its approval, use our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How can free mediation help with a dispute with my neighbour?",
+          "a": "<p>Mediation lets you and your neighbour sort out a dispute with the help of a trained mediator, without going to court. The Queensland Government's Dispute Resolution Centres offer it free in most cases. It is confidential and impartial. It is also voluntary, so you both have to agree to take part.</p>\n<p>It can help with most neighbour disputes, such as trees, fences, stormwater, noise, pets and parking.</p>\n<p><strong>Before you apply:</strong></p><ul>\n<li>try to sort it out with your neighbour yourself, if it is safe. See <em>Do I need to talk to my neighbour first?</em></li>\n<li>be willing to meet your neighbour to talk about the problem</li>\n</ul><p><strong>To apply</strong>, fill in the online form on the <a href=\"https://www.qld.gov.au/justice/court-and-mediation/dispute-resolution/apply-mediation\" target=\"_blank\" data-var-href=\"url_qld_apply_mediation\">Apply for mediation</a> page. You need your neighbour's name and contact details, and details of the problem. If a court order stops you contacting them, include a copy.</p>\n<p>Applications are assessed within <span class=\"faq-var\" data-var=\"time_mediation_assessment\">10 business days</span>. A session usually takes <span class=\"faq-var\" data-var=\"text_mediation_session\">2 to 4 hours</span>, and the whole process takes <span class=\"faq-var\" data-var=\"text_mediation_process\">2 to 6 weeks</span> on average.</p>\n<p>If you cannot apply online, or are not sure you have the details needed, contact the South Queensland Dispute Resolution Centre on <span class=\"faq-var\" data-var=\"phone_1800_017_288\">1800 017 288</span> (toll free). Find it on the <a href=\"https://www.qld.gov.au/justice/court-and-mediation/dispute-resolution/dispute-resolution-centres\" target=\"_blank\" data-var-href=\"url_qld_dispute_resolution_centres\">Find a dispute resolution centre</a> page.</p>\n<p>If you do not want to meet your neighbour, Legal Aid Queensland can tell you about other options. If mediation does not resolve it, a court or tribunal such as the Queensland Civil and Administrative Tribunal (QCAT) can make a decision you can enforce. Visit <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">qcat.qld.gov.au</a> or call <span class=\"faq-var\" data-var=\"phone_1300_753_228\">1300 753 228</span>.</p>\n<p>The Queensland Government's <a href=\"https://www.qld.gov.au/justice/court-and-mediation/dispute-resolution/resolve-disputes\" target=\"_blank\" data-var-href=\"url_qld_resolve_neighbour_disputes\">How to resolve neighbourhood disputes</a> tool shows what to read or do next for your type of dispute.</p>"
         }
       ],
       "footer": "Related:\n    <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/environmental-nuisance\" target=\"_blank\" data-var-href=\"url_environmental_nuisance\">Environmental Nuisance &amp; Pollution</a> ·\n    <a href=\"https://www.qld.gov.au/__data/assets/pdf_file/0020/202457/noise-regulation.pdf\" target=\"_blank\" data-var-href=\"url_noise_regulation_fact_sheet\">Noise regulation fact sheet</a> ·\n    <a href=\"https://www.qcat.qld.gov.au\" target=\"_blank\" data-var-href=\"url_www_qcat_qld_gov_au\">QCAT</a> ·\n    <a href=\"https://www.sdrc.qld.gov.au/council/contact-us/lodge-a-complaint/lodge-a-complaint\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_38\">Lodge a Complaint</a>",
@@ -3324,18 +4130,25 @@
     {
       "id": "building-compliance",
       "label": "Building Compliance",
+      "intro": "<p><strong>Worried about building work, a structure or a land use on a neighbouring property?</strong> We investigate compliance with planning, building, plumbing and local law approvals. This guide explains what we can look into and how to report it.</p>",
       "items": [
         {
           "type": "faq",
           "q": "My neighbour's shed or extension looks unapproved. How do I report it?",
-          "a": "<p>Unlike most neighbour disputes, we <em>can</em> investigate building work done without approval. If you think a structure was built without the building or planning approval it needed, make a complaint using our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</p>\n<p>Give us as much detail as you can:</p>\n<ul>\n<li>the address</li>\n<li>a description of the structure</li>\n<li>when it was built, if you know</li>\n<li>why you think it is unapproved</li>\n</ul>\n<p>Our Building Compliance team will investigate. If the work is unapproved, they may issue a notice requiring it to be certified after the fact, or removed. This takes time. You should not expect a same-day outcome.</p>\n<div class=\"note\">Not every structure needs approval. Small sheds (under 10m²), fences under 2m and retaining walls under 1m may be self-assessable. The Building Rural and Building Urban tabs have the details.</div>"
+          "a": "<p>Unlike most neighbour disputes, we <em>can</em> investigate building work done without approval. If you think a structure was built without the building or planning approval it needed, make a complaint using our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</p>\n<p>We can also investigate:</p><ul>\n<li>buildings that are dangerous or in a dilapidated condition</li>\n<li>shipping containers placed on a property</li>\n<li>people living in a shed, caravan or tent. See <em>Someone is living in a shed, caravan or tent on a property. Can Council investigate?</em></li>\n<li>unauthorised plumbing work, and stormwater drainage from roofed areas</li>\n</ul><p>If it is safe, try talking to your neighbour first. They may not know they need an approval. See <em>Do I need to talk to my neighbour first?</em> on the <a href=\"#disputes\">Environmental Nuisance &amp; Pollution tab</a>.</p>\n<p>Give us as much detail as you can:</p>\n<ul>\n<li>the address</li>\n<li>a description of the structure</li>\n<li>when it was built, if you know</li>\n<li>why you think it is unapproved</li>\n</ul>\n<p>We first explain the requirements to both sides. If the problem continues, we investigate further. Our Development and Compliance Officers assess the work and tell the owner if it does not comply. They may issue a notice requiring it to be certified after the fact, or removed. In extreme cases, an owner can be directed to remove an unapproved structure at their own cost. This takes time. You should not expect a same-day outcome.</p>\n<div class=\"note\">Not every structure needs approval. Small sheds (under 10m²), fences under 2m and retaining walls under 1m may be self-assessable. The Building Rural and Building Urban tabs have the details. If you are unsure whether something needs approval, call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>.</div>\n<p>Read more on our <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/neighbouring-land-uses\" target=\"_blank\" data-var-href=\"url_neighbouring_land_uses\">Neighbouring Land Uses</a> page.</p>"
         },
         {
           "type": "faq",
           "q": "Someone is running a business from a residential property. Can Council investigate?",
-          "a": "<p>Yes. We can investigate \"unlawful land use\" under the Planning Scheme.</p>\n<p>Some home-based businesses are allowed. These are usually small, low-impact businesses that do not bring more traffic, noise or signage than a normal home. Others need planning approval, or are not allowed in residential zones at all.</p>\n<p>Signs that a business has gone too far include:</p>\n<ul>\n<li>commercial vehicle traffic</li>\n<li>employees coming and going</li>\n<li>customer parking</li>\n<li>commercial signs</li>\n<li>industrial noise</li>\n<li>activities that change the character of the property</li>\n</ul>\n<p>Make a complaint using our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>. Our Planning Compliance team will investigate.</p>"
+          "a": "<p>Yes. We can investigate \"unlawful land use\" under the Planning Scheme.</p>\n<p>Some home-based businesses are allowed. These are usually small, low-impact businesses that do not bring more traffic, noise or signage than a normal home. Others need planning approval, or are not allowed in residential zones at all.</p>\n<p>Signs that a business has gone too far include:</p>\n<ul>\n<li>commercial vehicle traffic</li>\n<li>employees coming and going</li>\n<li>customer parking</li>\n<li>commercial signs</li>\n<li>industrial noise</li>\n<li>activities that change the character of the property</li>\n</ul>\n<p>Make a complaint using our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>. Our Planning Compliance team will investigate. We first explain the requirements to both sides. If the problem continues, we investigate further and tell the owner if the use does not comply.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Someone is living in a shed, caravan or tent on a property. Can Council investigate?",
+          "a": "<p>Yes. We can investigate people living on private property in a shed, caravan, tent or other structure that is not approved as a home.</p>\n<p>Some people are allowed to. With our approval, you can live in a shed while you build a house or renovate, or in a caravan or mobile home on rural land. You need a building approval for the house first. See <em>Can I live on the land in a caravan or shed while I build?</em> on the <a href=\"#rural\">Building Rural tab</a>.</p>\n<p>To report it, use our <a href=\"https://crm.sdrc.qld.gov.au/webinput/customform/categorylist?show_tiles=y\" target=\"_blank\" data-var-href=\"url_crm_sdrc_qld_gov_au\">online service request form</a> or call us on <span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span>. Tell us the address, what the structure is, and how long people have been living there, if you know.</p>\n<p>We first explain the requirements to the people involved. If the problem continues, our Development and Compliance Officers investigate. See <em>My neighbour's shed or extension looks unapproved. How do I report it?</em></p>\n<p>Camping on public land, such as parks, reserves and roadsides, is only allowed where we have signposted it. See <em>Can I camp anywhere else — a roadside, reserve or car park?</em> on the <a href=\"#tourism\">Visiting &amp; Camping tab</a>.</p>"
         }
       ],
+      "footer": "Related:\n    <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/neighbouring-land-uses\" target=\"_blank\" data-var-href=\"url_neighbouring_land_uses\">Neighbouring Land Uses</a> ·\n    <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/building-compliance/temporary-homes\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_9\">Temporary Homes</a> ·\n    <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/pollution-neighbourhood-nuisances/stormwater-disputes\" target=\"_blank\" data-var-href=\"url_stormwater_disputes\">Stormwater Disputes</a>",
       "lastReviewed": "November 2026"
     },
     {
@@ -3664,6 +4477,234 @@
           "a": "<p>Yes, with our approval. Fill in the <strong>Roadside Memorial Application</strong> and send it back to us. We will give you our decision in writing.</p>\n<p>Our guidelines are there to keep family, friends and road users safe while a memorial is put up and visited.</p>\n<p>The form is on our <a href=\"https://www.sdrc.qld.gov.au/living-here/cemeteries/roadside-memorials/roadside-memorials\" target=\"_blank\" data-var-href=\"url_roadside_memorials\">Roadside Memorials</a> page. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to be transferred to <strong>Cemeteries</strong>.</p>"
         }
       ]
+    },
+    {
+      "id": "food-businesses",
+      "label": "Food Businesses",
+      "intro": "<p><strong>Starting, buying or running a food business?</strong> This guide covers food business licences for cafés, restaurants, takeaways, home kitchens, food trucks, market stalls and community groups.</p>\n<p>Most food businesses need a licence from us before they start trading. For advice before you apply, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>",
+      "stepper": [
+        {
+          "label": "STEP 1",
+          "text": "Check planning, building, plumbing and trade waste approvals"
+        },
+        {
+          "label": "STEP 2",
+          "text": "Lodge your application, plans and fee"
+        },
+        {
+          "label": "STEP 3",
+          "text": "Design approval: we assess your plans"
+        },
+        {
+          "label": "STEP 4",
+          "text": "Fit out the premises, then book a final inspection"
+        },
+        {
+          "label": "STEP 5",
+          "text": "Licence issued: display it where customers can see it"
+        }
+      ],
+      "items": [
+        {
+          "type": "group",
+          "title": "Getting started"
+        },
+        {
+          "type": "faq",
+          "q": "Do I need a food business licence?",
+          "a": "<p>Most food businesses do. You need a food business licence from us if your business:</p><ul>\n<li>makes food by combining ingredients, for example jams, sauces, curries or soup</li>\n<li>sells unpackaged food by retail, such as a café, restaurant, takeaway or bakery</li>\n<li>sells unpackaged food from a vehicle, such as a food truck, or carries drinking water in bulk (a water carrier)</li>\n<li>is a non-profit organisation that sells meals on at least <span class=\"faq-var\" data-var=\"text_nonprofit_meal_days\">12 days</span> each financial year</li>\n</ul><p>Examples of unpackaged food that needs a licence:</p><ul>\n<li>fresh fruit or vegetable juice, or cut fruit or vegetables</li>\n<li>cakes, muffins or biscuits you make or handle</li>\n<li>takeaway food such as hot chips, hamburgers, pizzas or salads</li>\n<li>bread, bread rolls and sandwiches, including toasted sandwiches</li>\n<li>bulk food repackaged into smaller containers, such as coffee or spices</li>\n</ul><p>Some businesses do not need a licence. See <em>What food businesses do not need a licence?</em> Even without a licence, you must still meet the <em>Food Act 2006</em> and the Food Safety Standards.</p>\n<p>The licence covers the food. You may also need planning, building, plumbing or trade waste approval. See <em>What other approvals do I need to open a food business?</em></p>\n<p>Not sure whether your food needs a licence? Call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>. Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business\" target=\"_blank\" data-var-href=\"url_qld_starting_food_business\">Starting a food business</a> guide covers food safety laws, licences, premises and training. You can also read its <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/food-business-licences/do-i-need-a-food-business-licence\" target=\"_blank\" data-var-href=\"url_qld_food_licence\">Do I need a food business licence?</a>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What food businesses do not need a licence?",
+          "a": "<p>You may not need a licence if you only sell:</p><ul>\n<li>packaged food</li>\n<li>unpackaged snack food, such as biscuits, croissants, doughnuts, muffins or cakes without dairy fillings or icing, chocolates and confectionery, chips and nuts, jerky and dried fruit</li>\n<li>whole fruit or vegetables</li>\n<li>dry goods such as nuts, grains, spices, dried herbs, tea, coffee beans or ground coffee, flour, pasta and lentils, unless they form <abbr class=\"faq-def\" title=\"Food that has to be kept at certain temperatures to stop harmful bacteria growing or toxins forming. For example, meat, chicken, seafood, rice dishes, dairy products, gravy and cream-based desserts.\"><span class=\"faq-var\" data-var=\"text_potentially_hazardous_food\">potentially hazardous food</span></abbr></li>\n<li>spreads such as honey, jam, peanut butter and vegemite, and sugar and syrups</li>\n<li>drinks, other than fruit or vegetable juice made at the place of sale, such as tea, coffee, soft drinks and alcohol</li>\n<li>ice or flavoured ice, such as snow cones</li>\n</ul><p>For example, a café that sells only coffee and tea, with prepackaged cookies, does not need a food business licence. Selling alcohol needs a liquor licence from the Office of Liquor and Gaming Regulation.</p>\n<p>We also do not licence:</p><ul>\n<li>food businesses run by the Queensland Government or government-owned corporations</li>\n<li>state school tuckshops run by a Parents and Citizens Association</li>\n<li>some food prepared at home as part of family day care, student boarding or in-home support services</li>\n</ul><p>A tuckshop run by a private operator for profit, and private school tuckshops, do need a licence. Producers of primary produce such as meat, dairy or eggs are accredited by Safe Food Production Queensland instead.</p>\n<p>Without a licence, you must still sell food that is safe and suitable, and meet the <em>Food Act 2006</em> and the Food Safety Standards. We can inspect any food business in our area, whether or not it needs a licence.</p>\n<p>If you are unsure whether your business fits one of these, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What other approvals do I need to open a food business?",
+          "a": "<p>Often several. A food business licence covers food safety only. It does not include building, plumbing, trade waste or planning approvals, so get those <strong>before</strong> you apply for your licence.</p>\n<p>Check whether you need:</p><ul>\n<li><strong>planning approval</strong>, so the business can operate at that location. For a business from home, see <em>What approval is required to start a business from my home?</em> on the <a href=\"#planning\">Planning tab</a></li>\n<li><strong>building approval</strong> for the fit-out, or a change to the building's classification</li>\n<li><strong>plumbing approval</strong> for new sinks, basins, grease arrestors and drainage</li>\n<li><strong>trade waste approval</strong>. See <em>Does my food business need trade waste approval?</em></li>\n<li><strong>a permit for advertising signs</strong> on or near a road</li>\n<li><strong>a footpath dining permit</strong>. See <em>Can I put tables and chairs on the footpath outside my café?</em></li>\n<li><strong>a roadside vending permit</strong> for a food truck on a road. See <em>Where can I park my food truck to sell food?</em></li>\n<li><strong>a liquor licence</strong> from the Office of Liquor and Gaming Regulation, if you will sell alcohol</li>\n</ul><p>List the other applications you have lodged in section 10 of the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20Fixed%20%20Mobile%20with%20checklist%20v2.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_fixed_mobile\">Application for Food Business Licence – Fixed and Mobile Premises</a>.</p>\n<p>Business Queensland has advice on business names, structures, leasing, tax and employing staff. See its <a href=\"https://www.business.qld.gov.au/starting-business/starting-buying/buying\" target=\"_blank\" data-var-href=\"url_business_qld_buying\">Buying a business</a> guide.</p>\n<p>To check planning for your location, talk to a duty planner. Lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Planning enquiry</strong> and a duty planner will get back to you within <span class=\"faq-var\" data-var=\"time_duty_planner_response\">5 business days</span>. Or call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to speak to the duty planner.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Opening a new food business"
+        },
+        {
+          "type": "faq",
+          "q": "How do I apply for a food business licence?",
+          "a": "<p>Fill in the application form for your type of business and lodge it at least <span class=\"faq-var\" data-var=\"time_food_application_lead\">30 days</span> before you plan to open.</p><ul>\n<li><strong>Cafés, restaurants, shops, home kitchens, food trucks and water carriers:</strong> <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20Fixed%20%20Mobile%20with%20checklist%20v2.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_fixed_mobile\">Application for Food Business Licence – Fixed and Mobile Premises</a></li>\n<li><strong>Market stalls and event stalls:</strong> <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20%E2%80%93%20Temporary%20Food%20Premises%20with%20checklist%20.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_temporary\">Application for Food Business Licence – Temporary Premises</a>. See <em>Do I need a licence for a market or event stall?</em></li>\n</ul><p>On the fixed and mobile form, choose the application type:</p><ul>\n<li><strong>New licence + design approval</strong>: a new premises, or one not approved before. See <em>What is a design approval, and when do I need one?</em></li>\n<li><strong>New licence only</strong>: taking over a licensed premises with no changes, or your licence has lapsed</li>\n<li><strong>Design approval only</strong>: alterations to your current premises</li>\n<li><strong>Administrative amendment</strong>: changing details such as your trading name or contact details</li>\n<li><strong>Accreditation of a food safety program</strong>: see <em>Do I need a food safety program?</em></li>\n</ul><p>Attach:</p><ul>\n<li>your menu, or a list of the food you will handle</li>\n<li>plans, if you need a design approval. See <em>What plans do I need to submit with my application?</em></li>\n<li>your food safety supervisor's Statement of Attainment. See <em>Who needs a food safety supervisor, and what training do they need?</em></li>\n<li>for a company, a company extract listing the directors (a business registration certificate is not accepted)</li>\n<li>for a food truck or water carrier, a copy of the vehicle registration</li>\n</ul><p>Lodge it by email to <a href=\"mailto:mail@sdrc.qld.gov.au\" data-var-mailto=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</a>, at one of our <a href=\"https://www.sdrc.qld.gov.au/council/contact-us\" target=\"_blank\" data-var-href=\"url_contact_us\">customer service centres</a>, or by post to <span class=\"faq-var\" data-var=\"text_council_postal_address\">PO Box 26, Warwick QLD 4370</span>. Use the checklist at the end of the form so nothing is missing.</p>\n<p>When we assess your application, we look at:</p><ul>\n<li>whether you have the other approvals and permits you need, such as planning approval or a footpath dining permit</li>\n<li>whether you have the skills and knowledge to run a food business</li>\n<li>whether you have had a food licence refused, suspended or cancelled before</li>\n<li>whether the design and fit-out suit the food you will make</li>\n<li>your food safety program, if you need one</li>\n<li>your food safety supervisor</li>\n</ul>\n<p>We confirm your risk category and tell you the fee. You can pay by phone, in person or by cheque. We assign an officer once you have paid. An application number is not approval to trade: it is an offence to operate without a licence. See <em>How much does a food business licence cost?</em></p>\n<p>The <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Food%20Business%20Application%20Guide%20v2.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_guide\">Food Business Application Guide</a> explains each section of the form. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What is a design approval, and when do I need one?",
+          "a": "<p>A design approval is our check of your plans before you build or change a food premises. We assess the layout and fit-out against Food Safety Standard 3.2.3 (Food Premises and Equipment). It is the first stage of a licence for new premises, and it is <strong>not</strong> approval to trade.</p>\n<p>You need one if you:</p><ul>\n<li>build or fit out premises that have not been approved as a food business before</li>\n<li>change the layout, or add, move or replace equipment, fixtures or fittings</li>\n<li>take over a food business and plan to make changes</li>\n<li>reopen premises that have not operated as a food business for more than <span class=\"faq-var\" data-var=\"time_food_premises_inactive\">6 months</span> (check with us first)</li>\n</ul><p><strong>The steps:</strong></p><ol>\n<li>Lodge your application, plans and fee.</li>\n<li>We assess the plans. If they do not meet the standards, or are unclear, we ask for more information or amended plans.</li>\n<li>We send you a stamped copy of the approved plans. You can then start work, once you have any building and plumbing approvals.</li>\n<li>When the work is finished, contact us to book a final inspection. We check the work against the approved plans.</li>\n<li>We issue your licence once the final inspection is done and all fees are paid.</li>\n</ol>\n<div class=\"warn\">Do not start work before we approve your plans. If you do, you may have to change or remove fixtures, fittings or equipment that do not comply, at your own cost. This will delay your opening.</div>\n<p>If you will not be ready to open within <span class=\"faq-var\" data-var=\"time_design_approval_ready\">6 months</span> of the design approval, apply for <strong>Design approval only</strong> now, then for <strong>New licence only</strong> before you open.</p>\n<p>Minor works may not need a final inspection, but tell the Environmental Health Officer who approved them before you reopen.</p>\n<p>The design approval fee is <span class=\"faq-var\" data-var=\"money_food_design_approval\">$506.00</span>, plus the licence fee. It is not refunded if the application is refused, cancelled or withdrawn. See <em>How much does a food business licence cost?</em></p>\n<p>Read <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Flow%20Chart%20for%20FBL%20Application%20Process%20-%20NewAlterations-%20pdf.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_new_premises_fact_sheet\">Setting up a new food business premises</a>. To talk through your design before you lodge, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What plans do I need to submit with my application?",
+          "a": "<p>For a design approval, submit 2 copies of your plans, no larger than A3, or send them as a PDF. They must be drawn to a scale that is easy to read. We do not accept freehand drawings.</p>\n<p>Include:</p><ul>\n<li><strong>a floor plan</strong> (scale 1:100) showing equipment, benches, cupboards, sinks, hand basins, the cleaner's sink, door and window openings, storage for chemicals and staff belongings, staff areas, and dining areas with the number of seats</li>\n<li><strong>sectional elevations</strong> (scale 1:50) showing a side-on view of each wall, the height of benches and fixtures, how equipment is installed (on castors, legs or plinths), and the finishes to walls, floors and ceilings</li>\n<li><strong>a site plan</strong> (scale 1:100) showing where the premises is, waste storage, grease traps, car parking, staff and public toilets, and the businesses around it</li>\n<li><strong>mechanical ventilation plans</strong>, if you need an exhaust hood. See <em>Do I need an exhaust hood (mechanical ventilation)?</em></li>\n<li><strong>a plumbing and drainage plan</strong> (scale 1:50) showing water and sewer pipes, tundishes and grease traps</li>\n<li>brochures or photos of the equipment you will use</li>\n<li><strong>evidence that your water is safe to drink</strong>, if you are not on town water</li>\n</ul><p>A home kitchen can use photos of each wall instead of sectional elevations. See <em>What does my home kitchen need to have?</em> A temporary stall only needs a floor plan. See <em>What does a temporary food stall need?</em></p>\n<p>If your plans are not clear or detailed enough, we return them for you to fix, and extra fees may apply. This can delay your opening.</p>\n<p>The plans checklist is at the end of the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20Fixed%20%20Mobile%20with%20checklist%20v2.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_fixed_mobile\">application form</a>. For help with what to show, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What are the fit-out requirements for a food premises?",
+          "a": "<p>Your premises must meet Food Safety Standard 3.2.3 (Food Premises and Equipment). In short, it must be easy to clean, keep out pests and dust, and have enough space for everything you do.</p>\n<p>The main things we look for:</p><ul>\n<li><strong>hand basins</strong> used only for hand washing, in food preparation areas and next to the toilets, with nothing in the way, and with warm running drinking water, soap, paper towels and a bin for used towels</li>\n<li><strong>separate sinks</strong> for washing up, for preparing food, and a cleaner's sink</li>\n<li><strong>smooth, sealed surfaces</strong> on floors, walls, ceilings, benches and shelves, so they can be cleaned easily</li>\n<li><strong>equipment that can be moved or cleaned around</strong>, such as cooking equipment on flexible gas or electrical connections, and heavy items on castors or sealed to the floor</li>\n<li><strong>storage</strong> for food, clean equipment, chemicals and staff belongings, kept separate</li>\n<li><strong>pest control</strong>, such as flyscreens and self-closing doors, and sealed gaps around pipes and drains</li>\n<li><strong>lidded or enclosed storage for rubbish and recycling</strong>, big enough to hold everything until it is collected, and easy to clean</li>\n<li><strong>enough light</strong> for the work you do, and toilets for staff</li>\n<li><strong>a flow of work in one direction</strong>, from raw food to ready-to-eat food, to stop cross-contamination</li>\n<li><strong>ventilation</strong>, and an exhaust hood where needed. See <em>Do I need an exhaust hood (mechanical ventilation)?</em></li>\n<li>a probe thermometer accurate to within 1°C, before you open. Calibrate it regularly, about every <span class=\"faq-var\" data-var=\"text_thermometer_calibration\">6 months</span></li>\n<li>a coffee machine connected to a tundish that drains to an approved connection</li>\n<li>safe drinking water. If you are not on town water, provide a water analysis from a NATA-accredited laboratory and a drinking water management plan. See the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/288/Information%20Sheet%20-%20Potable%20Water.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_potable_water\">Potable Water information sheet</a></li>\n</ul><p>The rules for floors, walls and ceilings do not apply to dining and other areas the public uses. Australian Standard AS 4674-2004 (Design, construction and fit-out of food premises) has more detail.</p>\n<p>If you provide <span class=\"faq-var\" data-var=\"text_food_seats_toilets\">20</span> or more seats for customers, you need customer toilets that meet the Building Code of Australia, separate from the staff toilets.</p>\n<p>Read our <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Fact%20Sheet%20-%20Food%20Business%20Fit%20Out%20Guide.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_fit_out_guide\">Food Business Fit Out Guide</a> and Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/premises-and-equipment/design-and-fit-out\" target=\"_blank\" data-var-href=\"url_qld_design_fit_out\">Design and fit-out</a> guide before you finalise your design. Then call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong> to check it.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Do I need an exhaust hood (mechanical ventilation)?",
+          "a": "<p>You need mechanical exhaust ventilation if your cooking equipment includes:</p><ul>\n<li>electric appliances with a total input of more than <span class=\"faq-var\" data-var=\"text_vent_electric_trigger\">8kW</span></li>\n<li>gas appliances with a total input of <span class=\"faq-var\" data-var=\"text_vent_gas_trigger\">29MJ/hour</span> or more</li>\n<li>any deep fryer</li>\n<li>several items that together give off more heat than the room can handle (the fact sheet sets out the figures)</li>\n</ul><p>The system must be designed, installed, tested and certified to Australian Standards AS 1668.1 and AS 1668.2. Before we approve your licence, give us written certification from a qualified professional that it complies. This is a <abbr class=\"faq-def\" title=\"Inspection certificate — confirms that a stage or part of the building work has been inspected and complies.\"><span class=\"faq-var\" data-var=\"form_16\">Form 16</span></abbr> inspection certificate from a building certifier or a registered professional engineer.</p>\n<p>Include the ventilation drawings, with dimensions, cooking equipment and discharge points, in your plans. See <em>What plans do I need to submit with my application?</em></p>\n<p>Clean and maintain the system regularly. Filters usually need cleaning every 1 to 2 weeks, and ductwork every 6 to 12 months.</p><div class=\"warn\"><strong>Buying an existing business?</strong> An existing system must meet today's standards when you apply for a new licence. If it is not working well, for example there is grease or staining around it, we may ask you to have it certified, and replaced if it does not comply. Check it before you buy.</div>\n<p>Read the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Fact%20Sheet%20-%20Mechanical%20Ventilation.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_mechanical_ventilation\">Mechanical Ventilation fact sheet</a> for the design rules. For questions about your system, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Does my food business need trade waste approval?",
+          "a": "<p>Almost certainly yes. Wastewater from a commercial kitchen is trade waste, because it carries fats, oils, grease and food scraps. Food businesses must have trade waste approval before they discharge it to our sewer.</p>\n<p>Food businesses that need approval include cafés, restaurants, takeaways, bakeries, butchers, caterers (including home-based catering), clubs with kitchens, child care centres, motels and supermarkets.</p>\n<p>You will usually need:</p><ul>\n<li>a <strong>grease arrestor</strong>, installed by a licensed plumber. Our Trade Waste Officers decide its size and how often it is pumped out</li>\n<li>a <strong>cleaner's sink</strong>, used only for cleaning</li>\n<li><strong>dry basket arrestors</strong> in floor wastes and under sinks</li>\n<li>for a new business, <strong>sub-meters</strong> on the water supply to the trade waste areas</li>\n</ul><p>A licensed liquid waste transporter must clean and service the grease arrestor regularly. It is your responsibility to arrange this.</p>\n<p>Trade waste approval is separate from your food licence. Apply using the <a href=\"https://www.sdrc.qld.gov.au/living-here/environment-water-waste/water-wastewater/trade-waste/trade-waste-application-form\" target=\"_blank\" data-var-href=\"url_trade_waste_application\">Trade Waste Application Form</a>, and show the grease arrestor on your plans.</p>\n<p>Read the <a href=\"https://www.sdrc.qld.gov.au/articledocuments/1470/Trade%20Waste_Category%203.pdf.aspx\" target=\"_blank\" data-var-href=\"url_trade_waste_food_fact_sheet\">trade waste fact sheet for food businesses</a>. To check what you need, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for the <strong>Trade Waste Officer</strong>, or email <a href=\"mailto:mail@sdrc.qld.gov.au\" data-var-mailto=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</a>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How much does a food business licence cost?",
+          "a": "<p>It depends on your risk category. We confirm the category, and the fee, when you apply.</p><table>\n<thead><tr><th>Category</th><th>Who it covers</th><th>Annual licence</th></tr></thead>\n<tbody>\n<tr><td>Category 1</td><td>Make and sell ready-to-eat <abbr class=\"faq-def\" title=\"Food that has to be kept at certain temperatures to stop harmful bacteria growing or toxins forming. For example, meat, chicken, seafood, rice dishes, dairy products, gravy and cream-based desserts.\"><span class=\"faq-var\" data-var=\"text_potentially_hazardous_food\">potentially hazardous food</span></abbr>: cafés, restaurants, takeaways, caterers, food trucks</td><td><span class=\"faq-var\" data-var=\"money_food_licence_cat1\">$575.00</span></td></tr>\n<tr><td>Category 2</td><td>Sell unpackaged ready-to-eat potentially hazardous food made by someone else: delis, service stations, convenience stores</td><td><span class=\"faq-var\" data-var=\"money_food_licence_cat2\">$462.00</span></td></tr>\n<tr><td>Category 3</td><td>Low-risk commercial food businesses: packing spices, water carriers, drink manufacturers</td><td><span class=\"faq-var\" data-var=\"money_food_licence_cat3\">$323.00</span></td></tr>\n<tr><td>Category 4</td><td>Home kitchens making low-risk food only</td><td><span class=\"faq-var\" data-var=\"money_food_licence_cat4\">$323.00</span></td></tr>\n</tbody>\n</table>\n<p><strong>New premises or alterations</strong> also pay the design approval fee of <span class=\"faq-var\" data-var=\"money_food_design_approval\">$506.00</span>. It is not refunded if the application is refused, cancelled or withdrawn.</p>\n<p><strong>Other fees:</strong></p><ul>\n<li>temporary licence, one event of up to <span class=\"faq-var\" data-var=\"text_temp_event_max_days\">5 days</span>: <span class=\"faq-var\" data-var=\"money_food_temporary_event\">$139.00</span></li>\n<li>temporary licence, annual (valid for 12 months from issue): <span class=\"faq-var\" data-var=\"money_food_temporary_annual\">$268.00</span></li>\n<li>accreditation of a food safety program: <span class=\"faq-var\" data-var=\"money_food_safety_program\">$391.00</span></li>\n<li>administrative amendment of a licence: <span class=\"faq-var\" data-var=\"money_licence_amendment\">$87.00</span></li>\n<li>restoring an expired licence: <span class=\"faq-var\" data-var=\"money_licence_restoration\">$92.00</span></li>\n<li>each re-inspection, if one is needed: <span class=\"faq-var\" data-var=\"money_food_reinspection\">$221.00</span></li>\n</ul><p><strong>Starting part way through the year?</strong> Licences run to 30 June. For a new licence, you pay the full annual fee from 1 July to 30 September, <span class=\"faq-var\" data-var=\"text_food_prorata_oct_dec\">75%</span> from 1 October to 31 December and <span class=\"faq-var\" data-var=\"text_food_prorata_jan_mar\">50%</span> from 1 January to 31 March. A licence issued from 1 April to 30 June runs until 30 June the following year.</p>\n<p><strong>Non-profit organisations</strong> can get a <span class=\"faq-var\" data-var=\"text_nonprofit_licence_discount\">50%</span> discount. Write to the Manager Environmental Services with evidence of your non-profit status.</p><div class=\"note\">These categories set your fee. They are not the same as the category one and category two businesses in Food Safety Standard 3.2.2A. See <em>What food safety training do my staff need?</em></div>\n<p>See all fees on our <a href=\"https://www.sdrc.qld.gov.au/payments---services/fees-charges\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au\">Fees and charges</a> page. For help working out your category, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How long does it take to get a food business licence?",
+          "a": "<p>Allow at least <span class=\"faq-var\" data-var=\"time_food_decision\">30 days</span>. We have <span class=\"faq-var\" data-var=\"time_food_decision\">30 days</span> under the <em>Food Act 2006</em> to decide your application, as long as we do not need more information. Lodge at least <span class=\"faq-var\" data-var=\"time_food_application_lead\">30 days</span> before you plan to open.</p>\n<p>For new premises or alterations, the time also depends on your fit-out:</p><ul>\n<li>we assess your plans, generally within <span class=\"faq-var\" data-var=\"time_food_decision\">30 days</span></li>\n<li>if we need more information or amended plans, the reassessment can take up to a further <span class=\"faq-var\" data-var=\"time_food_further_info\">30 days</span></li>\n<li>you build or fit out the premises</li>\n<li>we do a final inspection, then issue the licence</li>\n</ul><p>Complex applications can take longer.</p>\n<p>If you are taking over a business with no changes, it is usually quicker than <span class=\"faq-var\" data-var=\"time_food_decision\">30 days</span>.</p>\n<p>Avoid delays by lodging a complete application with clear plans, and paying the fee. We assign an officer once you have paid. If we ask for more information and you do not provide it in time, we may refuse the application.</p>\n<p>To check on your application, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>, or lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Licence enquiries</strong>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Buying or taking over a food business"
+        },
+        {
+          "type": "faq",
+          "q": "Can the current owner's food licence be transferred to me?",
+          "a": "<p>No. A food business licence cannot be transferred. If you buy or take over a food business, apply for a new licence in your own name before you start trading. This applies even if the business has a current licence.</p>\n<p>If you are not changing the layout or fit-out, choose <strong>New licence only</strong> on the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20Fixed%20%20Mobile%20with%20checklist%20v2.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_fixed_mobile\">Application for Food Business Licence – Fixed and Mobile Premises</a>. You do not need to submit plans. You pay the annual licence fee for your risk category. See <em>How much does a food business licence cost?</em></p>\n<p>You also need a design approval if you will:</p><ul>\n<li>change the layout, or add, move or replace equipment, fixtures or fittings</li>\n<li>reopen premises that have not traded as a food business for more than <span class=\"faq-var\" data-var=\"time_food_premises_inactive\">6 months</span></li>\n</ul><p>See <em>What is a design approval, and when do I need one?</em></p>\n<p><strong>Before you buy:</strong></p><ul>\n<li>The premises must meet today's standards, including the exhaust ventilation. See <em>Do I need an exhaust hood (mechanical ventilation)?</em></li>\n<li>You need a food safety supervisor. If no one in the business is qualified yet, we allow <span class=\"faq-var\" data-var=\"time_fss_takeover\">30 days</span>, or a time agreed with us, to get the qualification. See <em>Who needs a food safety supervisor, and what training do they need?</em></li>\n<li>A health search inspection tells you how well the premises complies now. See <em>Should I get a health search inspection before I buy a food business?</em></li>\n</ul><p>We have <span class=\"faq-var\" data-var=\"time_food_decision\">30 days</span> to decide your application, but most are processed sooner. Display your licence where customers can see it.</p>\n<p>Read <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Flow%20Chart%20For%20FBL%20application%20For%20Existing%20Businesses.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_existing_business_fact_sheet\">Taking over an existing licensed food premises</a>. Business Queensland's <a href=\"https://www.business.qld.gov.au/starting-business/starting-buying/buying\" target=\"_blank\" data-var-href=\"url_business_qld_buying\">Buying a business</a> guide covers due diligence, valuations and contracts. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Should I get a health search inspection before I buy a food business?",
+          "a": "<p>We recommend it. A health search inspection, also called a pre-sale inspection, shows how well the premises complies now. It is not compulsory, but it helps you decide before you buy.</p>\n<p>An Environmental Health Officer inspects the premises and writes a report. The report describes the condition of the premises and lists anything that does not comply with the design, maintenance or cleanliness requirements.</p><ul>\n<li><strong>Cost:</strong> <span class=\"faq-var\" data-var=\"money_health_search\">$234.00</span>, plus <span class=\"faq-var\" data-var=\"money_health_search_hourly\">$170.00</span> an hour after the first 2 hours</li>\n<li><strong>Time:</strong> within <span class=\"faq-var\" data-var=\"time_health_search\">10 full working days</span></li>\n<li><strong>Results:</strong> emailed to you</li>\n</ul><p>If you are not the current licence holder, you need a letter of consent from them.</p>\n<p>A good report does not mean you can trade. You still need a licence in your own name. See <em>Can the current owner's food licence be transferred to me?</em></p>\n<p>Apply using the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/476/Search%20Application%20Form%202026%202027%20-%20V4.pdf.aspx\" target=\"_blank\" data-var-href=\"url_search_application_form\">Search Application form</a> (Health Search Inspections, Food Premises Inspection). Email it to <a href=\"mailto:mail@sdrc.qld.gov.au\" data-var-mailto=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</a>, or hand it in at one of our <a href=\"https://www.sdrc.qld.gov.au/council/contact-us\" target=\"_blank\" data-var-href=\"url_contact_us\">customer service centres</a>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Home kitchens"
+        },
+        {
+          "type": "faq",
+          "q": "Can I run a food business from my home kitchen?",
+          "a": "<p>Yes, for low-risk food. We can licence a home kitchen to make:</p><ul>\n<li>cakes and other baked goods</li>\n<li>jams, pickles and chutneys</li>\n<li>snack foods, such as confectionery, biscuits, nuts and dried fruit</li>\n</ul><p>You can sell them at markets or fetes, from your home, and in small amounts wholesale, for example to a café.</p>\n<p>You cannot make ready-to-eat meals, or other <abbr class=\"faq-def\" title=\"Food that has to be kept at certain temperatures to stop harmful bacteria growing or toxins forming. For example, meat, chicken, seafood, rice dishes, dairy products, gravy and cream-based desserts.\"><span class=\"faq-var\" data-var=\"text_potentially_hazardous_food\">potentially hazardous food</span></abbr>, for sale in a home kitchen. Drying, pickling or fermenting food can be high risk, so talk to us first.</p><div class=\"note\"><strong>Bed and breakfasts and motels</strong> can use their kitchen to make meals for their own guests. What you can serve, and how your business is classed, depends on your menu. Talk to an Environmental Health Officer before you start.</div>\n<p>You need:</p><ul>\n<li>a food business licence. Home kitchens are Category 4. See <em>How much does a food business licence cost?</em></li>\n<li>approval of your kitchen's layout. See <em>What does my home kitchen need to have?</em></li>\n<li>to meet the home-based business rules, or get planning approval. See <em>What approval is required to start a business from my home?</em> on the <a href=\"#planning\">Planning tab</a></li>\n<li>any building and plumbing approvals for the premises</li>\n</ul><p>Some food made at home does not need a licence, such as meals in family day care. See <em>What food businesses do not need a licence?</em></p>\n<p>Before you start, talk to our planning, building, plumbing and environmental health staff, so you have the right approvals from the beginning.</p>\n<p>Read our <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Guideline%20for%20Domestic%20Kitchen.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_domestic_kitchen_guideline\">Guidelines for the Use of Domestic Kitchens for Commercial Food Preparation</a>. Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/specific-requirements/home-based-food-business\" target=\"_blank\" data-var-href=\"url_qld_home_based_food\">Home-based food businesses</a> page has more on running a food business from home. Then call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong> to check whether your plans fit.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What does my home kitchen need to have?",
+          "a": "<p>Your home kitchen must meet the Food Safety Standards. We take into account the type of food you make. You need:</p><ul>\n<li><strong>a hand basin</strong> used only for hand washing, with warm running water, soap, paper towels and a bin. It can be in a room next to the kitchen if it is no more than <span class=\"faq-var\" data-var=\"text_home_kitchen_basin_distance\">5 metres</span> from where you handle food, but not in a toilet, bathroom or laundry</li>\n<li><strong>a washing up area</strong>: a single bowl sink and a dishwasher, a double bowl sink big enough for your largest equipment, or a double bowl sink and a dishwasher</li>\n<li><strong>a way to sanitise</strong> dishes and utensils. A domestic dishwasher only counts if its sanitising cycle reaches at least <span class=\"faq-var\" data-var=\"text_dishwasher_sanitise_temp\">65.6°C</span>, or, without one, it runs with inlet water above <span class=\"faq-var\" data-var=\"text_dishwasher_inlet_temp\">68°C</span>. Otherwise, use a food-grade sanitiser after washing</li>\n<li>a splashback at least <span class=\"faq-var\" data-var=\"text_home_kitchen_splashback\">300mm</span> high behind the washing up area, and hot water of at least <span class=\"faq-var\" data-var=\"text_washing_water_temp\">54°C</span></li>\n<li><strong>smooth, sealed floors, walls, ceilings and benches</strong> that are easy to clean and keep out pests</li>\n<li><strong>enough fridge space</strong> for the most food you will hold. A domestic fridge can struggle to stay at <span class=\"faq-var\" data-var=\"text_cold_food_temp\">5°C</span> or below, so check its temperature often. Your freezer must keep food frozen hard</li>\n<li><strong>a probe thermometer</strong> accurate to within 1°C, kept clean and calibrated</li>\n<li><strong>sealed, vermin-proof storage</strong> for business food and equipment. Do not store it in a garage or shed unless that space is sealed and vermin-proof</li>\n<li><strong>safe drinking water</strong>. If you are not on town water, you may need a water treatment and testing plan</li>\n</ul><p><strong>While you work:</strong></p><ul>\n<li>keep your business food and equipment separate from your household food and equipment</li>\n<li>do not use the kitchen for anything else that could contaminate the food</li>\n<li>keep children and anyone who is sick out of the kitchen while you prepare food, and keep animals out at all times</li>\n<li>use cleaning cloths and products only for the business, not in the bathroom or toilet</li>\n<li>label packaged food correctly. See <em>Can I sell my home-made food at markets?</em></li>\n</ul><p><strong>Plans:</strong> submit 2 copies of a floor plan drawn to scale (for example, 1:100), and sectional elevations (1:50) or photos of each wall. Show the finishes, the layout of all equipment and benches, doors and windows, any other room you use for food or storage, and where the toilet and bathroom are. We do not accept freehand drawings.</p>\n<p>We inspect your kitchen before you start, then about once a year.</p>\n<p>Read our <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Guideline%20for%20Domestic%20Kitchen.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_domestic_kitchen_guideline\">Guidelines for the Use of Domestic Kitchens for Commercial Food Preparation</a> for the full list. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Can I sell my home-made food at markets?",
+          "a": "<p>Yes. If your home kitchen is licensed, you can sell its low-risk food at markets and fetes.</p><ul>\n<li><strong>Packaged food, or unpackaged snack food such as cakes and confectionery:</strong> you may not need a separate stall licence</li>\n<li><strong>Other unpackaged food handled at the market:</strong> you may need a temporary food licence for the stall as well. See <em>Do I need a licence for a market or event stall?</em></li>\n</ul><p>All prepacked food sold at a market stall must be made in a licensed kitchen and labelled correctly.</p>\n<p><strong>Labels:</strong> food you package for retail sale, such as cakes, jams, pickles and chutneys, must be fully labelled under the Food Standards Code, including allergen declarations. Unpackaged food is exempt from full labelling, but some information must still be given to customers, such as allergens when they ask. Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/food-labelling/do-I-need-a-label\" target=\"_blank\" data-var-href=\"url_qld_do_i_need_a_label\">Do I need a label?</a> quiz tells you what your food needs, and its Label Buster tool helps you create a label. Queensland Health regulates labelling. See its <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/food-labelling\" target=\"_blank\" data-var-href=\"url_qld_food_labelling\">Food labelling</a> page, call 13 QGOV (<span class=\"faq-var\" data-var=\"phone_13_74_68\">13 74 68</span>), or call the Darling Downs Public Health Unit on <span class=\"faq-var\" data-var=\"phone_ddphu\">(07) 4699 8240</span>.</p>\n<p><strong>At the stall:</strong></p><ul>\n<li>protect food on display from customers, for example with a barrier or covers</li>\n<li>use a separate serving utensil for each unpackaged food</li>\n<li>remove any food a customer may have contaminated straight away</li>\n<li>transport food covered and protected</li>\n</ul><p>To check whether your stall needs its own licence, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Food trucks and mobile vendors"
+        },
+        {
+          "type": "faq",
+          "q": "Do I need a licence for a food truck or mobile coffee van?",
+          "a": "<p>Yes, if you sell unpackaged food from it. A food truck, van, trailer or caravan that sells unpackaged food is a mobile food premises under the <em>Food Act 2006</em>. So is a food vending machine.</p><ul>\n<li><strong>One licence covers all of Queensland.</strong> Get it from one council where you plan to trade. If another council has licensed your vehicle, you do not need a licence from us too</li>\n<li>to be licensed by us, your vehicle must be garaged in the Southern Downs, so we can inspect it</li>\n<li>the vehicle should be self-contained, with its own water, wastewater tank, rubbish storage and power where needed</li>\n<li>most food trucks are Category 1. See <em>How much does a food business licence cost?</em></li>\n</ul><p>Display your licence details on the vehicle where customers can easily see them. Queensland Health keeps a public register of licensed mobile food businesses. Another council may charge fees for services it provides when you trade in its area.</p>\n<p>A delivery vehicle, or a vehicle used only to carry food for off-site catering, is not a mobile food premises.</p>\n<p>Apply using the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20Fixed%20%20Mobile%20with%20checklist%20v2.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_fixed_mobile\">Application for Food Business Licence – Fixed and Mobile Premises</a>. Give us the vehicle details and registration, the water and wastewater tank sizes, whether a backflow prevention device is fitted, and where food is prepared and stored. Include a floor plan of the vehicle. See <em>What plans do I need to submit with my application?</em></p>\n<p>A coffee van that sells only drinks, with packaged or snack food, may not need a licence. See <em>What food businesses do not need a licence?</em></p>\n<p>The licence lets you operate the vehicle. Where you park to trade needs its own permission. See <em>Where can I park my food truck to sell food?</em></p><div class=\"note\"><strong>Water carriers</strong> delivering drinking water also need a licence as a mobile food premises. You need written confirmation that your delivery hoses meet AS 2070, your tank lining meets AS 4020, backflow prevention is certified, and evidence that the water is safe to drink. A water carrier also needs a food safety supervisor. See Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/specific-requirements/water-carriers\" target=\"_blank\" data-var-href=\"url_qld_water_carriers\">Water carriers</a> page.</div>\n<p>For help with your vehicle's set-up, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Where can I park my food truck to sell food?",
+          "a": "<p>It depends where.</p><ul>\n<li><strong>On a Council road or footpath:</strong> you need a roadside vending permit from us</li>\n<li><strong>On a State-controlled road:</strong> you also need a permit from the Department of Transport and Main Roads (TMR)</li>\n<li><strong>At a market or event:</strong> arrange it with the organiser</li>\n<li><strong>On private land:</strong> you need the owner's permission. If you plan to trade there regularly, check with a duty planner whether planning approval is needed</li>\n</ul><p>A roadside vending permit can be <strong>stationary</strong> (trading from a set place) or <strong>mobile</strong> (travelling, with customers waving you down, like an ice cream van). It is issued under Local Law No. 1 (Administration) 2011.</p>\n<p>The main conditions:</p><ul>\n<li>get the permit before you trade</li>\n<li>public liability insurance of at least <span class=\"faq-var\" data-var=\"text_public_liability_council_land\">$20 million</span>, naming us as an interested party</li>\n<li>one permit is for one person, one vehicle registered in their name, and one location</li>\n<li>keep at least <span class=\"faq-var\" data-var=\"text_roadside_vending_lane_clearance\">10 metres</span> clear of the nearest traffic lane and <span class=\"faq-var\" data-var=\"text_roadside_vending_intersection_clearance\">50 metres</span> clear of the nearest intersection</li>\n<li>hold a food licence if your food needs one. See <em>Do I need a licence for a food truck or mobile coffee van?</em></li>\n<li>provide a bin for customers, and leave the area clean</li>\n<li>collect all wastewater in a sealed tank and empty it each day at a suitable facility, such as a caravan dump point</li>\n<li>remove the vehicle and equipment at the end of each day</li>\n</ul><p>The fee is <span class=\"faq-var\" data-var=\"money_roadside_vending_application\">$323.00</span> to apply, plus <span class=\"faq-var\" data-var=\"money_roadside_vending_annual\">$197.00</span> for the annual permit. Renewal is <span class=\"faq-var\" data-var=\"money_roadside_vending_annual\">$197.00</span> a year.</p>\n<p>Apply at least <span class=\"faq-var\" data-var=\"time_food_application_lead\">30 days</span> before you start, using the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Permit%20for%20Use%20of%20Road%20(Commercial%20Roadside%20Vending).pdf.aspx\" target=\"_blank\" data-var-href=\"url_roadside_vending_application\">Application for Permit for Use of Road (Commercial Roadside Vending)</a>. Read the conditions on our <a href=\"https://www.sdrc.qld.gov.au/doing-business/new-planning-development/licences-permits-for-business/using-council-land\" target=\"_blank\" data-var-href=\"url_using_council_land\">Using Council Land</a> page. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong>, or lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Licence enquiries</strong>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Markets, events and temporary stalls"
+        },
+        {
+          "type": "faq",
+          "q": "Do I need a licence for a market or event stall?",
+          "a": "<p>It depends on what you sell.</p><ul>\n<li><strong>Prepacked low-risk food only</strong>, such as a cake or fruit stall: you do not need a stall licence. But the food must be made in a licensed kitchen and labelled correctly</li>\n<li><strong>Unpackaged food prepared or handled at the stall</strong>, such as a sausage sizzle, burgers or taste-testing: you need a temporary food licence</li>\n<li><strong>A temporary set-up inside an existing building</strong>, such as a community hall kitchen: you need a temporary food licence</li>\n</ul><p>There are 2 kinds of temporary food licence:</p><ul>\n<li><strong>one-off event</strong>: one event, one location, for up to <span class=\"faq-var\" data-var=\"text_temp_event_max_days\">5 days</span>. The fee is <span class=\"faq-var\" data-var=\"money_food_temporary_event\">$139.00</span></li>\n<li><strong>annual</strong>: regular markets or events, valid for 12 months from issue. The fee is <span class=\"faq-var\" data-var=\"money_food_temporary_annual\">$268.00</span></li>\n</ul><p>If you will trade at events <span class=\"faq-var\" data-var=\"text_temp_max_times\">12 times</span> a year or more, a stall is not enough. You need a licensed food vehicle or premises. See <em>Do I need a licence for a food truck or mobile coffee van?</em></p><div class=\"note\"><strong>Trading in other council areas?</strong> Our temporary licence covers the Southern Downs only. You need a licence from each council where you trade. A licensed food truck is different: one licence covers Queensland.</div>\n<p>If you prepare or store the food somewhere else, that place needs its own approval.</p>\n<p>For a one-off event, name your food safety supervisor in the application. See <em>Who needs a food safety supervisor, and what training do they need?</em></p>\n<p>Community groups follow different rules. See <em>Does our community group or charity need a food licence?</em></p>\n<p>Apply at least <span class=\"faq-var\" data-var=\"time_food_application_lead\">30 days</span> before the event using the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20%E2%80%93%20Temporary%20Food%20Premises%20with%20checklist%20.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_temporary\">Application for Food Business Licence – Temporary Premises</a>. See <em>What does a temporary food stall need?</em> For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What does a temporary food stall need?",
+          "a": "<p>A stall that handles unpackaged food needs to protect it from dust, pests and customers, and keep it at the right temperature. You need:</p><ul>\n<li><strong>a roof, walls and a cleanable floor</strong>. Our operator checklist asks for a marquee or similar with at least 3 walls. On grass or gravel that is wet or muddy, add a floor covering</li>\n<li><strong>hand washing</strong>: a container of at least <span class=\"faq-var\" data-var=\"text_temp_stall_water\">20 litres</span> of drinking water with a tap, a bucket underneath, liquid soap and paper towels, labelled for hand washing only</li>\n<li><strong>separate utensil washing</strong>: hot water (an urn or kettle is fine), a container of cold water with a tap, and at least 2 tubs</li>\n<li><strong>temperature control</strong>: cold food at <span class=\"faq-var\" data-var=\"text_cold_food_temp\">5°C</span> or below (for example, an esky with ice), hot food at <span class=\"faq-var\" data-var=\"text_hot_food_temp\">60°C</span> or above, and a probe thermometer with alcohol wipes. Use a bain-marie only to keep cooked food hot, not to heat it</li>\n<li><strong>protection</strong>: food off the ground, benches with an impervious cover, a sneeze guard or barrier, tongs or other utensils, and sauces in squeeze bottles or single packs</li>\n<li><strong>cooking equipment</strong> inside the stall and away from the public, with a dry chemical fire extinguisher where there is an open flame</li>\n<li><strong>a sign</strong> with the operator's name and phone number, in letters at least <span class=\"faq-var\" data-var=\"text_temp_stall_sign_height\">100mm</span> high</li>\n<li><strong>waste</strong>: a lidded bin with a liner, bins for customers, and wastewater kept in a lidded container marked <em>Liquid waste only</em>. Never pour it on the ground or into a gutter</li>\n</ul><p>Handle food and money separately. Ready-to-eat <abbr class=\"faq-def\" title=\"Food that has to be kept at certain temperatures to stop harmful bacteria growing or toxins forming. For example, meat, chicken, seafood, rice dishes, dairy products, gravy and cream-based desserts.\"><span class=\"faq-var\" data-var=\"text_potentially_hazardous_food\">potentially hazardous food</span></abbr> can be out of temperature control (between 5°C and 60°C) for a total of <span class=\"faq-var\" data-var=\"text_food_max_hours_out_of_temp\">4 hours</span> at most. After that, throw it out. See Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/premises-and-equipment/temperature-control\" target=\"_blank\" data-var-href=\"url_qld_temperature_control\">Temperature control</a> page.</p>\n<p>Transport food in sealed containers in an enclosed vehicle, keeping <abbr class=\"faq-def\" title=\"Food that has to be kept at certain temperatures to stop harmful bacteria growing or toxins forming. For example, meat, chicken, seafood, rice dishes, dairy products, gravy and cream-based desserts.\"><span class=\"faq-var\" data-var=\"text_potentially_hazardous_food\">potentially hazardous food</span></abbr> at the right temperature.</p>\n<p>Gas barbecues and cookers must meet the rules for using gas at outdoor events.</p>\n<p>Your application needs a floor plan of the stall showing this layout, clear enough for us to assess.</p>\n<p>Read the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/1059/Guideline%20for%20the%20Establishment%20of%20a%20Temporary%20Food%20Premises.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_temporary_guideline\">Guideline for the Establishment of a Temporary Food Premises</a>, and use the operator checklist in the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20%E2%80%93%20Temporary%20Food%20Premises%20with%20checklist%20.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_temporary\">temporary premises application</a> each time you set up. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Community groups and fundraisers"
+        },
+        {
+          "type": "faq",
+          "q": "Does our community group or charity need a food licence?",
+          "a": "<p>Usually not, but you must tell us about your event. Every non-profit or community organisation that sells food must complete the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Notification%20of%20Non-Profit%20Organisation%20Food%20Event.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_nonprofit_notification\">Notification of Non-Profit Organisation Food Event</a>.</p>\n<p>You only need a food licence if your organisation sells meals on at least <span class=\"faq-var\" data-var=\"text_nonprofit_meal_days\">12 days</span> each financial year. A meal is food eaten sitting at a table with cutlery, and substantial enough to be accepted as a meal.</p>\n<p>Examples that need a licence:</p><ul>\n<li>a sporting club restaurant open daily to the public</li>\n<li>meals sold at a homeless shelter</li>\n<li>Meals on Wheels</li>\n<li>a mobile food van selling meals at a sports ground</li>\n</ul><p>Examples that do not:</p><ul>\n<li>meals of fruit, cereal or toast, or meals the customer helps to prepare</li>\n<li>meals made by someone else and heated as their instructions say</li>\n<li>meals made in a cooking or hospitality class</li>\n</ul><p><strong>Even without a licence</strong>, your food must be safe, and the people handling it must have the skills to do it safely. The free <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/resources-food-businesses\" target=\"_blank\" data-var-href=\"url_qld_food_resources\">DoFoodSafely</a> course is a good start. This does not apply if the food is not potentially hazardous, such as biscuits, cakes without cream or jams, or is eaten straight after thorough cooking, such as a sausage on bread.</p>\n<p>Food sold at a fundraising event, such as a cake stall or sausage sizzle, has some exemptions from full labelling.</p>\n<p>Volunteers can make low-risk food, such as cakes and biscuits, at home and donate it. Once you receive it, your organisation is responsible for its safety.</p>\n<p><strong>Donated food:</strong> a donor is not liable under the <em>Civil Liability Act 2003</em> if the food was safe when it left them, and they passed on any handling instructions and time limits. Charities cannot give out food past its use-by date. Food past its best-before date can be given out if it is otherwise safe.</p>\n<p>If you do need a licence, we discount it by <span class=\"faq-var\" data-var=\"text_nonprofit_licence_discount\">50%</span>. Write to the Manager Environmental Services with evidence of your non-profit status. A licensed non-profit still needs a food safety supervisor.</p>\n<p>A cake stall or sausage sizzle on a Council footpath also needs a permit. There is no fee for a community group or charity. See our <a href=\"https://www.sdrc.qld.gov.au/doing-business/new-planning-development/licences-permits-for-business/using-council-land\" target=\"_blank\" data-var-href=\"url_using_council_land\">Using Council Land</a> page.</p>\n<p>Read Queensland Health's advice on <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/non-profit-organisations/non-profit\" target=\"_blank\" data-var-href=\"url_qld_nonprofit_food\">non-profit organisations</a> and <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/starting-a-food-business/non-profit-organisations/fundraising-events\" target=\"_blank\" data-var-href=\"url_qld_fundraising_events\">fundraising events</a>. To check your event, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Running your food business"
+        },
+        {
+          "type": "faq",
+          "q": "Who needs a food safety supervisor, and what training do they need?",
+          "a": "<p>Every licensed food business must have at least one food safety supervisor. This is the person who makes sure food is handled safely.</p>\n<p>They must:</p><ul>\n<li>know how to recognise, prevent and fix food safety hazards in the business</li>\n<li>have food safety skills and knowledge relevant to the business</li>\n<li>have the authority to supervise food handlers and give them directions</li>\n<li>be reasonably available to staff and to us while the business is operating. This usually means they work on site</li>\n</ul><p><strong>Training:</strong> the supervisor needs a Statement of Attainment from a registered training organisation (RTO) for the units of competency for your sector. Queensland Health lists the units for retail and hospitality, food processing, health and community services, and transport. Search the unit codes on <a href=\"https://training.gov.au/Home/Tga\" target=\"_blank\" data-var-href=\"url_training_gov_au\">training.gov.au</a> to find an RTO.</p>\n<p>Our application forms ask for qualifications gained within the last <span class=\"faq-var\" data-var=\"text_fss_certificate_years\">5 years</span>. For category one and category two businesses under Food Safety Standard 3.2.2A, such as restaurants, takeaways, caterers, bakeries, delis and market stalls, this is a legal requirement. They must renew the certificate at least every <span class=\"faq-var\" data-var=\"text_fss_certificate_years\">5 years</span>. Recognition of prior learning is not accepted.</p>\n<p><strong>When to tell us:</strong> give us your supervisor's name, contact details and certificate with your licence application, or by a time agreed with us. For later changes, see <em>I'm changing or adding a food safety supervisor. What do I do?</em></p>\n<p>An online food handler course, such as DoFoodSafely, does not usually give the level of knowledge a supervisor needs.</p>\n<p>If the supervisor is away for a short time, have written procedures for staff to follow. For longer leave, appoint another supervisor.</p>\n<p>Read Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/food-safety-supervisors\" target=\"_blank\" data-var-href=\"url_qld_food_safety_supervisors\">Food safety supervisors</a> page. For advice on the right training, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What food safety training do my staff need?",
+          "a": "<p>Everyone who handles food must have the skills and knowledge to do it safely for the work they do. This is a requirement of the <em>Food Act 2006</em>. It covers anyone who handles food, or surfaces that touch food, such as cutlery and plates.</p>\n<p>Queensland Health's free online <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/resources-food-businesses\" target=\"_blank\" data-var-href=\"url_qld_food_resources\">DoFoodSafely</a> course is a good start. Keep each certificate in your staff training records.</p>\n<p><strong>Food Safety Standard 3.2.2A</strong> sets extra rules for businesses that serve or sell unpackaged, ready-to-eat <abbr class=\"faq-def\" title=\"Food that has to be kept at certain temperatures to stop harmful bacteria growing or toxins forming. For example, meat, chicken, seafood, rice dishes, dairy products, gravy and cream-based desserts.\"><span class=\"faq-var\" data-var=\"text_potentially_hazardous_food\">potentially hazardous food</span></abbr>:</p><ul>\n<li><strong>category one</strong>: caterers and food services that make it, such as restaurants, takeaways, caterers and bakeries</li>\n<li><strong>category two</strong>: retailers that sell it but do not make it, such as delis, market stalls, service stations and convenience stores</li>\n</ul><p>In both categories:</p><ul>\n<li>food handlers must complete a food safety course, or show equivalent skills. A course must cover safe food handling, contamination, cleaning and sanitising, and personal hygiene</li>\n<li>the food safety supervisor must hold a current certificate. See <em>Who needs a food safety supervisor, and what training do they need?</em></li>\n</ul><p>There is no set time for refresher training, but regular refreshers are good practice.</p>\n<p>Category one businesses must also <strong>keep records</strong>, or show an Environmental Health Officer another way, that they control the main risks: temperatures when receiving, storing, displaying and transporting food, cooking, cooling, reheating, and cleaning and sanitising.</p>\n<p>Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/resources-food-businesses#Records\" target=\"_blank\" data-var-href=\"url_qld_food_records\">free record sheets</a> include a temperature control log, a cleaning and sanitising record and a staff training record, with posters for hand washing and the temperature danger zone.</p>\n<p><strong>Sick staff:</strong> anyone with diarrhoea, vomiting, fever, a sore throat with fever or jaundice must tell the food safety supervisor and not handle food until they have been free of symptoms for <span class=\"faq-var\" data-var=\"text_food_handler_symptom_free\">48 hours</span>.</p>\n<p>The standard does not apply to fundraising events, or to businesses that only manufacture or wholesale food.</p><div class=\"note\">Category one and two under this standard are not the same as our licence fee categories 1 to 4. See <em>How much does a food business licence cost?</em></div>\n<p>Read Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/other-requirements/food-safety-tools-standard\" target=\"_blank\" data-var-href=\"url_qld_standard_322a\">Standard 3.2.2A</a> page. To check which category you are, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Do I need a food safety program?",
+          "a": "<p>Only some businesses must have one. You need an accredited food safety program if your licensed business:</p><ul>\n<li>caters off site, for example at events. This does not include delivering food customers order, such as pizza, or selling from a food truck or stall</li>\n<li>mainly does on-site catering, such as a function centre</li>\n<li>caters on site at part of the premises, such as a function room in a large hotel, for 200 or more people on 12 or more occasions in any 12 months</li>\n<li>is part of a private hospital, or serves <abbr class=\"faq-def\" title=\"Food that has to be kept at certain temperatures to stop harmful bacteria growing or toxins forming. For example, meat, chicken, seafood, rice dishes, dairy products, gravy and cream-based desserts.\"><span class=\"faq-var\" data-var=\"text_potentially_hazardous_food\">potentially hazardous food</span></abbr> to <span class=\"faq-var\" data-var=\"text_fsp_vulnerable_people\">six</span> or more vulnerable people, such as in an aged care facility or child care centre</li>\n</ul><p>A food safety program is a written plan for how you identify and control food safety hazards, with daily records, fixes for when something goes wrong, and regular reviews. Any business can choose to have one.</p>\n<p><strong>How to get one accredited:</strong></p><ol>\n<li>Write your program. You can use a Queensland Health template. See <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-programs-and-auditors/develop-a-food-safety-program\" target=\"_blank\" data-var-href=\"url_qld_develop_food_safety_program\">Develop a food safety program</a>.</li>\n<li>Get written advice on it from an approved food safety auditor. See the <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/food-safety-programs-and-auditors/compliance\" target=\"_blank\" data-var-href=\"url_qld_food_safety_auditors\">register of approved auditors</a>.</li>\n<li>Apply to us using the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Safety%20Program%20Accreditation%20or%20Amendment.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_safety_program_application\">Application for Food Safety Program Accreditation or Amendment</a>, at the same time as your new licence application.</li>\n<li>Have your first compliance audit within <span class=\"faq-var\" data-var=\"time_fsp_first_audit\">6 months</span> of accreditation. We decide how often you are audited after that.</li>\n</ol>\n<p>Once accredited, follow your program and keep a copy at the premises where all staff can use it. The auditor sends us a copy of each audit report, and must tell us about any critical problem within 24 hours.</p>\n<p>A food safety program can also help you show you took all reasonable care if something goes wrong.</p>\n<p>Accreditation costs <span class=\"faq-var\" data-var=\"money_food_safety_program\">$391.00</span>, which covers 3 hours of assessment. Longer assessments are charged at the Environmental Health Officer rate. Accreditation is a one-off. You only reapply if you make a major change to a process, and assessing an amended program costs <span class=\"faq-var\" data-var=\"money_food_safety_program_amended\">$308.00</span>.</p>\n<p>To check whether you need one, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "When does my food licence expire, and how do I renew it?",
+          "a": "<p>Every food business licence ends on 30 June. We send you a renewal notice before then.</p>\n<p>You can pay the renewal by phone, by bank transfer, or at one of our <a href=\"https://www.sdrc.qld.gov.au/council/contact-us\" target=\"_blank\" data-var-href=\"url_contact_us\">customer service centres</a>. The renewal fee is the annual fee for your risk category. See <em>How much does a food business licence cost?</em></p>\n<p>Temporary food licences are different. An annual temporary licence is valid for 12 months from the date we issue it.</p>\n<p><strong>If you miss the renewal:</strong> your licence expires, and you cannot trade until it is restored. Restoring an expired licence costs <span class=\"faq-var\" data-var=\"money_licence_restoration\">$92.00</span>, plus the licence fee. If it is not renewed or restored, you must apply for a new licence.</p>\n<p>Your food safety supervisor's certificate may also need renewing. See <em>Who needs a food safety supervisor, and what training do they need?</em></p>\n<p>For help with your renewal, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong>, or lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Licence enquiries</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How do I change my licence details or alter my premises?",
+          "a": "<p>It depends on the change.</p><ul>\n<li><strong>Your trading name, contact details, or how you run the business (not the premises):</strong> apply for an administrative amendment on the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Food%20Business%20Licence%20Fixed%20%20Mobile%20with%20checklist%20v2.pdf.aspx?embed=Y\" target=\"_blank\" data-var-href=\"url_food_application_fixed_mobile\">application form</a>. The fee is <span class=\"faq-var\" data-var=\"money_licence_amendment\">$87.00</span></li>\n<li><strong>The layout, fit-out or equipment:</strong> you need a design approval <strong>before</strong> you start any work. See <em>What is a design approval, and when do I need one?</em></li>\n<li><strong>Your food safety supervisor:</strong> tell us within <span class=\"faq-var\" data-var=\"time_fss_change\">14 days</span>. See <em>I'm changing or adding a food safety supervisor. What do I do?</em></li>\n<li><strong>A new owner:</strong> licences cannot be transferred. The new owner applies for their own licence. See <em>Can the current owner's food licence be transferred to me?</em></li>\n<li><strong>A lost or damaged licence:</strong> a replacement costs <span class=\"faq-var\" data-var=\"money_licence_replacement\">$52.00</span></li>\n</ul><p>If you are unsure whether a change needs a design approval, check with us before you start.</p>\n<p>Lodge the form by email to <a href=\"mailto:mail@sdrc.qld.gov.au\" data-var-mailto=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</a>, at one of our <a href=\"https://www.sdrc.qld.gov.au/council/contact-us\" target=\"_blank\" data-var-href=\"url_contact_us\">customer service centres</a>, or by post to <span class=\"faq-var\" data-var=\"text_council_postal_address\">PO Box 26, Warwick QLD 4370</span>. To check what you need, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How often will you inspect my food business?",
+          "a": "<p>We inspect your premises before you open, then routinely, about once a year. Environmental Health Officers also visit when we receive a report of poor food handling.</p>\n<p>At an inspection, we check that your premises and food handling meet the <em>Food Act 2006</em> and the Food Safety Standards.</p><ul>\n<li>if we need to come back to check that something has been fixed, each re-inspection costs <span class=\"faq-var\" data-var=\"money_food_reinspection\">$221.00</span></li>\n<li>if you do not allow a reasonable request for an inspection, we may suspend or cancel your licence</li>\n</ul><p>We can inspect any food business in our area, whether or not it needs a licence.</p>\n<p>To prepare, try Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/know-your-food-business\" target=\"_blank\" data-var-href=\"url_qld_know_your_food_business\">Know your food business</a> self-assessment. It has 11 topics of 5 to 10 minutes each. Keep your records up to date using its <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/resources-food-businesses#Records\" target=\"_blank\" data-var-href=\"url_qld_food_records\">free record sheets</a>.</p>\n<p>Display your licence where customers can see it.</p>\n<p>For advice before an inspection, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Can I put tables and chairs on the footpath outside my café?",
+          "a": "<p>Yes, with a footpath dining permit from us. You need one to put tables and chairs on a Council footpath for your customers.</p>\n<p>You do not need a permit if the outdoor area is on private property, for example an area owned by a shopping centre.</p>\n<p>To apply:</p><ul>\n<li>fill in the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Application%20for%20Permit%20for%20Use%20of%20Footpath%20(commercial%20use).pdf.aspx\" target=\"_blank\" data-var-href=\"url_footpath_use_application\">Application for Permit for Use of Footpath (Commercial Use)</a></li>\n<li>include details of your public liability insurance, at least <span class=\"faq-var\" data-var=\"text_public_liability_council_land\">$20 million</span></li>\n<li>lodge it at least <span class=\"faq-var\" data-var=\"time_food_application_lead\">30 days</span> before you want to start, with the fee</li>\n</ul><p><strong>Fees, each year:</strong></p><ul>\n<li>in the principal centre zone of Warwick and Stanthorpe: <span class=\"faq-var\" data-var=\"money_footpath_dining_centre\">$99.00 + $19.00 per chair</span></li>\n<li>in all other areas: <span class=\"faq-var\" data-var=\"money_footpath_dining_other\">$57.00 + $13.00 per chair</span></li>\n</ul><p>Include the outdoor seats when you tell us your seat numbers on your food licence application. With <span class=\"faq-var\" data-var=\"text_food_seats_toilets\">20</span> or more seats in total, you need customer toilets. See <em>What are the fit-out requirements for a food premises?</em></p>\n<p>You can choose to allow customers' dogs in an outdoor dining area. See <em>Can customers bring dogs into my café or outdoor dining area?</em></p>\n<p>Read our <a href=\"https://www.sdrc.qld.gov.au/doing-business/new-planning-development/licences-permits-for-business/using-council-land\" target=\"_blank\" data-var-href=\"url_using_council_land\">Using Council Land</a> page. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong>, or lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Licence enquiries</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "I'm changing or adding a food safety supervisor. What do I do?",
+          "a": "<p>Tell us within <span class=\"faq-var\" data-var=\"time_fss_change\">14 days</span> using the <a href=\"https://www.sdrc.qld.gov.au/ArticleDocuments/392/Food%20Safety%20Supervisor%20Notification%20-%20New,%20Change%20or%20Remove.pdf.aspx\" target=\"_blank\" data-var-href=\"url_food_fss_notification\">Food Safety Supervisor Notification – New, Change or Remove</a>. Use it when:</p><ul>\n<li>someone new becomes a food safety supervisor</li>\n<li>a supervisor's contact details change</li>\n<li>someone stops being a supervisor</li>\n</ul><p>The licence holder must sign the form. Attach a copy of each new supervisor's Statement of Attainment, or describe their food safety experience.</p>\n<p>Your business must always have at least one supervisor. If your only supervisor leaves, nominate a replacement. See <em>Who needs a food safety supervisor, and what training do they need?</em></p>\n<p>Email the form to <a href=\"mailto:mail@sdrc.qld.gov.au\" data-var-mailto=\"email_mail_sdrc_qld_gov_au\">mail@sdrc.qld.gov.au</a>, hand it in at one of our <a href=\"https://www.sdrc.qld.gov.au/council/contact-us\" target=\"_blank\" data-var-href=\"url_contact_us\">customer service centres</a>, or post it to <span class=\"faq-var\" data-var=\"text_council_postal_address\">PO Box 26, Warwick QLD 4370</span>. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How do I report a food safety concern or suspected food poisoning?",
+          "a": "<p>Lodge an <a href=\"https://www.sdrc.qld.gov.au/payments-services/online-service-requests/new-service-request\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_39\">online service request</a> under <strong>Unhygienic food premises</strong>, or call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong>. Environmental Health Officers investigate poor food handling, unhygienic premises and foreign objects in food.</p>\n<p>Tell us:</p><ul>\n<li>the name and address of the business</li>\n<li>when you were there</li>\n<li>what you saw, or what you ate and when you became unwell</li>\n</ul><p><strong>Queensland Health</strong> investigates foodborne illness, and problems with food labelling or what is in a food. You can use its <a href=\"https://phconnect-foodcomplaints.health.qld.gov.au/\" target=\"_blank\" data-var-href=\"url_qld_food_complaint\">online food safety complaint form</a>. For an urgent food safety issue, call 13 HEALTH on <span class=\"faq-var\" data-var=\"phone_13_health\">13 43 25 84</span>.</p>\n<p><strong>About food poisoning:</strong> symptoms usually start between 8 hours and 3 or 4 days after eating, but can start much later. So the last meal you ate may not be the cause. Most people recover within a few days. See a doctor if your symptoms are severe or last more than 3 days.</p>\n<p>For other concerns about a food business, such as trading without a licence, use the <strong>Compliance enquiries</strong> category.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "A customer says my food made them sick. What should I do?",
+          "a": "<p>Take down the details, and do not admit fault or argue. Only a proper investigation, supported by laboratory tests, can find the cause of an illness.</p>\n<p>Ask the customer for, and record:</p><ul>\n<li>the time and date of the complaint</li>\n<li>their name and contact details</li>\n<li>how many people are ill</li>\n<li>when the food was bought or eaten</li>\n<li>what they ate, and which food they think made them sick</li>\n<li>whether they still have any of the food</li>\n</ul><p>They do not have to answer. Keep anything they tell you confidential.</p>\n<p>Tell the owner or food safety supervisor straight away. If any of the suspected food is still on the premises, isolate it, label it <em>suspected unsafe food</em>, and refrigerate it away from other food.</p><div class=\"warn\"><strong>Are 2 or more people sick</strong> from the same food, or after eating at your business at the same time? Report it to the Darling Downs Public Health Unit on <span class=\"faq-var\" data-var=\"phone_ddphu\">(07) 4699 8240</span>.</div>\n<p>Whether you offer compensation is your decision.</p>\n<p>Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/handling-food/customer-complaints\" target=\"_blank\" data-var-href=\"url_qld_customer_complaints\">Customer complaints</a> page has a customer complaints log you can use. For advice, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What do I need to tell customers about allergens?",
+          "a": "<p>Accurate information, whenever a customer asks. It is an offence not to give a customer information about allergens when they ask for it. A reaction to food can be life-threatening.</p>\n<p>Most allergic reactions are caused by wheat, peanuts, soy, milk, eggs, tree nuts, sesame, shellfish, fish and lupin.</p>\n<p>To manage allergens in your business:</p><ul>\n<li>name known allergens in menu and display descriptions, for example <em>fish with almond butter</em></li>\n<li>keep ingredient information for every dish where staff can find it, including food taken out of its original packaging</li>\n<li>train staff to answer questions accurately, and to say when they are not sure</li>\n<li>prevent cross-contact: use separate utensils, set aside a time or area for allergen-free food, and clean and sanitise equipment and benches between uses</li>\n<li>tell customers if a food may contain traces of an allergen</li>\n<li>suggest that customers with a severe allergy avoid self-serve areas and buffets</li>\n</ul><p>Packaged food must declare allergens on its label. See <em>Can I sell my home-made food at markets?</em></p>\n<p>The free <a href=\"https://foodallergytraining.org.au/\" target=\"_blank\" data-var-href=\"url_allergen_training\">All About Allergens</a> online course helps owners and staff set up safe procedures. Queensland Health has an allergen matrix record among its <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/training-and-teaching-resources/resources-food-businesses#Records\" target=\"_blank\" data-var-href=\"url_qld_food_records\">free record sheets</a>.</p>\n<p>Read Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/skills-and-knowledge/allergies-and-food-intolerances\" target=\"_blank\" data-var-href=\"url_qld_allergies\">Food allergies and intolerances</a> page. For advice, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Can customers bring dogs into my café or outdoor dining area?",
+          "a": "<p>Not inside, unless it is an assistance animal. You can choose to allow dogs in an outdoor dining area.</p><ul>\n<li><strong>Assistance animals</strong>, such as guide dogs and hearing dogs, must be allowed in every customer area, indoors and outdoors, including bathrooms. They are not allowed in the kitchen or storeroom</li>\n<li><strong>Companion or emotional support animals</strong> do not have the same right</li>\n<li><strong>Other dogs</strong> are allowed only in an outdoor dining area, if you choose. You can refuse any dog that is not an assistance animal. This applies to dogs only, not other animals</li>\n</ul><p>An outdoor dining area must:</p><ul>\n<li>be used for eating or drinking, or both</li>\n<li>be open to the public without passing through an enclosed area</li>\n<li>not be used to prepare food</li>\n<li>not be enclosed. An area with a roof and roll-down plastic sides counts as enclosed</li>\n</ul><p>If you allow dogs, keep food staff from touching them, provide water and a way to clean bowls, and clean up dog waste straight away. Plan how you will handle misbehaving dogs and complaints, and tell customers your rules with signs.</p>\n<p>On a Council footpath, you also need a footpath dining permit. See <em>Can I put tables and chairs on the footpath outside my café?</em></p>\n<p>Read Queensland Health's <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business/premises-and-equipment/food-premises-and-equipment/animals-in-a-food-business\" target=\"_blank\" data-var-href=\"url_qld_animals_food_business\">Animals in a food business</a> page. For advice, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask for an <strong>Environmental Health Officer</strong>.</p>"
+        }
+      ],
+      "footer": "Related:\n    <a href=\"https://www.sdrc.qld.gov.au/doing-business/planning-development/licences-permits-for-business/food-businesses\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au_24\">Food Businesses</a> ·\n    <a href=\"https://www.sdrc.qld.gov.au/payments-services/forms-permits-licences/permits-licences\" target=\"_blank\" data-var-href=\"url_permits_licences_forms\">Permits &amp; Licences forms</a> ·\n    <a href=\"https://www.sdrc.qld.gov.au/payments---services/fees-charges\" target=\"_blank\" data-var-href=\"url_www_sdrc_qld_gov_au\">Fees &amp; Charges</a> ·\n    <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry\" target=\"_blank\" data-var-href=\"url_qld_food_pantry\">Queensland Health: The Food Pantry</a> ·\n    <a href=\"https://www.qld.gov.au/health/staying-healthy/food-pantry/running-a-food-business\" target=\"_blank\" data-var-href=\"url_qld_running_food_business\">Running a food business</a>",
+      "lastReviewed": "November 2026"
     },
     {
       "id": "about",
