@@ -3664,6 +3664,100 @@
           "a": "<p>Yes, with our approval. Fill in the <strong>Roadside Memorial Application</strong> and send it back to us. We will give you our decision in writing.</p>\n<p>Our guidelines are there to keep family, friends and road users safe while a memorial is put up and visited.</p>\n<p>The form is on our <a href=\"https://www.sdrc.qld.gov.au/living-here/cemeteries/roadside-memorials/roadside-memorials\" target=\"_blank\" data-var-href=\"url_roadside_memorials\">Roadside Memorials</a> page. For help, call us on <strong><span class=\"faq-var\" data-var=\"phone_1300_697_372\">1300 697 372</span></strong> and ask to be transferred to <strong>Cemeteries</strong>.</p>"
         }
       ]
+    },
+    {
+      "id": "about",
+      "label": "About this project",
+      "intro": "<p><strong>Process Hub is a plain-English FAQ for residents, and the editor that keeps it accurate.</strong> I built it from 14 months of customer service conversations. These questions explain what it is, how it works and what I am asking for.</p>",
+      "items": [
+        {
+          "type": "group",
+          "title": "The ask"
+        },
+        {
+          "type": "faq",
+          "q": "What am I asking for?",
+          "a": "<p>Approval to publish the FAQ on the council website, so residents can use it directly.</p>\n<p>The content is ready: about 215 questions across 17 topics, in plain English, each ending with what to do next. Before launch, each department confirms the details it owns. The editor turns that into a short checklist, not a page-by-page review.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What problem does it solve?",
+          "a": "<p>Residents often come to us without the background they need to use our information. Our detailed pages have to cover legislation and technical rules, so it is easy to get lost before reaching the answer.</p>\n<p>The FAQ starts simple. It explains the topic in plain words, then takes the resident to the right page, form or team. They arrive better informed: they understand the detailed pages, ask better questions and know what to do next.</p>\n<p>It is a front door to our existing website, not a replacement for it.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Why did this come from customer service?",
+          "a": "<p>Customer service hears the questions first. We resolve most of them on the spot, so other teams rarely see where residents get stuck, or which explanations help.</p>\n<p>I have taken thousands of calls and counter enquiries. Over 14 months I kept notes on the explanations that worked, and refined them in real conversations every day. This FAQ is those notes, checked against our published information.</p>"
+        },
+        {
+          "type": "group",
+          "title": "Is it ready to publish?"
+        },
+        {
+          "type": "faq",
+          "q": "How do we know the answers are accurate?",
+          "a": "<p>There are 3 layers of checking:</p>\n<ul>\n<li><strong>Sources.</strong> Over 95% of the public details are linked to the council or government document they come from: more than 100 documents, with the page and the words quoted.</li>\n<li><strong>Ownership.</strong> Every detail belongs to the department responsible for it. The editor generates a confirmation email that asks them to confirm it.</li>\n<li><strong>Checks.</strong> Built-in checks flag plain-English problems, unconfirmed details, and answers with no owner or next step.</li>\n</ul>\n<p>Confirming the information which has been sourced from publicly available sources is current is the main step before launch.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Does it give advice?",
+          "a": "<p>No. Every answer is general information that customer service already gives residents. It does not interpret legislation, assess applications or advise on individual properties. It refers those questions to the specialist teams.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How is it kept up to date?",
+          "a": "<p>Each detail, such as a fee, a phone number, a timeframe or a link, is stored as a variable in the editor. Change the variable, and it updates everywhere it appears. Currently 300+ variables are used around 800 times across the answers.</p>\n<p>Edits can publish to the live page within minutes. Every change is recorded with who made it and when.</p>"
+        },
+        {
+          "type": "group",
+          "title": "How it works"
+        },
+        {
+          "type": "faq",
+          "q": "What is behind the FAQ page?",
+          "a": "<p>An editor I built, called Process Hub. It holds 3 kinds of content; all built from one shared set of details:</p>\n<ul>\n<li><strong>FAQ answers</strong> for residents</li>\n<li><strong>fact sheets</strong>, the longer versions, with a review pack and sign-off workflow (5 drafted)</li>\n<li><strong>process maps</strong> of how our services actually run (more than 100 drafted), with a register of where they break down (almost 90 issues logged)</li>\n</ul>\n<p>A Probe tool lets staff type a question the way a resident would and see whether the FAQ answers it. Unanswered questions become a work list.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What does it cost, and what does it run on?",
+          "a": "<p>No licences, subscriptions or servers. It is plain HTML, CSS and JavaScript, so it runs on any web host, including the council's own, with nothing to install.</p>\n<p>The published FAQ is a single data file. IT can take it into the council website, or host the page as it is.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Where is it kept today?",
+          "a": "<p>The content is in a private GitHub repository, and the editor and FAQ page run on GitHub Pages. It is a working prototype, and it holds no internal or customer information.</p>\n<p>It is built to move to council hosting without being rebuilt.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "Was AI used in production?",
+          "a": "<p>Yes, as a tool. The knowledge and judgement come from my customer service experience and the council's own publications. AI helped me draft and edit wording against the source documents and helped me build the editor.</p>\n<p>I check every answer against its sources and approve it before it is published. The editor records the source behind every figure.&nbsp;</p>"
+        },
+        {
+          "type": "group",
+          "title": "About me and what's next"
+        },
+        {
+          "type": "faq",
+          "q": "Who built it?",
+          "a": "<p>I did. I am a customer service officer, and I built Process Hub in my own time, on my own devices.</p>\n<p>It started as personal notes to assist with answering customer enquiries. Over the last 3 months it became about 44,000 words of answers, roughly the length of a small novel and an editor of more than 20,000 lines of code.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "What else could it do?",
+          "a": "<ul>\n<li><strong>Fact sheets</strong> for topics that need more depth, built from the same confirmed details</li>\n<li><strong>An AI question tool</strong> that answers only from approved content to avoid the hallucination problem. A working prototype already runs in the browser and sends no data anywhere.</li>\n<li><strong>Service blueprints</strong> that show each step of a process, where residents lack information, and where hand-offs between teams break down</li>\n</ul>\n<p><br></p>"
+        },
+        {
+          "type": "faq",
+          "q": "What is needed to take it further?",
+          "a": "<ol>\n<li><strong>Approval to publish</strong> on the council website.</li>\n<li><strong>Department time</strong> to confirm their details: a checklist each, not a rewrite.</li>\n<li><strong>A dedicated content role</strong> to maintain the answers, work with departments and develop the fact sheets and process maps.</li>\n</ol>\n<p>The groundwork is done. What it needs now is time and a home.</p>"
+        },
+        {
+          "type": "faq",
+          "q": "How can I see it working?",
+          "a": "<p>For ease of sharing, the resident FAQ is temporarily live as a prototype at <a href=\"https://aaronunify2.github.io/ProcessHub/FAQ.html\" target=\"_blank\">aaronunify2.github.io/ProcessHub/FAQ.html</a>. I am happy to walk you through the editor behind it at any time.&nbsp;</p><p>Note that this webpage is blocked from appearing as a result from search engines.&nbsp;</p>"
+        }
+      ],
+      "lastReviewed": "November 2026"
     }
   ],
   "departments": [
