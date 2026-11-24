@@ -99,6 +99,9 @@
       '<header class="pane-head"><h1>Probe</h1>' +
       '<p class="lede">Ask a question the way a customer would, and see whether the FAQ has an ' +
       'answer for it. Questions it can\'t answer can be logged as content gaps.</p>' +
+      '<p class="probe-links">Stand-alone pages for the public FAQ: ' +
+      '<a href="ask.html" target="_blank" rel="noopener">Ask ↗</a> ' +
+      '<a href="map.html" target="_blank" rel="noopener">Meaning map ↗</a></p>' +
       '<form class="probe-form" id="probeForm" autocomplete="off">' +
       '<input type="search" id="probeInput" value="' + e(view.query) + '" ' +
       'placeholder="e.g. can I keep chooks in town" aria-label="Question to probe" enterkeyhint="search">' +
