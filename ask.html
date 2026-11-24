@@ -2632,10 +2632,17 @@ async function readMissing(jobs, batch, label, put) {
 // The question (or the closest of its other phrasings, a little discounted),
 // the best passage of the answer, and the words they share — plus the lift for an everyday
 // question. Process Hub's Probe scores exactly the same way.
-function score(f, qVec, qTerms) {
+// A phrasing is also compared with the question exactly as typed, before the
+// glossary adds its words: "chooks in town" reads closer to the phrasing "How
+// many Chooks in Town?" than "chooks in town (chickens poultry livestock;
+// urban)" does. The better of the two counts.
+function score(f, qVec, qTerms, typedVec) {
   var sq = dot(qVec, f.qVec);
   var also = 0;
-  f.aliasVecs.forEach(function (v) { also = Math.max(also, dot(qVec, v) - ALIAS_DISCOUNT); });
+  f.aliasVecs.forEach(function (v) {
+    var near = typedVec ? Math.max(dot(qVec, v), dot(typedVec, v)) : dot(qVec, v);
+    also = Math.max(also, near - ALIAS_DISCOUNT);
+  });
   var sa = 0;
   f.cVecs.forEach(function (v) { sa = Math.max(sa, dot(qVec, v)); });
   var sqAll = Math.max(sq, also);
@@ -2646,11 +2653,12 @@ function score(f, qVec, qTerms) {
 
 async function search(question, limit) {
   await Ask.whenReady;
-  question = expand(question);
-  var vec = (await embed([question]))[0];
-  var qTerms = terms(question);
+  var asked = expand(question);
+  var vecs = await embed(asked === question ? [asked] : [asked, question]);
+  var vec = vecs[0], typed = vecs[1] || null;
+  var qTerms = terms(asked);
   return Ask.faqs
-    .map(function (f, i) { var s = score(f, vec, qTerms); return { faq: f, index: i, score: s.total, parts: s }; })
+    .map(function (f, i) { var s = score(f, vec, qTerms, typed); return { faq: f, index: i, score: s.total, parts: s }; })
     .sort(function (a, b) { return b.score - a.score; })
     .slice(0, limit || 10);
 }

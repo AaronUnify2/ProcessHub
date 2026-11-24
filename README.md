@@ -200,7 +200,10 @@ one per line, in their words (`alsoAsked`), and **Everyday question**
 (`common`), for the question most people mean when several answers fit.
 Neither is ever published as text. Probe and `ask.html` match a question
 against its phrasings as well as its own wording, and give an everyday
-question a small lift (3 points) that breaks near-ties. When Probe lands on
+question a small lift (3 points) that breaks near-ties. A phrasing is
+compared with the question both as typed and with the glossary's words added
+("chooks" → "chickens poultry livestock"), and the closer of the two counts,
+so a phrasing in everyday words still matches everyday words. When Probe lands on
 the wrong answer, add what was asked as a phrasing on the right one.
 
 ## Fact sheets

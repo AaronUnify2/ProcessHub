@@ -321,10 +321,17 @@
       return total ? hit / total : 0;
     }
 
-    function score(f, qVec, qTerms) {
+    // A phrasing is also compared with the question exactly as typed, before the
+    // glossary adds its words: "chooks in town" reads closer to the phrasing "How
+    // many Chooks in Town?" than "chooks in town (chickens poultry livestock;
+    // urban)" does. The better of the two counts.
+    function score(f, qVec, qTerms, typedVec) {
       var sq = dot(qVec, f.qVec);
       var also = 0;
-      f.aliasVecs.forEach(function (v) { also = Math.max(also, dot(qVec, v) - ALIAS_DISCOUNT); });
+      f.aliasVecs.forEach(function (v) {
+        var near = typedVec ? Math.max(dot(qVec, v), dot(typedVec, v)) : dot(qVec, v);
+        also = Math.max(also, near - ALIAS_DISCOUNT);
+      });
       var sa = 0;
       f.cVecs.forEach(function (v) { sa = Math.max(sa, dot(qVec, v)); });
       var sqAll = Math.max(sq, also);
@@ -334,11 +341,12 @@
 
     self.search = async function (question, limit) {
       await self.whenReady;
-      question = expand(question);
-      var vec = (await embed([question]))[0];
-      var qTerms = terms(question);
+      var asked = expand(question);
+      var vecs = await embed(asked === question ? [asked] : [asked, question]);
+      var vec = vecs[0], typed = vecs[1] || null;
+      var qTerms = terms(asked);
       return self.faqs
-        .map(function (f) { return { faq: f, score: score(f, vec, qTerms) }; })
+        .map(function (f) { return { faq: f, score: score(f, vec, qTerms, typed) }; })
         .sort(function (a, b) { return b.score - a.score; })
         .slice(0, limit || 10);
     };

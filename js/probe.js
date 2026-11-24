@@ -205,18 +205,28 @@
    * How well an FAQ answer answers a question: the question (or the closest
    * of its other phrasings), the best passage of the answer, and the words
    * they share — plus the lift for an everyday question. Same as ask.html.
+   *
+   * typed (optional) is the question as typed, before the glossary added its
+   * words. A phrasing is compared with both and the better counts: "chooks in
+   * town" reads closer to the phrasing "How many Chooks in Town?" than
+   * "chooks in town (chickens poultry livestock; urban)" does.
    */
-  function scoreFaq(c, f, vec, qTerms) {
-    var best = function (keys) {
+  function scoreFaq(c, f, vec, qTerms, typed) {
+    var best = function (keys, against) {
       var top = 0;
       keys.forEach(function (k) {
         var v = S.lookup(k);
-        if (v) top = Math.max(top, S.dot(vec, v));
+        if (v) top = Math.max(top, S.dot(against || vec, v));
       });
       return top;
     };
     var sq = best([f.qKey]);
-    var also = f.alsoKeys.length ? best(f.alsoKeys) - S.ALIAS_DISCOUNT : 0;
+    var also = 0;
+    if (f.alsoKeys.length) {
+      also = best(f.alsoKeys);
+      if (typed) also = Math.max(also, best(f.alsoKeys, typed));
+      also -= S.ALIAS_DISCOUNT;
+    }
     var sa = best(f.cKeys);
     var sqAll = Math.max(sq, also);
     var sem = Math.max(sqAll, 0.5 * sqAll + 0.5 * sa);
@@ -250,10 +260,14 @@
       return S.ensure(questionJobs(c), 32).then(function () {
         readPassages(c);
         var asked = S.expand(question);
-        return S.vectorOf(asked).then(function (vec) {
+        return Promise.all([
+          S.vectorOf(asked),
+          asked === question ? null : S.vectorOf(question)
+        ]).then(function (vecs) {
+          var vec = vecs[0], typed = vecs[1];
           var qTerms = S.terms(asked);
           return {
-            faqs: c.faqs.map(function (f) { return scoreFaq(c, f, vec, qTerms); })
+            faqs: c.faqs.map(function (f) { return scoreFaq(c, f, vec, qTerms, typed); })
               .sort(function (a, b) { return b.score - a.score; }),
             gaps: c.gaps.filter(function (g) { return !g.gap.resolved; })
               .map(function (g) { return scoreGap(c, g, vec, qTerms); })
