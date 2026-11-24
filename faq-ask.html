@@ -15,7 +15,16 @@
 
    The same page as FAQ.html, read from the same exports/FAQ.json. The box
    at the top takes a question in plain words and shows the published
-   answers that match it best, in place of the tabs. The matching is
+   answers that match it best, in place of the tabs.
+
+   Two modes. Browsing (the default): the page is the FAQ page, and Ask
+   keeps to its box; the example questions and the model's progress show
+   only while the box is in use. Asking (body.asking): the header shrinks,
+   the box stays at the top of the screen so the next question is one tap
+   away, the tabs fold into a "Browse all topics" button, and the answers
+   get the space. Going back to browsing (that button, a topic link, Escape)
+   folds the answer away into a "Back to your answer" link; the × in the box
+   throws it away. The matching is
    ask.html's (js/ask-engine.js, with the model in js/ask-worker.js and the
    fingerprints read from ask.html). Until the model has loaded, the box
    matches words instead, and the answer updates once it is ready.
@@ -169,8 +178,52 @@ a:hover { color: var(--accent-strong); }
   vertical-align: 1px;
 }
 
-.try[hidden] { display: none; }
-.try { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 0.85rem; color: var(--ink-soft); }
+/* ---- the two modes: browsing and asking ------------------------------- */
+
+/* Browsing: Ask keeps to its box. Examples and progress show while it is in use. */
+.try, .ask-status { display: none; }
+body.ask-focus:not(.asking) .try { display: flex; }
+body.ask-focus:not(.asking) .ask-status,
+body.asking .ask-status:not(.ready) { display: block; }
+
+.recall {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+  margin: 10px 0 0; padding: 6px 14px;
+  border: 1px solid var(--accent); border-radius: 999px;
+  background: var(--accent-wash); color: var(--accent-strong);
+  font: inherit; font-size: 0.88rem; cursor: pointer;
+}
+.recall span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recall:hover { background: var(--paper); }
+.recall[hidden], body.asking .recall { display: none; }
+
+.browse-bar { display: none; margin: 14px 0 16px; }
+.browse-bar button {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line-strong); background: var(--paper); border-radius: 999px;
+  padding: 7px 14px; font: inherit; font-size: 0.92rem; color: var(--ink); cursor: pointer;
+}
+.browse-bar button:hover { border-color: var(--accent); color: var(--accent); }
+.browse-bar svg { width: 16px; height: 16px; }
+
+/* Asking: a slimmer header, the box stays in reach, the answers get the room. */
+body.asking .masthead { padding: 14px 0 14px; }
+body.asking .masthead h1 { font-size: 1.25rem; }
+body.asking .masthead .lede { display: none; }
+body.asking .shell { margin-top: 0; }
+body.asking .ask-area {
+  position: sticky; top: 0; z-index: 20;
+  margin: 0 -16px; padding: 12px 16px 10px;
+  background: var(--wash);
+  box-shadow: 0 6px 10px -8px rgba(16, 38, 46, 0.25);
+}
+body.asking .tabs { display: none; }
+body.asking .browse-bar { display: block; }
+body.asking #content .panel:not([hidden]) { animation: rise 0.18s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { body.asking #content .panel:not([hidden]) { animation: none; } }
+
+.try { flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 0.85rem; color: var(--ink-soft); }
 .chip {
   border: 1px solid var(--line-strong);
   background: var(--paper);
@@ -556,9 +609,10 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
 
 @media print {
   body { background: #fff; font-size: 11pt; }
+  body.asking .ask-area { position: static; box-shadow: none; }
   .masthead { background: none; color: #000; padding: 0 0 8pt; }
   .shell { margin: 0; padding: 0; max-width: none; }
-  .search, .try, .ask-status, .tabs, .copy-link, .more, .copy-email, .skip, .def-tip, .toast, .qa-q .chev { display: none !important; }
+  .search, .try, .ask-status, .recall, .browse-bar, .tabs, .copy-link, .more, .copy-email, .skip, .def-tip, .toast, .qa-q .chev { display: none !important; }
   .qa { box-shadow: none; break-inside: avoid; border-color: #bbb; }
   .qa-a[hidden] { display: block !important; }
   .intro, .stepper .step, .empty { box-shadow: none; }
@@ -583,19 +637,24 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
 </header>
 
 <main class="shell">
+  <div class="ask-area" id="askArea">
   <div class="search" role="search">
     <form id="askForm" autocomplete="off">
       <div class="field">
         <label for="q">Ask a question</label>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-        <input id="q" type="search" placeholder="Ask a question in your own words" autocomplete="off" enterkeyhint="search">
+        <input id="q" type="search" placeholder="Ask a question" autocomplete="off" enterkeyhint="search">
         <button class="clear" type="button" id="clear" aria-label="Clear the question" hidden>×</button>
       </div>
       <button class="ask-go" type="submit">Ask</button>
     </form>
   </div>
+  <button class="recall" type="button" id="recall" hidden>↩ <span>Back to your answer</span></button>
   <p class="ask-status" id="askStatus" role="status"></p>
   <div class="try" id="try"><span>Try:</span></div>
+  </div>
+
+  <div class="browse-bar"><button type="button" id="browse"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>Browse all topics</button></div>
 
   <ul class="tabs" id="tabs" role="tablist" aria-label="Topics"></ul>
 
@@ -1166,29 +1225,70 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
     ask(searchEl.value);
   });
   searchEl.addEventListener('input', function () {
+    // Emptying the box to type the next question keeps the answer showing.
     clearEl.hidden = !searchEl.value;
-    if (!searchEl.value && resultsEl && !resultsEl.hidden) backToTabs();
   });
   searchEl.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') backToTabs();
   });
   clearEl.addEventListener('click', function () {
-    backToTabs();
+    discardAnswer();
     searchEl.focus();
   });
 
+  // The box is "in use" while focus is anywhere in the ask area.
+  var askArea = document.getElementById('askArea');
+  askArea.addEventListener('focusin', function () { document.body.classList.add('ask-focus'); });
+  askArea.addEventListener('focusout', function (event) {
+    if (!askArea.contains(event.relatedTarget)) document.body.classList.remove('ask-focus');
+  });
+
+  var recallEl = document.getElementById('recall');
+  var lastQuestion = '';   // the question whose answer is on screen, or folded away
+
+  document.getElementById('browse').addEventListener('click', backToTabs);
+  recallEl.addEventListener('click', function () {
+    searchEl.value = lastQuestion;
+    clearEl.hidden = false;
+    showAnswerArea();
+  });
+
+  /** Asking: hide the tabs' pages, show the answer, give it the room. */
+  function showAnswerArea() {
+    tabs.forEach(function (t) {
+      t.panel.hidden = true;
+      t.button.setAttribute('aria-selected', 'false');
+    });
+    hideDefinition();
+    document.body.classList.add('asking');
+    resultsEl.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  /** Back to browsing, keeping the answer behind "Back to your answer". */
   function backToTabs() {
     clearSearch();
     showTab(currentTab ? currentTab.id : tabs[0].id, false);
+    tabsEl.scrollIntoView({ block: 'nearest' });
   }
 
-  function clearSearch() {
+  /** The × in the box: throw the answer away, and browse. */
+  function discardAnswer() {
     askSeq++;
-    if (!searchEl.value && (!resultsEl || resultsEl.hidden)) return;
+    lastQuestion = '';
+    resultsEl.innerHTML = '';
+    backToTabs();
+  }
+
+  // Leaving the answer for a topic: fold it away (every way into a tab calls this).
+  function clearSearch() {
+    if (!resultsEl) return;
+    document.body.classList.remove('asking');
+    resultsEl.hidden = true;
     searchEl.value = '';
     clearEl.hidden = true;
-    if (resultsEl) { resultsEl.hidden = true; resultsEl.innerHTML = ''; }
-    document.getElementById('try').hidden = false;
+    recallEl.hidden = !(lastQuestion && resultsEl.childNodes.length);
+    recallEl.querySelector('span').textContent = 'Back to your answer: “' + lastQuestion + '”';
   }
 
   /** "Show in the … tab": leave the answers and open the question where it lives. */
@@ -1214,6 +1314,8 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
       var chip = el('button', 'chip');
       chip.type = 'button';
       chip.textContent = text;
+      // Keep the focus in the box, so the examples do not fold away mid-tap.
+      chip.addEventListener('mousedown', function (event) { event.preventDefault(); });
       chip.addEventListener('click', function () {
         searchEl.value = text;
         ask(text);
@@ -1226,6 +1328,7 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
     question = question.trim();
     if (!question || !tabs.length) return;
     var seq = ++askSeq;
+    lastQuestion = question;
     clearEl.hidden = false;
     searchEl.blur();   // on a phone, put the keyboard away so the answer shows
 
@@ -1278,11 +1381,8 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
   }
 
   function showMatches(question, matches, opts) {
-    tabs.forEach(function (t) {
-      t.panel.hidden = true;
-      t.button.setAttribute('aria-selected', 'false');
-    });
-    hideDefinition();
+    // An answer redone by meaning while it is folded away stays folded.
+    var folded = !document.body.classList.contains('asking') && question !== searchEl.value.trim();
     resultsEl.innerHTML = '';
     resultsEl.appendChild(el('p', 'results-head', 'You asked: <strong>“' + escapeHtml(question) + '”</strong>'));
     if (opts.note) resultsEl.appendChild(el('p', 'results-note', escapeHtml(opts.note)));
@@ -1320,10 +1420,7 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
       '<p>Still not sure? Call us on ' + councilPhone() + ', or ' + requestLink() + '.</p>'));
     resolveVariables(resultsEl, variableMap(data.variables || []));
     prepareContent(resultsEl);
-    resultsEl.hidden = false;
-    document.getElementById('try').hidden = true;
-    var top = resultsEl.getBoundingClientRect().top;
-    if (top < 0 || top > window.innerHeight * 0.6) resultsEl.scrollIntoView({ block: 'start' });
+    if (!folded) showAnswerArea();
   }
 
   /** Council's main number, from the variables list when it is loaded. */

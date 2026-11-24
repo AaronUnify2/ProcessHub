@@ -322,10 +322,18 @@ needs no refreshing of its own.
 
 `faq-ask.html` is the public FAQ page, read from the same `exports/FAQ.json`,
 with Ask's box in place of the search box:
-`https://aaronunify2.github.io/ProcessHub/faq-ask.html`. A question replaces
-the tabs with the published answers that match it best, the best one opened
-when the match is strong; each new question replaces the last, and clearing
-the box brings the tabs back. Each answer can be shown in its tab, and
+`https://aaronunify2.github.io/ProcessHub/faq-ask.html`. It has two modes:
+
+- **Browsing** (the default): the FAQ page as it is, with Ask kept to its box.
+  The example questions and the model's progress show only while the box is
+  in use.
+- **Asking**: a question shrinks the header, keeps the box at the top of the
+  screen, folds the tabs into a **Browse all topics** button and shows the
+  published answers that match best, the best one opened when the match is
+  strong. Each new question replaces the last.
+
+**Browse all topics**, a link to a tab, or Escape folds the answer away into a
+**Back to your answer** link under the box; the × in the box throws it away. Each answer can be shown in its tab, and
 **Copy link** copies the public FAQ page's link to it, ready to send to a
 customer. Until the model has loaded, the box matches words and says so, then
 redoes the answer by meaning. The matching is Ask's, in `js/ask-engine.js`
