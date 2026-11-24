@@ -36,6 +36,8 @@ content in those older public copies was judged acceptable to leave.
   ask.html           experimental, staff only: ask a question in plain words, get the matching
                      FAQ answers (a small language model running in the browser)
   map.html           experimental, staff only: the published FAQ laid out by meaning
+  faq-ask.html       experimental, staff only: the public FAQ page with Ask in place of
+                     its search box (js/ask-engine.js · js/ask-worker.js)
   css/app.css · css/live.css · css/gate.css · css/meaning-map.css
   js/                github.js · gate.js · storage.js · data.js · merge.js · edit.js
                      rules.js · writing.js · checks.js · export.js · factsheet-export.js · faq.js
@@ -93,7 +95,7 @@ first if there are unpublished changes.
 If GitHub cannot be reached, a draft already on the computer still opens, so
 work can carry on offline and be published later.
 
-**`ask.html` and `map.html`** sit behind the same sign-in. They start hidden
+**`ask.html`, `map.html` and `faq-ask.html`** sit behind the same sign-in. They start hidden
 and run only once GitHub confirms the token kept in the browser can still read
 ProcessHub-data; anyone signed in to Process Hub on that computer goes
 straight in. They ask search engines not to index them. What they show is the
@@ -313,7 +315,22 @@ never their text) and which are everyday questions. After phrasings change,
 or once a lot of the FAQ has been edited: open Process Hub with the published
 content and no local changes, run `copy(await Probe.exportFingerprints())`
 in the browser console, and paste the result over the `fingerprints` block
-in `ask.html`.
+in `ask.html`. `faq-ask.html` reads the same block from `ask.html`, so it
+needs no refreshing of its own.
+
+## FAQ with Ask (experimental)
+
+`faq-ask.html` is the public FAQ page, read from the same `exports/FAQ.json`,
+with Ask's box in place of the search box:
+`https://aaronunify2.github.io/ProcessHub/faq-ask.html`. A question replaces
+the tabs with the published answers that match it best, the best one opened
+when the match is strong; each new question replaces the last, and clearing
+the box brings the tabs back. Each answer can be shown in its tab, and
+**Copy link** copies the public FAQ page's link to it, ready to send to a
+customer. Until the model has loaded, the box matches words and says so, then
+redoes the answer by meaning. The matching is Ask's, in `js/ask-engine.js`
+(the model runs in `js/ask-worker.js`); `ask.html` still carries its own copy.
+`#tab` and `#tab/question` links work as on `FAQ.html`.
 
 ## The meaning map (experimental)
 

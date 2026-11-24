@@ -101,6 +101,7 @@
       'answer for it. Questions it can\'t answer can be logged as content gaps.</p>' +
       '<p class="probe-links">Stand-alone pages for the public FAQ: ' +
       '<a href="ask.html" target="_blank" rel="noopener">Ask ↗</a> ' +
+      '<a href="faq-ask.html" target="_blank" rel="noopener">FAQ with Ask ↗</a> ' +
       '<a href="map.html" target="_blank" rel="noopener">Meaning map ↗</a></p>' +
       '<form class="probe-form" id="probeForm" autocomplete="off">' +
       '<input type="search" id="probeInput" value="' + e(view.query) + '" ' +
