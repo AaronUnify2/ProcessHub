@@ -721,6 +721,7 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
 
     button.addEventListener('click', function () {
       var opening = button.getAttribute('aria-expanded') !== 'true';
+      if (opening) closeOthers(li);
       setOpen(li, opening);
       if (opening && !inResults) setHash(question.tab.id + '/' + question.slug);
       if (!opening && !inResults) setHash(question.tab.id);
@@ -729,6 +730,20 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
     li.appendChild(button);
     li.appendChild(answer);
     return li;
+  }
+
+  /**
+   * One answer open at a time: close every other open answer on the page.
+   * Closing one above it would pull this question up the screen, so the
+   * page scrolls to keep it where the reader tapped it.
+   */
+  function closeOthers(keep) {
+    var before = keep.getBoundingClientRect().top;
+    Array.prototype.forEach.call(contentEl.querySelectorAll('.qa.open'), function (other) {
+      if (other !== keep) setOpen(other, false);
+    });
+    var shift = keep.getBoundingClientRect().top - before;
+    if (shift) window.scrollBy(0, shift);
   }
 
   function setOpen(li, open) {
@@ -999,6 +1014,7 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1
     if (parts[1]) {
       var match = tab.items.filter(function (q) { return q.slug === parts[1]; })[0];
       if (match) {
+        closeOthers(match.node);
         setOpen(match.node, true);
         setTimeout(function () { match.node.scrollIntoView({ block: 'start' }); }, 0);
         return true;
